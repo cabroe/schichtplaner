@@ -1,27 +1,5 @@
 basePath: /
 definitions:
-  handlers.HealthResponse:
-    properties:
-      database:
-        type: string
-      status:
-        type: string
-      timestamp:
-        type: string
-    type: object
-  models.APIResponse:
-    properties:
-      data: {}
-      error:
-        example: Fehlermeldung
-        type: string
-      message:
-        example: Operation erfolgreich
-        type: string
-      success:
-        example: true
-        type: boolean
-    type: object
   models.Department:
     properties:
       color:
@@ -99,6 +77,19 @@ definitions:
       updated_at:
         type: string
     type: object
+  responses.APIResponse:
+    properties:
+      data: {}
+      error:
+        example: Ein Fehler ist aufgetreten
+        type: string
+      message:
+        example: Operation erfolgreich durchgeführt
+        type: string
+      success:
+        example: true
+        type: boolean
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -120,11 +111,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Get all departments
       tags:
       - departments
@@ -145,11 +136,11 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Create a department
       tags:
       - departments
@@ -170,15 +161,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Delete a department
       tags:
       - departments
@@ -198,11 +189,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Get a single department
       tags:
       - departments
@@ -228,15 +219,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Update a department
       tags:
       - departments
@@ -244,19 +235,19 @@ paths:
     get:
       consumes:
       - '*/*'
-      description: get the status of server and its components.
+      description: Gibt den Status des Servers und seiner Komponenten zurück
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handlers.HealthResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "503":
           description: Service Unavailable
           schema:
-            $ref: '#/definitions/handlers.HealthResponse'
-      summary: Show the status of server.
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Zeigt den Status des Servers
       tags:
       - health
   /shiftdays:
@@ -270,11 +261,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Get all shift days
       tags:
       - shiftdays
@@ -295,11 +286,11 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Create a shift day
       tags:
       - shiftdays
@@ -320,15 +311,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Delete a shift day
       tags:
       - shiftdays
@@ -348,11 +339,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Get a single shift day
       tags:
       - shiftdays
@@ -378,15 +369,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Update a shift day
       tags:
       - shiftdays
@@ -401,11 +392,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Get all shift types
       tags:
       - shifttypes
@@ -426,11 +417,11 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Create a shift type
       tags:
       - shifttypes
@@ -451,15 +442,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Delete a shift type
       tags:
       - shifttypes
@@ -479,11 +470,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Get a single shift type
       tags:
       - shifttypes
@@ -509,15 +500,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Update a shift type
       tags:
       - shifttypes
@@ -532,11 +523,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Get all shift weeks
       tags:
       - shiftweeks
@@ -557,11 +548,11 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Create a shift week
       tags:
       - shiftweeks
@@ -582,15 +573,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Delete a shift week
       tags:
       - shiftweeks
@@ -610,11 +601,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Get a single shift week
       tags:
       - shiftweeks
@@ -640,15 +631,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Update a shift week
       tags:
       - shiftweeks
@@ -663,11 +654,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Get all users
       tags:
       - users
@@ -688,11 +679,11 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Create a new user
       tags:
       - users
@@ -713,15 +704,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Delete a user
       tags:
       - users
@@ -741,11 +732,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Get a single user
       tags:
       - users
@@ -771,15 +762,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/models.APIResponse'
+            $ref: '#/definitions/responses.APIResponse'
       summary: Update a user
       tags:
       - users

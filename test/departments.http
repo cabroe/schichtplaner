@@ -11,7 +11,8 @@ POST http://localhost:8080/departments
 Content-Type: application/json
 
 {
-    "name": "IT Department"
+    "name": "IT Abteilung",
+    "color": "#FF5733"
 }
 
 ### Update department
@@ -19,7 +20,8 @@ PUT http://localhost:8080/departments/1
 Content-Type: application/json
 
 {
-    "name": "Updated IT Department"
+    "name": "IT Support",
+    "color": "#33FF57"
 }
 
 ### Delete department

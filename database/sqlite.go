@@ -13,29 +13,39 @@ import (
 
 var db *gorm.DB
 
+// GetDB gibt die Datenbankinstanz zurück
 func GetDB() *gorm.DB {
 	return db
 }
 
+// SetDB setzt die Datenbankinstanz
 func SetDB(database *gorm.DB) {
 	db = database
 }
 
+// ValidateConnection prüft die Datenbankverbindung
+func ValidateConnection() error {
+	sqlDB, err := db.DB()
+	if err != nil {
+		return err
+	}
+	return sqlDB.Ping()
+}
+
+// SetupTestDB erstellt eine In-Memory Testdatenbank
 func SetupTestDB(t *testing.T, entities ...interface{}) *fiber.App {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	if err != nil {
-		t.Fatalf("failed to connect database: %v", err)
+		t.Fatalf("Fehler beim Verbinden zur Testdatenbank: %v", err)
 	}
 
-	// Migrate schema for all provided entities
 	db.AutoMigrate(entities...)
-
-	// Set test DB
 	SetDB(db)
 
 	return fiber.New()
 }
 
+// StartDB initialisiert die Datenbankverbindung
 func StartDB() error {
 	dbPath := os.Getenv("SQLITE_DB_PATH")
 	if dbPath == "" {
@@ -45,12 +55,13 @@ func StartDB() error {
 	var err error
 	db, err = gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
 	if err != nil {
-		return errors.New("Error opening SQLite database: " + err.Error())
+		return errors.New("Fehler beim Öffnen der SQLite Datenbank: " + err.Error())
 	}
 
 	return nil
 }
 
+// CloseDB schließt die Datenbankverbindung
 func CloseDB() {
 	if db != nil {
 		sqlDB, err := db.DB()
@@ -64,17 +75,17 @@ func CloseDB() {
 	}
 }
 
+// AutoMigrate führt die Datenbankmigrationen durch
 func AutoMigrate() error {
-	// Migration order matters due to foreign key constraints
 	err := db.AutoMigrate(
-		&models.Department{}, // Base table
-		&models.User{},       // Depends on Department
-		&models.ShiftType{},  // Independent table
-		&models.ShiftWeek{},  // Depends on Department
-		&models.ShiftDay{},   // Depends on ShiftWeek, ShiftType, User
+		&models.Department{},
+		&models.User{},
+		&models.ShiftType{},
+		&models.ShiftWeek{},
+		&models.ShiftDay{},
 	)
 	if err != nil {
-		return errors.New("Database migration error: " + err.Error())
+		return errors.New("Datenbank Migrationsfehler: " + err.Error())
 	}
 	return nil
 }

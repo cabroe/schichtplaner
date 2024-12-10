@@ -11,9 +11,13 @@ POST http://localhost:8080/users
 Content-Type: application/json
 
 {
-    "name": "John Doe",
-    "email": "john@example.com",
-    "department_id": 1
+    "first_name": "Max",
+    "last_name": "Mustermann",
+    "email": "max.mustermann@firma.de",
+    "password": "geheim123",
+    "color": "#FF5733",
+    "department_id": 1,
+    "is_admin": false
 }
 
 ### Update user
@@ -21,10 +25,15 @@ PUT http://localhost:8080/users/1
 Content-Type: application/json
 
 {
-    "name": "Jane Doe",
-    "email": "jane@example.com",
-    "department_id": 2
+    "first_name": "Maximilian",
+    "last_name": "Mustermann",
+    "email": "maximilian.mustermann@firma.de",
+    "password": "geheim123",
+    "color": "#33FF57",
+    "department_id": 1,
+    "is_admin": true
 }
 
 ### Delete user
 DELETE http://localhost:8080/users/1
+Accept: application/json

@@ -1,3 +1,0 @@
-### Check health status
-GET http://localhost:8080/health
-Accept: application/json

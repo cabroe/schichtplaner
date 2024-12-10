@@ -12,6 +12,7 @@ type HealthData struct {
 	Status    string `json:"status"`
 	Database  string `json:"database"`
 	Timestamp string `json:"timestamp"`
+	Version   string `json:"version"`
 }
 
 // @Summary Zeigt den Status des Servers
@@ -23,19 +24,21 @@ type HealthData struct {
 // @Failure 503 {object} responses.APIResponse
 // @Router /health [get]
 func HandleHealthCheck(c *fiber.Ctx) error {
-	sqlDB, err := database.GetDB().DB()
 	dbStatus := "online"
+	systemStatus := "gesund"
 
-	healthData := HealthData{
-		Status:    "gesund",
-		Database:  dbStatus,
-		Timestamp: time.Now().Format(time.RFC3339),
+	// Prüfe Datenbankverbindung
+	if err := database.ValidateConnection(); err != nil {
+		dbStatus = "offline"
+		systemStatus = "ungesund"
+		return c.Status(503).JSON(responses.ErrorResponse("System ist nicht verfügbar"))
 	}
 
-	if err != nil || sqlDB.Ping() != nil {
-		healthData.Status = "ungesund"
-		healthData.Database = "offline"
-		return c.Status(503).JSON(responses.ErrorResponse("System ist nicht verfügbar"))
+	healthData := HealthData{
+		Status:    systemStatus,
+		Database:  dbStatus,
+		Timestamp: time.Now().Format(time.RFC3339),
+		Version:   "1.0.0",
 	}
 
 	return c.JSON(responses.SuccessResponse("System läuft einwandfrei", healthData))

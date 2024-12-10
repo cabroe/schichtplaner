@@ -17,7 +17,7 @@ clean:
 	rm -rf tmp/
 
 seed:
-	go run cmd/seed/main.go
+	go run cmd/seed.go
 
 install:
 	go mod download

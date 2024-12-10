@@ -2,12 +2,32 @@
 GET http://localhost:8080/shifttypes
 Accept: application/json
 
+### Get single shift type
+GET http://localhost:8080/shifttypes/1
+Accept: application/json
+
 ### Create new shift type
 POST http://localhost:8080/shifttypes
 Content-Type: application/json
 
 {
-    "name": "Early Shift",
-    "description": "Morning shift from 6am to 2pm",
-    "duration": "8h"
+    "name": "Frühschicht",
+    "description": "Frühe Schicht von 6-14 Uhr",
+    "duration": "8h",
+    "color": "#FF5733"
 }
+
+### Update shift type
+PUT http://localhost:8080/shifttypes/1
+Content-Type: application/json
+
+{
+    "name": "Spätschicht",
+    "description": "Späte Schicht von 14-22 Uhr",
+    "duration": "8h",
+    "color": "#33FF57"
+}
+
+### Delete shift type
+DELETE http://localhost:8080/shifttypes/1
+Accept: application/json

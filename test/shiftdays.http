@@ -2,13 +2,32 @@
 GET http://localhost:8080/shiftdays
 Accept: application/json
 
+### Get single shift day
+GET http://localhost:8080/shiftdays/1
+Accept: application/json
+
 ### Create new shift day
 POST http://localhost:8080/shiftdays
 Content-Type: application/json
 
 {
-    "date": "2024-01-22",
+    "date": "2024-01-15T08:00:00Z",
     "shift_week_id": 1,
     "shift_type_id": 1,
     "user_id": 1
 }
+
+### Update shift day
+PUT http://localhost:8080/shiftdays/1
+Content-Type: application/json
+
+{
+    "date": "2024-01-15T14:00:00Z",
+    "shift_week_id": 1,
+    "shift_type_id": 2,
+    "user_id": 1
+}
+
+### Delete shift day
+DELETE http://localhost:8080/shiftdays/1
+Accept: application/json
