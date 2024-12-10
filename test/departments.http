@@ -2,6 +2,10 @@
 GET http://localhost:8080/departments
 Accept: application/json
 
+### Get single department
+GET http://localhost:8080/departments/1
+Accept: application/json
+
 ### Create new department
 POST http://localhost:8080/departments
 Content-Type: application/json
@@ -9,3 +13,15 @@ Content-Type: application/json
 {
     "name": "IT Department"
 }
+
+### Update department
+PUT http://localhost:8080/departments/1
+Content-Type: application/json
+
+{
+    "name": "Updated IT Department"
+}
+
+### Delete department
+DELETE http://localhost:8080/departments/1
+Accept: application/json

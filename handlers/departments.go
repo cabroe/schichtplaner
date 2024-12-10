@@ -7,7 +7,7 @@ import (
 )
 
 // @Summary Get all departments
-// @Description Fetch all departments
+// @Description Fetch all departments with their relationships
 // @Tags departments
 // @Accept json
 // @Produce json
@@ -16,7 +16,11 @@ import (
 // @Router /departments [get]
 func HandleAllDepartments(c *fiber.Ctx) error {
 	var departments []models.Department
-	result := database.GetDB().Find(&departments)
+	result := database.GetDB().
+		Preload("Users").
+		Preload("ShiftWeeks").
+		Find(&departments)
+
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
 			Success: false,
@@ -30,15 +34,46 @@ func HandleAllDepartments(c *fiber.Ctx) error {
 	})
 }
 
+// @Summary Get a single department
+// @Description Get department details by ID including relationships
+// @Tags departments
+// @Accept json
+// @Produce json
+// @Param id path int true "Department ID"
+// @Success 200 {object} models.APIResponse
+// @Failure 404 {object} models.APIResponse
+// @Router /departments/{id} [get]
+func HandleGetOneDepartment(c *fiber.Ctx) error {
+	id := c.Params("id")
+
+	var department models.Department
+	result := database.GetDB().
+		Preload("Users").
+		Preload("ShiftWeeks").
+		First(&department, id)
+
+	if result.Error != nil {
+		return c.Status(404).JSON(models.APIResponse{
+			Success: false,
+			Error:   "Department not found",
+		})
+	}
+
+	return c.JSON(models.APIResponse{
+		Success: true,
+		Message: "Department successfully retrieved",
+		Data:    department,
+	})
+}
+
 // @Summary Create a department
 // @Description Create a new department
 // @Tags departments
 // @Accept json
 // @Produce json
 // @Param department body models.Department true "Department information"
-// @Success 200 {object} models.APIResponse
+// @Success 201 {object} models.APIResponse
 // @Failure 400 {object} models.APIResponse
-// @Failure 500 {object} models.APIResponse
 // @Router /departments [post]
 func HandleCreateDepartment(c *fiber.Ctx) error {
 	department := new(models.Department)
@@ -57,36 +92,15 @@ func HandleCreateDepartment(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.JSON(models.APIResponse{
+	// Reload the department with relationships
+	database.GetDB().
+		Preload("Users").
+		Preload("ShiftWeeks").
+		First(&department, department.ID)
+
+	return c.Status(201).JSON(models.APIResponse{
 		Success: true,
 		Message: "Department successfully created",
-		Data:    department,
-	})
-}
-
-// @Summary Get a single department
-// @Description Get department details by ID
-// @Tags departments
-// @Accept json
-// @Produce json
-// @Param id path int true "Department ID"
-// @Success 200 {object} models.APIResponse
-// @Failure 404 {object} models.APIResponse
-// @Router /departments/{id} [get]
-func HandleGetOneDepartment(c *fiber.Ctx) error {
-	id := c.Params("id")
-
-	var department models.Department
-	if err := database.GetDB().First(&department, id).Error; err != nil {
-		return c.Status(404).JSON(models.APIResponse{
-			Success: false,
-			Error:   "Department not found",
-		})
-	}
-
-	return c.JSON(models.APIResponse{
-		Success: true,
-		Message: "Department successfully retrieved",
 		Data:    department,
 	})
 }
@@ -99,8 +113,7 @@ func HandleGetOneDepartment(c *fiber.Ctx) error {
 // @Param id path int true "Department ID"
 // @Param department body models.Department true "Updated department information"
 // @Success 200 {object} models.APIResponse
-// @Failure 400 {object} models.APIResponse
-// @Failure 404 {object} models.APIResponse
+// @Failure 400,404 {object} models.APIResponse
 // @Router /departments/{id} [put]
 func HandleUpdateDepartment(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -120,7 +133,19 @@ func HandleUpdateDepartment(c *fiber.Ctx) error {
 		})
 	}
 
-	database.GetDB().Save(&department)
+	if err := database.GetDB().Save(&department).Error; err != nil {
+		return c.Status(500).JSON(models.APIResponse{
+			Success: false,
+			Error:   err.Error(),
+		})
+	}
+
+	// Reload the department with relationships
+	database.GetDB().
+		Preload("Users").
+		Preload("ShiftWeeks").
+		First(&department, id)
+
 	return c.JSON(models.APIResponse{
 		Success: true,
 		Message: "Department successfully updated",
@@ -135,12 +160,21 @@ func HandleUpdateDepartment(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "Department ID"
 // @Success 200 {object} models.APIResponse
-// @Failure 500 {object} models.APIResponse
+// @Failure 404,500 {object} models.APIResponse
 // @Router /departments/{id} [delete]
 func HandleDeleteDepartment(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	result := database.GetDB().Delete(&models.Department{}, id)
+	// Check if department exists
+	var department models.Department
+	if err := database.GetDB().First(&department, id).Error; err != nil {
+		return c.Status(404).JSON(models.APIResponse{
+			Success: false,
+			Error:   "Department not found",
+		})
+	}
+
+	result := database.GetDB().Delete(&department)
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
 			Success: false,

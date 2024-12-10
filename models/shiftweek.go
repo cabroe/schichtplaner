@@ -10,5 +10,5 @@ type ShiftWeek struct {
 	EndDate      time.Time  `json:"end_date" gorm:"not null"`
 	DepartmentID uint       `json:"department_id"`
 	Department   Department `json:"department" swaggerignore:"true"`
-	ShiftDays    []ShiftDay `json:"shift_days" swaggerignore:"true"`
+	ShiftDays    []ShiftDay `json:"shift_days" swaggerignore:"true"` // 1-n with ShiftDays
 }
