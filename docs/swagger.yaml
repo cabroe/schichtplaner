@@ -1,20 +1,5 @@
 basePath: /
 definitions:
-  handlers.CreateAbsenceDTO:
-    properties:
-      description:
-        type: string
-      end_date:
-        type: string
-      start_date:
-        type: string
-      status:
-        type: string
-      type:
-        type: string
-      user_id:
-        type: integer
-    type: object
   handlers.CreateDepartmentDTO:
     properties:
       name:
@@ -58,6 +43,15 @@ definitions:
       name:
         type: string
     type: object
+  handlers.HealthResponse:
+    properties:
+      database:
+        type: string
+      status:
+        type: string
+      timestamp:
+        type: string
+    type: object
   models.APIResponse:
     properties:
       data: {}
@@ -81,38 +75,6 @@ info:
   title: Schichtplaner
   version: "0.1"
 paths:
-  /absences:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-      summary: Get all absences
-      tags:
-      - absences
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Absence Data
-        in: body
-        name: absence
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.CreateAbsenceDTO'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-      summary: Create absence
-      tags:
-      - absences
   /departments:
     get:
       produces:
@@ -149,12 +111,18 @@ paths:
     get:
       consumes:
       - '*/*'
-      description: get the status of server.
+      description: get the status of server and its components.
       produces:
-      - text/plain
+      - application/json
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/handlers.HealthResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/handlers.HealthResponse'
       summary: Show the status of server.
       tags:
       - health

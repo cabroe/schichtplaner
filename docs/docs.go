@@ -20,56 +20,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/absences": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "absences"
-                ],
-                "summary": "Get all absences",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "absences"
-                ],
-                "summary": "Create absence",
-                "parameters": [
-                    {
-                        "description": "Absence Data",
-                        "name": "absence",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.CreateAbsenceDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/departments": {
             "get": {
                 "produces": [
@@ -122,12 +72,12 @@ const docTemplate = `{
         },
         "/health": {
             "get": {
-                "description": "get the status of server.",
+                "description": "get the status of server and its components.",
                 "consumes": [
                     "*/*"
                 ],
                 "produces": [
-                    "text/plain"
+                    "application/json"
                 ],
                 "tags": [
                     "health"
@@ -135,7 +85,16 @@ const docTemplate = `{
                 "summary": "Show the status of server.",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.HealthResponse"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.HealthResponse"
+                        }
                     }
                 }
             }
@@ -490,29 +449,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "handlers.CreateAbsenceDTO": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "end_date": {
-                    "type": "string"
-                },
-                "start_date": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "handlers.CreateDepartmentDTO": {
             "type": "object",
             "properties": {
@@ -576,6 +512,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.HealthResponse": {
+            "type": "object",
+            "properties": {
+                "database": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "timestamp": {
                     "type": "string"
                 }
             }
