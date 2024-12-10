@@ -165,7 +165,6 @@ func HandleUpdateDepartment(c *fiber.Ctx) error {
 func HandleDeleteDepartment(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	// Check if department exists
 	var department models.Department
 	if err := database.GetDB().First(&department, id).Error; err != nil {
 		return c.Status(404).JSON(models.APIResponse{

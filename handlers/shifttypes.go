@@ -16,7 +16,9 @@ import (
 // @Router /shifttypes [get]
 func HandleAllShiftTypes(c *fiber.Ctx) error {
 	var shiftTypes []models.ShiftType
-	result := database.GetDB().Find(&shiftTypes)
+	result := database.GetDB().
+		Preload("ShiftDays").
+		Find(&shiftTypes)
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
 			Success: false,
@@ -36,9 +38,8 @@ func HandleAllShiftTypes(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param shifttype body models.ShiftType true "ShiftType information"
-// @Success 200 {object} models.APIResponse
+// @Success 201 {object} models.APIResponse
 // @Failure 400 {object} models.APIResponse
-// @Failure 500 {object} models.APIResponse
 // @Router /shifttypes [post]
 func HandleCreateShiftType(c *fiber.Ctx) error {
 	shiftType := new(models.ShiftType)
@@ -57,7 +58,12 @@ func HandleCreateShiftType(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.JSON(models.APIResponse{
+	// Reload with relationships
+	database.GetDB().
+		Preload("ShiftDays").
+		First(&shiftType, shiftType.ID)
+
+	return c.Status(201).JSON(models.APIResponse{
 		Success: true,
 		Message: "ShiftType successfully created",
 		Data:    shiftType,
@@ -77,7 +83,9 @@ func HandleGetOneShiftType(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	var shiftType models.ShiftType
-	if err := database.GetDB().First(&shiftType, id).Error; err != nil {
+	if err := database.GetDB().
+		Preload("ShiftDays").
+		First(&shiftType, id).Error; err != nil {
 		return c.Status(404).JSON(models.APIResponse{
 			Success: false,
 			Error:   "ShiftType not found",
@@ -99,8 +107,7 @@ func HandleGetOneShiftType(c *fiber.Ctx) error {
 // @Param id path int true "ShiftType ID"
 // @Param shifttype body models.ShiftType true "Updated shift type information"
 // @Success 200 {object} models.APIResponse
-// @Failure 400 {object} models.APIResponse
-// @Failure 404 {object} models.APIResponse
+// @Failure 400,404 {object} models.APIResponse
 // @Router /shifttypes/{id} [put]
 func HandleUpdateShiftType(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -120,7 +127,18 @@ func HandleUpdateShiftType(c *fiber.Ctx) error {
 		})
 	}
 
-	database.GetDB().Save(&shiftType)
+	if err := database.GetDB().Save(&shiftType).Error; err != nil {
+		return c.Status(500).JSON(models.APIResponse{
+			Success: false,
+			Error:   err.Error(),
+		})
+	}
+
+	// Reload with relationships
+	database.GetDB().
+		Preload("ShiftDays").
+		First(&shiftType, id)
+
 	return c.JSON(models.APIResponse{
 		Success: true,
 		Message: "ShiftType successfully updated",
@@ -135,12 +153,20 @@ func HandleUpdateShiftType(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "ShiftType ID"
 // @Success 200 {object} models.APIResponse
-// @Failure 500 {object} models.APIResponse
+// @Failure 404,500 {object} models.APIResponse
 // @Router /shifttypes/{id} [delete]
 func HandleDeleteShiftType(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	result := database.GetDB().Delete(&models.ShiftType{}, id)
+	var shiftType models.ShiftType
+	if err := database.GetDB().First(&shiftType, id).Error; err != nil {
+		return c.Status(404).JSON(models.APIResponse{
+			Success: false,
+			Error:   "ShiftType not found",
+		})
+	}
+
+	result := database.GetDB().Delete(&shiftType)
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
 			Success: false,

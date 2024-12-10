@@ -155,18 +155,28 @@ func HandleUpdateUser(c *fiber.Ctx) error {
 }
 
 // @Summary Delete a user
-// @Description Delete user by ID
+// @Description Delete user by ID with validation
 // @Tags users
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
 // @Success 200 {object} models.APIResponse
+// @Failure 404 {object} models.APIResponse
 // @Failure 500 {object} models.APIResponse
 // @Router /users/{id} [delete]
 func HandleDeleteUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	result := database.GetDB().Delete(&models.User{}, id)
+	// Check if user exists
+	var user models.User
+	if err := database.GetDB().First(&user, id).Error; err != nil {
+		return c.Status(404).JSON(models.APIResponse{
+			Success: false,
+			Error:   "User not found",
+		})
+	}
+
+	result := database.GetDB().Delete(&user)
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
 			Success: false,

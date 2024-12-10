@@ -39,9 +39,8 @@ func HandleAllShiftWeeks(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param shiftweek body models.ShiftWeek true "ShiftWeek Data"
-// @Success 200 {object} models.APIResponse
+// @Success 201 {object} models.APIResponse
 // @Failure 400 {object} models.APIResponse
-// @Failure 500 {object} models.APIResponse
 // @Router /shiftweeks [post]
 func HandleCreateShiftWeek(c *fiber.Ctx) error {
 	shiftWeek := new(models.ShiftWeek)
@@ -77,7 +76,13 @@ func HandleCreateShiftWeek(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.JSON(models.APIResponse{
+	// Reload with relationships
+	database.GetDB().
+		Preload("Department").
+		Preload("ShiftDays").
+		First(&shiftWeek, shiftWeek.ID)
+
+	return c.Status(201).JSON(models.APIResponse{
 		Success: true,
 		Message: "ShiftWeek successfully created",
 		Data:    shiftWeek,
@@ -122,8 +127,7 @@ func HandleGetOneShiftWeek(c *fiber.Ctx) error {
 // @Param id path int true "ShiftWeek ID"
 // @Param shiftweek body models.ShiftWeek true "Updated ShiftWeek Data"
 // @Success 200 {object} models.APIResponse
-// @Failure 400 {object} models.APIResponse
-// @Failure 404 {object} models.APIResponse
+// @Failure 400,404 {object} models.APIResponse
 // @Router /shiftweeks/{id} [put]
 func HandleUpdateShiftWeek(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -159,7 +163,19 @@ func HandleUpdateShiftWeek(c *fiber.Ctx) error {
 		})
 	}
 
-	database.GetDB().Save(&shiftWeek)
+	if err := database.GetDB().Save(&shiftWeek).Error; err != nil {
+		return c.Status(500).JSON(models.APIResponse{
+			Success: false,
+			Error:   err.Error(),
+		})
+	}
+
+	// Reload with relationships
+	database.GetDB().
+		Preload("Department").
+		Preload("ShiftDays").
+		First(&shiftWeek, id)
+
 	return c.JSON(models.APIResponse{
 		Success: true,
 		Message: "ShiftWeek successfully updated",
@@ -174,12 +190,20 @@ func HandleUpdateShiftWeek(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "ShiftWeek ID"
 // @Success 200 {object} models.APIResponse
-// @Failure 500 {object} models.APIResponse
+// @Failure 404,500 {object} models.APIResponse
 // @Router /shiftweeks/{id} [delete]
 func HandleDeleteShiftWeek(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	result := database.GetDB().Delete(&models.ShiftWeek{}, id)
+	var shiftWeek models.ShiftWeek
+	if err := database.GetDB().First(&shiftWeek, id).Error; err != nil {
+		return c.Status(404).JSON(models.APIResponse{
+			Success: false,
+			Error:   "ShiftWeek not found",
+		})
+	}
+
+	result := database.GetDB().Delete(&shiftWeek)
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
 			Success: false,
