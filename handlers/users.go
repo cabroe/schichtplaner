@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/ptmmeiningen/schichtplaner/database"
 	"github.com/ptmmeiningen/schichtplaner/models"
+	"github.com/ptmmeiningen/schichtplaner/pkg/responses"
 )
 
 // @Summary Get all users
@@ -11,8 +12,8 @@ import (
 // @Tags users
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.APIResponse
-// @Failure 500 {object} models.APIResponse
+// @Success 200 {object} responses.APIResponse
+// @Failure 500 {object} responses.APIResponse
 // @Router /users [get]
 func HandleAllUsers(c *fiber.Ctx) error {
 	var users []models.User
@@ -22,16 +23,9 @@ func HandleAllUsers(c *fiber.Ctx) error {
 		Preload("ShiftDays.ShiftWeek").
 		Find(&users)
 	if result.Error != nil {
-		return c.Status(500).JSON(models.APIResponse{
-			Success: false,
-			Error:   result.Error.Error(),
-		})
+		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
 	}
-	return c.JSON(models.APIResponse{
-		Success: true,
-		Message: "Users successfully retrieved",
-		Data:    users,
-	})
+	return c.JSON(responses.SuccessResponse("Benutzer erfolgreich abgerufen", users))
 }
 
 // @Summary Create a new user
@@ -40,62 +34,40 @@ func HandleAllUsers(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param user body models.User true "User information"
-// @Success 201 {object} models.APIResponse
-// @Failure 400 {object} models.APIResponse
+// @Success 201 {object} responses.APIResponse
+// @Failure 400 {object} responses.APIResponse
 // @Router /users [post]
 func HandleCreateUser(c *fiber.Ctx) error {
 	user := new(models.User)
 	if err := c.BodyParser(user); err != nil {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "Invalid input",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Ungültige Eingabe"))
 	}
 
-	// Validate required fields
 	if user.FirstName == "" || user.LastName == "" || user.Email == "" {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "First name, last name and email are required",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Vorname, Nachname und E-Mail sind erforderlich"))
 	}
 
 	if user.DepartmentID == 0 {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "Department ID is required",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Abteilung ist erforderlich"))
 	}
 
-	// Validate Department exists
 	var department models.Department
 	if err := database.GetDB().First(&department, user.DepartmentID).Error; err != nil {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "Department not found",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Abteilung nicht gefunden"))
 	}
 
 	result := database.GetDB().Create(&user)
 	if result.Error != nil {
-		return c.Status(500).JSON(models.APIResponse{
-			Success: false,
-			Error:   result.Error.Error(),
-		})
+		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
 	}
 
-	// Reload with relationships
 	database.GetDB().
 		Preload("Department").
 		Preload("ShiftDays.ShiftType").
 		Preload("ShiftDays.ShiftWeek").
 		First(&user, user.ID)
 
-	return c.Status(201).JSON(models.APIResponse{
-		Success: true,
-		Message: "User successfully created",
-		Data:    user,
-	})
+	return c.Status(201).JSON(responses.SuccessResponse("Benutzer erfolgreich erstellt", user))
 }
 
 // @Summary Get a single user
@@ -104,8 +76,8 @@ func HandleCreateUser(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
-// @Success 200 {object} models.APIResponse
-// @Failure 404 {object} models.APIResponse
+// @Success 200 {object} responses.APIResponse
+// @Failure 404 {object} responses.APIResponse
 // @Router /users/{id} [get]
 func HandleGetOneUser(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -116,17 +88,10 @@ func HandleGetOneUser(c *fiber.Ctx) error {
 		Preload("ShiftDays.ShiftType").
 		Preload("ShiftDays.ShiftWeek").
 		First(&user, id).Error; err != nil {
-		return c.Status(404).JSON(models.APIResponse{
-			Success: false,
-			Error:   "User not found",
-		})
+		return c.Status(404).JSON(responses.ErrorResponse("Benutzer nicht gefunden"))
 	}
 
-	return c.JSON(models.APIResponse{
-		Success: true,
-		Message: "User successfully retrieved",
-		Data:    user,
-	})
+	return c.JSON(responses.SuccessResponse("Benutzer erfolgreich abgerufen", user))
 }
 
 // @Summary Update a user
@@ -136,69 +101,44 @@ func HandleGetOneUser(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "User ID"
 // @Param user body models.User true "Updated user information"
-// @Success 200 {object} models.APIResponse
-// @Failure 400,404 {object} models.APIResponse
+// @Success 200 {object} responses.APIResponse
+// @Failure 400,404 {object} responses.APIResponse
 // @Router /users/{id} [put]
 func HandleUpdateUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	var user models.User
 	if err := database.GetDB().First(&user, id).Error; err != nil {
-		return c.Status(404).JSON(models.APIResponse{
-			Success: false,
-			Error:   "User not found",
-		})
+		return c.Status(404).JSON(responses.ErrorResponse("Benutzer nicht gefunden"))
 	}
 
 	if err := c.BodyParser(&user); err != nil {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "Invalid input",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Ungültige Eingabe"))
 	}
 
-	// Validate required fields
 	if user.FirstName == "" || user.LastName == "" || user.Email == "" {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "First name, last name and email are required",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Vorname, Nachname und E-Mail sind erforderlich"))
 	}
 
 	if user.DepartmentID == 0 {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "Department ID is required",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Abteilung ist erforderlich"))
 	}
 
-	// Validate Department exists
 	if err := database.GetDB().First(&models.Department{}, user.DepartmentID).Error; err != nil {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "Department not found",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Abteilung nicht gefunden"))
 	}
 
 	if err := database.GetDB().Save(&user).Error; err != nil {
-		return c.Status(500).JSON(models.APIResponse{
-			Success: false,
-			Error:   err.Error(),
-		})
+		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
 
-	// Reload with relationships
 	database.GetDB().
 		Preload("Department").
 		Preload("ShiftDays.ShiftType").
 		Preload("ShiftDays.ShiftWeek").
 		First(&user, id)
 
-	return c.JSON(models.APIResponse{
-		Success: true,
-		Message: "User successfully updated",
-		Data:    user,
-	})
+	return c.JSON(responses.SuccessResponse("Benutzer erfolgreich aktualisiert", user))
 }
 
 // @Summary Delete a user
@@ -207,30 +147,21 @@ func HandleUpdateUser(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
-// @Success 200 {object} models.APIResponse
-// @Failure 404,500 {object} models.APIResponse
+// @Success 200 {object} responses.APIResponse
+// @Failure 404,500 {object} responses.APIResponse
 // @Router /users/{id} [delete]
 func HandleDeleteUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	var user models.User
 	if err := database.GetDB().First(&user, id).Error; err != nil {
-		return c.Status(404).JSON(models.APIResponse{
-			Success: false,
-			Error:   "User not found",
-		})
+		return c.Status(404).JSON(responses.ErrorResponse("Benutzer nicht gefunden"))
 	}
 
 	result := database.GetDB().Delete(&user)
 	if result.Error != nil {
-		return c.Status(500).JSON(models.APIResponse{
-			Success: false,
-			Error:   result.Error.Error(),
-		})
+		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
 	}
 
-	return c.JSON(models.APIResponse{
-		Success: true,
-		Message: "User successfully deleted",
-	})
+	return c.JSON(responses.SuccessResponse("Benutzer erfolgreich gelöscht", nil))
 }

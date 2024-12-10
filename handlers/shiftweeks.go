@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/ptmmeiningen/schichtplaner/database"
 	"github.com/ptmmeiningen/schichtplaner/models"
+	"github.com/ptmmeiningen/schichtplaner/pkg/responses"
 )
 
 // @Summary Get all shift weeks
@@ -11,8 +12,8 @@ import (
 // @Tags shiftweeks
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.APIResponse
-// @Failure 500 {object} models.APIResponse
+// @Success 200 {object} responses.APIResponse
+// @Failure 500 {object} responses.APIResponse
 // @Router /shiftweeks [get]
 func HandleAllShiftWeeks(c *fiber.Ctx) error {
 	var shiftWeeks []models.ShiftWeek
@@ -22,16 +23,9 @@ func HandleAllShiftWeeks(c *fiber.Ctx) error {
 		Preload("ShiftDays.User").
 		Find(&shiftWeeks)
 	if result.Error != nil {
-		return c.Status(500).JSON(models.APIResponse{
-			Success: false,
-			Error:   result.Error.Error(),
-		})
+		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
 	}
-	return c.JSON(models.APIResponse{
-		Success: true,
-		Message: "ShiftWeeks successfully retrieved",
-		Data:    shiftWeeks,
-	})
+	return c.JSON(responses.SuccessResponse("Schichtwochen erfolgreich abgerufen", shiftWeeks))
 }
 
 // @Summary Create a shift week
@@ -40,70 +34,44 @@ func HandleAllShiftWeeks(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param shiftweek body models.ShiftWeek true "ShiftWeek Data"
-// @Success 201 {object} models.APIResponse
-// @Failure 400 {object} models.APIResponse
+// @Success 201 {object} responses.APIResponse
+// @Failure 400 {object} responses.APIResponse
 // @Router /shiftweeks [post]
 func HandleCreateShiftWeek(c *fiber.Ctx) error {
 	shiftWeek := new(models.ShiftWeek)
 	if err := c.BodyParser(shiftWeek); err != nil {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "Invalid input",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Ungültige Eingabe"))
 	}
 
-	// Validate required fields
 	if shiftWeek.DepartmentID == 0 {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "Department ID is required",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Abteilung ist erforderlich"))
 	}
 
 	if shiftWeek.StartDate.IsZero() || shiftWeek.EndDate.IsZero() {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "Start date and end date are required",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Start- und Enddatum sind erforderlich"))
 	}
 
-	// Validate Department exists
 	var department models.Department
 	if err := database.GetDB().First(&department, shiftWeek.DepartmentID).Error; err != nil {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "Department not found",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Abteilung nicht gefunden"))
 	}
 
-	// Validate end date is after start date
 	if shiftWeek.EndDate.Before(shiftWeek.StartDate) {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "End date must be after start date",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Enddatum muss nach dem Startdatum liegen"))
 	}
 
 	result := database.GetDB().Create(&shiftWeek)
 	if result.Error != nil {
-		return c.Status(500).JSON(models.APIResponse{
-			Success: false,
-			Error:   result.Error.Error(),
-		})
+		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
 	}
 
-	// Reload with relationships
 	database.GetDB().
 		Preload("Department").
 		Preload("ShiftDays.ShiftType").
 		Preload("ShiftDays.User").
 		First(&shiftWeek, shiftWeek.ID)
 
-	return c.Status(201).JSON(models.APIResponse{
-		Success: true,
-		Message: "ShiftWeek successfully created",
-		Data:    shiftWeek,
-	})
+	return c.Status(201).JSON(responses.SuccessResponse("Schichtwoche erfolgreich erstellt", shiftWeek))
 }
 
 // @Summary Get a single shift week
@@ -112,8 +80,8 @@ func HandleCreateShiftWeek(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path int true "ShiftWeek ID"
-// @Success 200 {object} models.APIResponse
-// @Failure 404 {object} models.APIResponse
+// @Success 200 {object} responses.APIResponse
+// @Failure 404 {object} responses.APIResponse
 // @Router /shiftweeks/{id} [get]
 func HandleGetOneShiftWeek(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -124,17 +92,10 @@ func HandleGetOneShiftWeek(c *fiber.Ctx) error {
 		Preload("ShiftDays.ShiftType").
 		Preload("ShiftDays.User").
 		First(&shiftWeek, id).Error; err != nil {
-		return c.Status(404).JSON(models.APIResponse{
-			Success: false,
-			Error:   "ShiftWeek not found",
-		})
+		return c.Status(404).JSON(responses.ErrorResponse("Schichtwoche nicht gefunden"))
 	}
 
-	return c.JSON(models.APIResponse{
-		Success: true,
-		Message: "ShiftWeek successfully retrieved",
-		Data:    shiftWeek,
-	})
+	return c.JSON(responses.SuccessResponse("Schichtwoche erfolgreich abgerufen", shiftWeek))
 }
 
 // @Summary Update a shift week
@@ -144,77 +105,48 @@ func HandleGetOneShiftWeek(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "ShiftWeek ID"
 // @Param shiftweek body models.ShiftWeek true "Updated ShiftWeek Data"
-// @Success 200 {object} models.APIResponse
-// @Failure 400,404 {object} models.APIResponse
+// @Success 200 {object} responses.APIResponse
+// @Failure 400,404 {object} responses.APIResponse
 // @Router /shiftweeks/{id} [put]
 func HandleUpdateShiftWeek(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	var shiftWeek models.ShiftWeek
 	if err := database.GetDB().First(&shiftWeek, id).Error; err != nil {
-		return c.Status(404).JSON(models.APIResponse{
-			Success: false,
-			Error:   "ShiftWeek not found",
-		})
+		return c.Status(404).JSON(responses.ErrorResponse("Schichtwoche nicht gefunden"))
 	}
 
 	if err := c.BodyParser(&shiftWeek); err != nil {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "Invalid input",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Ungültige Eingabe"))
 	}
 
-	// Validate required fields
 	if shiftWeek.DepartmentID == 0 {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "Department ID is required",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Abteilung ist erforderlich"))
 	}
 
-	// Validate Department exists
 	if err := database.GetDB().First(&models.Department{}, shiftWeek.DepartmentID).Error; err != nil {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "Department not found",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Abteilung nicht gefunden"))
 	}
 
-	// Validate dates
 	if shiftWeek.StartDate.IsZero() || shiftWeek.EndDate.IsZero() {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "Start date and end date are required",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Start- und Enddatum sind erforderlich"))
 	}
 
 	if shiftWeek.EndDate.Before(shiftWeek.StartDate) {
-		return c.Status(400).JSON(models.APIResponse{
-			Success: false,
-			Error:   "End date must be after start date",
-		})
+		return c.Status(400).JSON(responses.ErrorResponse("Enddatum muss nach dem Startdatum liegen"))
 	}
 
 	if err := database.GetDB().Save(&shiftWeek).Error; err != nil {
-		return c.Status(500).JSON(models.APIResponse{
-			Success: false,
-			Error:   err.Error(),
-		})
+		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
 
-	// Reload with relationships
 	database.GetDB().
 		Preload("Department").
 		Preload("ShiftDays.ShiftType").
 		Preload("ShiftDays.User").
 		First(&shiftWeek, id)
 
-	return c.JSON(models.APIResponse{
-		Success: true,
-		Message: "ShiftWeek successfully updated",
-		Data:    shiftWeek,
-	})
+	return c.JSON(responses.SuccessResponse("Schichtwoche erfolgreich aktualisiert", shiftWeek))
 }
 
 // @Summary Delete a shift week
@@ -223,30 +155,21 @@ func HandleUpdateShiftWeek(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path int true "ShiftWeek ID"
-// @Success 200 {object} models.APIResponse
-// @Failure 404,500 {object} models.APIResponse
+// @Success 200 {object} responses.APIResponse
+// @Failure 404,500 {object} responses.APIResponse
 // @Router /shiftweeks/{id} [delete]
 func HandleDeleteShiftWeek(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	var shiftWeek models.ShiftWeek
 	if err := database.GetDB().First(&shiftWeek, id).Error; err != nil {
-		return c.Status(404).JSON(models.APIResponse{
-			Success: false,
-			Error:   "ShiftWeek not found",
-		})
+		return c.Status(404).JSON(responses.ErrorResponse("Schichtwoche nicht gefunden"))
 	}
 
 	result := database.GetDB().Delete(&shiftWeek)
 	if result.Error != nil {
-		return c.Status(500).JSON(models.APIResponse{
-			Success: false,
-			Error:   result.Error.Error(),
-		})
+		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
 	}
 
-	return c.JSON(models.APIResponse{
-		Success: true,
-		Message: "ShiftWeek successfully deleted",
-	})
+	return c.JSON(responses.SuccessResponse("Schichtwoche erfolgreich gelöscht", nil))
 }

@@ -5,38 +5,38 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/ptmmeiningen/schichtplaner/database"
+	"github.com/ptmmeiningen/schichtplaner/pkg/responses"
 )
 
-type HealthResponse struct {
+type HealthData struct {
 	Status    string `json:"status"`
 	Database  string `json:"database"`
 	Timestamp string `json:"timestamp"`
 }
 
-// @Summary Show the status of server.
-// @Description get the status of server and its components.
+// @Summary Zeigt den Status des Servers
+// @Description Gibt den Status des Servers und seiner Komponenten zurück
 // @Tags health
 // @Accept */*
 // @Produce json
-// @Success 200 {object} HealthResponse
-// @Failure 503 {object} HealthResponse
+// @Success 200 {object} responses.APIResponse
+// @Failure 503 {object} responses.APIResponse
 // @Router /health [get]
 func HandleHealthCheck(c *fiber.Ctx) error {
-	// Check database connection
 	sqlDB, err := database.GetDB().DB()
-	dbStatus := "up"
-	if err != nil || sqlDB.Ping() != nil {
-		dbStatus = "down"
-		return c.Status(503).JSON(HealthResponse{
-			Status:    "unhealthy",
-			Database:  dbStatus,
-			Timestamp: time.Now().Format(time.RFC3339),
-		})
-	}
+	dbStatus := "online"
 
-	return c.JSON(HealthResponse{
-		Status:    "healthy",
+	healthData := HealthData{
+		Status:    "gesund",
 		Database:  dbStatus,
 		Timestamp: time.Now().Format(time.RFC3339),
-	})
+	}
+
+	if err != nil || sqlDB.Ping() != nil {
+		healthData.Status = "ungesund"
+		healthData.Database = "offline"
+		return c.Status(503).JSON(responses.ErrorResponse("System ist nicht verfügbar"))
+	}
+
+	return c.JSON(responses.SuccessResponse("System läuft einwandfrei", healthData))
 }
