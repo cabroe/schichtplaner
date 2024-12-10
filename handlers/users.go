@@ -6,12 +6,6 @@ import (
 	"github.com/ptmmeiningen/schichtplaner/models"
 )
 
-type CreateUserDTO struct {
-	Name         string `json:"name"`
-	Email        string `json:"email"`
-	DepartmentID uint   `json:"department_id"`
-}
-
 // @Summary Get all users
 // @Description Fetch all users with their departments
 // @Tags users
@@ -43,7 +37,7 @@ func HandleAllUsers(c *fiber.Ctx) error {
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param user body CreateUserDTO true "User information"
+// @Param user body models.User true "User information"
 // @Success 200 {object} models.APIResponse
 // @Failure 400 {object} models.APIResponse
 // @Failure 500 {object} models.APIResponse
@@ -55,6 +49,17 @@ func HandleCreateUser(c *fiber.Ctx) error {
 			Success: false,
 			Error:   "Invalid input",
 		})
+	}
+
+	// Validate Department exists if DepartmentID is provided
+	if user.DepartmentID != 0 {
+		var department models.Department
+		if err := database.GetDB().First(&department, user.DepartmentID).Error; err != nil {
+			return c.Status(400).JSON(models.APIResponse{
+				Success: false,
+				Error:   "Department not found",
+			})
+		}
 	}
 
 	result := database.GetDB().Create(&user)
@@ -107,7 +112,7 @@ func HandleGetOneUser(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
-// @Param user body CreateUserDTO true "Updated user information"
+// @Param user body models.User true "Updated user information"
 // @Success 200 {object} models.APIResponse
 // @Failure 400 {object} models.APIResponse
 // @Failure 404 {object} models.APIResponse
@@ -128,6 +133,17 @@ func HandleUpdateUser(c *fiber.Ctx) error {
 			Success: false,
 			Error:   "Invalid input",
 		})
+	}
+
+	// Validate Department exists if DepartmentID is provided
+	if user.DepartmentID != 0 {
+		var department models.Department
+		if err := database.GetDB().First(&department, user.DepartmentID).Error; err != nil {
+			return c.Status(400).JSON(models.APIResponse{
+				Success: false,
+				Error:   "Department not found",
+			})
+		}
 	}
 
 	database.GetDB().Save(&user)

@@ -1,48 +1,5 @@
 basePath: /
 definitions:
-  handlers.CreateDepartmentDTO:
-    properties:
-      name:
-        type: string
-    type: object
-  handlers.CreateShiftDayDTO:
-    properties:
-      date:
-        type: string
-      shift_type_id:
-        type: integer
-      shift_week_id:
-        type: integer
-      user_id:
-        type: integer
-    type: object
-  handlers.CreateShiftTypeDTO:
-    properties:
-      description:
-        type: string
-      duration:
-        type: string
-      name:
-        type: string
-    type: object
-  handlers.CreateShiftWeekDTO:
-    properties:
-      department_id:
-        type: integer
-      end_date:
-        type: string
-      start_date:
-        type: string
-    type: object
-  handlers.CreateUserDTO:
-    properties:
-      department_id:
-        type: integer
-      email:
-        type: string
-      name:
-        type: string
-    type: object
   handlers.HealthResponse:
     properties:
       database:
@@ -65,6 +22,67 @@ definitions:
         example: true
         type: boolean
     type: object
+  models.Department:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.ShiftDay:
+    properties:
+      date:
+        type: string
+      id:
+        type: integer
+      shift_type_id:
+        type: integer
+      shift_week_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  models.ShiftType:
+    properties:
+      description:
+        type: string
+      duration:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.ShiftWeek:
+    properties:
+      department_id:
+        type: integer
+      end_date:
+        type: string
+      id:
+        type: integer
+      start_date:
+        type: string
+    type: object
+  models.User:
+    properties:
+      color:
+        type: string
+      department_id:
+        type: integer
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      is_admin:
+        type: boolean
+      last_name:
+        type: string
+      password:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -77,11 +95,18 @@ info:
 paths:
   /departments:
     get:
+      consumes:
+      - application/json
+      description: Fetch all departments
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/models.APIResponse'
       summary: Get all departments
@@ -90,13 +115,14 @@ paths:
     post:
       consumes:
       - application/json
+      description: Create a new department
       parameters:
-      - description: Department Data
+      - description: Department information
         in: body
         name: department
         required: true
         schema:
-          $ref: '#/definitions/handlers.CreateDepartmentDTO'
+          $ref: '#/definitions/models.Department'
       produces:
       - application/json
       responses:
@@ -104,7 +130,98 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.APIResponse'
-      summary: Create department
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create a department
+      tags:
+      - departments
+  /departments/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete department by ID
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete a department
+      tags:
+      - departments
+    get:
+      consumes:
+      - application/json
+      description: Get department details by ID
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get a single department
+      tags:
+      - departments
+    put:
+      consumes:
+      - application/json
+      description: Update department information by ID
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated department information
+        in: body
+        name: department
+        required: true
+        schema:
+          $ref: '#/definitions/models.Department'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Update a department
       tags:
       - departments
   /health:
@@ -128,11 +245,18 @@ paths:
       - health
   /shiftdays:
     get:
+      consumes:
+      - application/json
+      description: Fetch all shift days with related data
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/models.APIResponse'
       summary: Get all shift days
@@ -141,13 +265,14 @@ paths:
     post:
       consumes:
       - application/json
+      description: Create a new shift day with validations
       parameters:
       - description: ShiftDay Data
         in: body
         name: shiftday
         required: true
         schema:
-          $ref: '#/definitions/handlers.CreateShiftDayDTO'
+          $ref: '#/definitions/models.ShiftDay'
       produces:
       - application/json
       responses:
@@ -155,16 +280,114 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.APIResponse'
-      summary: Create shift day
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create a shift day
       tags:
       - shiftdays
-  /shifttypes:
-    get:
+  /shiftdays/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete shift day by ID
+      parameters:
+      - description: ShiftDay ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete a shift day
+      tags:
+      - shiftdays
+    get:
+      consumes:
+      - application/json
+      description: Get shift day details by ID
+      parameters:
+      - description: ShiftDay ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get a single shift day
+      tags:
+      - shiftdays
+    put:
+      consumes:
+      - application/json
+      description: Update shift day information by ID
+      parameters:
+      - description: ShiftDay ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated ShiftDay Data
+        in: body
+        name: shiftday
+        required: true
+        schema:
+          $ref: '#/definitions/models.ShiftDay'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Update a shift day
+      tags:
+      - shiftdays
+  /shifttypes:
+    get:
+      consumes:
+      - application/json
+      description: Fetch all shift types
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/models.APIResponse'
       summary: Get all shift types
@@ -173,13 +396,14 @@ paths:
     post:
       consumes:
       - application/json
+      description: Create a new shift type
       parameters:
-      - description: ShiftType Data
+      - description: ShiftType information
         in: body
         name: shifttype
         required: true
         schema:
-          $ref: '#/definitions/handlers.CreateShiftTypeDTO'
+          $ref: '#/definitions/models.ShiftType'
       produces:
       - application/json
       responses:
@@ -187,16 +411,114 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.APIResponse'
-      summary: Create shift type
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create a shift type
       tags:
       - shifttypes
-  /shiftweeks:
-    get:
+  /shifttypes/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete shift type by ID
+      parameters:
+      - description: ShiftType ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete a shift type
+      tags:
+      - shifttypes
+    get:
+      consumes:
+      - application/json
+      description: Get shift type details by ID
+      parameters:
+      - description: ShiftType ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get a single shift type
+      tags:
+      - shifttypes
+    put:
+      consumes:
+      - application/json
+      description: Update shift type information by ID
+      parameters:
+      - description: ShiftType ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated shift type information
+        in: body
+        name: shifttype
+        required: true
+        schema:
+          $ref: '#/definitions/models.ShiftType'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Update a shift type
+      tags:
+      - shifttypes
+  /shiftweeks:
+    get:
+      consumes:
+      - application/json
+      description: Fetch all shift weeks with related data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/models.APIResponse'
       summary: Get all shift weeks
@@ -205,13 +527,14 @@ paths:
     post:
       consumes:
       - application/json
+      description: Create a new shift week with validations
       parameters:
       - description: ShiftWeek Data
         in: body
         name: shiftweek
         required: true
         schema:
-          $ref: '#/definitions/handlers.CreateShiftWeekDTO'
+          $ref: '#/definitions/models.ShiftWeek'
       produces:
       - application/json
       responses:
@@ -219,7 +542,98 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.APIResponse'
-      summary: Create shift week
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create a shift week
+      tags:
+      - shiftweeks
+  /shiftweeks/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete shift week by ID
+      parameters:
+      - description: ShiftWeek ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete a shift week
+      tags:
+      - shiftweeks
+    get:
+      consumes:
+      - application/json
+      description: Get shift week details by ID
+      parameters:
+      - description: ShiftWeek ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get a single shift week
+      tags:
+      - shiftweeks
+    put:
+      consumes:
+      - application/json
+      description: Update shift week information by ID
+      parameters:
+      - description: ShiftWeek ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated ShiftWeek Data
+        in: body
+        name: shiftweek
+        required: true
+        schema:
+          $ref: '#/definitions/models.ShiftWeek'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Update a shift week
       tags:
       - shiftweeks
   /users:
@@ -251,7 +665,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/handlers.CreateUserDTO'
+          $ref: '#/definitions/models.User'
       produces:
       - application/json
       responses:
@@ -334,7 +748,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/handlers.CreateUserDTO'
+          $ref: '#/definitions/models.User'
       produces:
       - application/json
       responses:
