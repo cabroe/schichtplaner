@@ -3,8 +3,10 @@ package database
 import (
 	"errors"
 	"os"
+	"testing"
 
 	"github.com/glebarez/sqlite"
+	"github.com/gofiber/fiber/v2"
 	"github.com/ptmmeiningen/schichtplaner/models"
 	"gorm.io/gorm"
 )
@@ -13,6 +15,25 @@ var db *gorm.DB
 
 func GetDB() *gorm.DB {
 	return db
+}
+
+func SetDB(database *gorm.DB) {
+	db = database
+}
+
+func SetupTestDB(t *testing.T, entities ...interface{}) *fiber.App {
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("failed to connect database: %v", err)
+	}
+
+	// Migrate schema for all provided entities
+	db.AutoMigrate(entities...)
+
+	// Set test DB
+	SetDB(db)
+
+	return fiber.New()
 }
 
 func StartDB() error {
@@ -24,7 +45,7 @@ func StartDB() error {
 	var err error
 	db, err = gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
 	if err != nil {
-		return errors.New("Fehler beim Öffnen der SQLite-Datenbank: " + err.Error())
+		return errors.New("Error opening SQLite database: " + err.Error())
 	}
 
 	return nil
@@ -44,9 +65,16 @@ func CloseDB() {
 }
 
 func AutoMigrate() error {
-	err := db.AutoMigrate(&models.User{}, &models.Todo{}, &models.Department{}, &models.Shift{})
+	// Migration order matters due to foreign key constraints
+	err := db.AutoMigrate(
+		&models.Department{}, // Base table
+		&models.User{},       // Depends on Department
+		&models.ShiftType{},  // Independent table
+		&models.ShiftWeek{},  // Depends on Department
+		&models.ShiftDay{},   // Depends on ShiftWeek, ShiftType, User
+	)
 	if err != nil {
-		return errors.New("Fehler bei der Datenbank-Migration: " + err.Error())
+		return errors.New("Database migration error: " + err.Error())
 	}
 	return nil
 }

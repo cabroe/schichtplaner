@@ -20,12 +20,58 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/absences": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "absences"
+                ],
+                "summary": "Get all absences",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "absences"
+                ],
+                "summary": "Create absence",
+                "parameters": [
+                    {
+                        "description": "Absence Data",
+                        "name": "absence",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CreateAbsenceDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/departments": {
             "get": {
-                "description": "fetch all departments",
-                "consumes": [
-                    "*/*"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -39,17 +85,10 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
                     }
                 }
             },
             "post": {
-                "description": "create new department",
                 "consumes": [
                     "application/json"
                 ],
@@ -59,10 +98,10 @@ const docTemplate = `{
                 "tags": [
                     "departments"
                 ],
-                "summary": "Create a department",
+                "summary": "Create department",
                 "parameters": [
                     {
-                        "description": "Department to create",
+                        "description": "Department Data",
                         "name": "department",
                         "in": "body",
                         "required": true,
@@ -74,137 +113,6 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/departments/{id}": {
-            "get": {
-                "description": "fetch department by ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "departments"
-                ],
-                "summary": "Get a single department",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Department ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "update department by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "departments"
-                ],
-                "summary": "Update a department",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Department ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Department update data",
-                        "name": "department",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.CreateDepartmentDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "delete department by ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "departments"
-                ],
-                "summary": "Delete a department",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Department ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
@@ -232,28 +140,18 @@ const docTemplate = `{
                 }
             }
         },
-        "/todos": {
+        "/shiftdays": {
             "get": {
-                "description": "fetch every todo available.",
-                "consumes": [
-                    "*/*"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "todos"
+                    "shiftdays"
                 ],
-                "summary": "Get all todos.",
+                "summary": "Get all shift days",
                 "responses": {
                     "200": {
                         "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
@@ -261,7 +159,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "create a single todo.",
                 "consumes": [
                     "application/json"
                 ],
@@ -269,35 +166,23 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "todos"
+                    "shiftdays"
                 ],
-                "summary": "Create a todo.",
+                "summary": "Create shift day",
                 "parameters": [
                     {
-                        "description": "Todo to create",
-                        "name": "todo",
+                        "description": "ShiftDay Data",
+                        "name": "shiftday",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.CreateTodoDTO"
+                            "$ref": "#/definitions/handlers.CreateShiftDayDTO"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
@@ -305,42 +190,25 @@ const docTemplate = `{
                 }
             }
         },
-        "/todos/{id}": {
+        "/shifttypes": {
             "get": {
-                "description": "fetch a single todo.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "todos"
+                    "shifttypes"
                 ],
-                "summary": "Get a single todo.",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Todo ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
+                "summary": "Get all shift types",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
                     }
                 }
             },
-            "put": {
-                "description": "update a single todo.",
+            "post": {
                 "consumes": [
                     "application/json"
                 ],
@@ -348,25 +216,18 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "todos"
+                    "shifttypes"
                 ],
-                "summary": "Update a todo.",
+                "summary": "Create shift type",
                 "parameters": [
                     {
-                        "description": "Todo update data",
-                        "name": "todo",
+                        "description": "ShiftType Data",
+                        "name": "shifttype",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.CreateTodoDTO"
+                            "$ref": "#/definitions/handlers.CreateShiftTypeDTO"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Todo ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -375,60 +236,53 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
+                    }
+                }
+            }
+        },
+        "/shiftweeks": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shiftweeks"
+                ],
+                "summary": "Get all shift weeks",
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
                     }
                 }
             },
-            "delete": {
-                "description": "delete a single todo by id.",
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "todos"
+                    "shiftweeks"
                 ],
-                "summary": "Delete a single todo.",
+                "summary": "Create shift week",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Todo ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "ShiftWeek Data",
+                        "name": "shiftweek",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.CreateShiftWeekDTO"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
@@ -438,9 +292,9 @@ const docTemplate = `{
         },
         "/users": {
             "get": {
-                "description": "fetch all users",
+                "description": "Fetch all users with their departments",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -465,7 +319,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "create new user",
+                "description": "Create a new user with department assignment",
                 "consumes": [
                     "application/json"
                 ],
@@ -475,10 +329,10 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Create a user",
+                "summary": "Create a new user",
                 "parameters": [
                     {
-                        "description": "User to create",
+                        "description": "User information",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -511,7 +365,10 @@ const docTemplate = `{
         },
         "/users/{id}": {
             "get": {
-                "description": "fetch user by ID",
+                "description": "Get user details by ID including department",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -544,7 +401,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "update user by ID",
+                "description": "Update user information by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -564,7 +421,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "User update data",
+                        "description": "Updated user information",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -595,7 +452,10 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "delete user by ID",
+                "description": "Delete user by ID",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -630,13 +490,61 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "handlers.CreateAbsenceDTO": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "handlers.CreateDepartmentDTO": {
             "type": "object",
             "properties": {
-                "color": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.CreateShiftDayDTO": {
+            "type": "object",
+            "properties": {
+                "date": {
                     "type": "string"
                 },
+                "shift_type_id": {
+                    "type": "integer"
+                },
+                "shift_week_id": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handlers.CreateShiftTypeDTO": {
+            "type": "object",
+            "properties": {
                 "description": {
+                    "type": "string"
+                },
+                "duration": {
                     "type": "string"
                 },
                 "name": {
@@ -644,19 +552,16 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.CreateTodoDTO": {
+        "handlers.CreateShiftWeekDTO": {
             "type": "object",
             "properties": {
-                "completed": {
-                    "type": "boolean"
+                "department_id": {
+                    "type": "integer"
                 },
-                "date": {
+                "end_date": {
                     "type": "string"
                 },
-                "description": {
-                    "type": "string"
-                },
-                "title": {
+                "start_date": {
                     "type": "string"
                 }
             }
@@ -664,28 +569,13 @@ const docTemplate = `{
         "handlers.CreateUserDTO": {
             "type": "object",
             "properties": {
-                "color": {
-                    "type": "string"
-                },
-                "department_ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                "department_id": {
+                    "type": "integer"
                 },
                 "email": {
                     "type": "string"
                 },
-                "first_name": {
-                    "type": "string"
-                },
-                "is_admin": {
-                    "type": "boolean"
-                },
-                "last_name": {
-                    "type": "string"
-                },
-                "password": {
+                "name": {
                     "type": "string"
                 }
             }

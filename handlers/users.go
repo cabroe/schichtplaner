@@ -6,17 +6,25 @@ import (
 	"github.com/ptmmeiningen/schichtplaner/models"
 )
 
+type CreateUserDTO struct {
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+	DepartmentID uint   `json:"department_id"`
+}
+
 // @Summary Get all users
-// @Description fetch all users
+// @Description Fetch all users with their departments
 // @Tags users
-// @Accept */*
+// @Accept json
 // @Produce json
 // @Success 200 {object} models.APIResponse
 // @Failure 500 {object} models.APIResponse
 // @Router /users [get]
 func HandleAllUsers(c *fiber.Ctx) error {
 	var users []models.User
-	result := database.GetDB().Preload("Departments").Find(&users)
+	result := database.GetDB().
+		Preload("Department").
+		Find(&users)
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
 			Success: false,
@@ -30,53 +38,23 @@ func HandleAllUsers(c *fiber.Ctx) error {
 	})
 }
 
-type CreateUserDTO struct {
-	FirstName     string `json:"first_name"`
-	LastName      string `json:"last_name"`
-	Email         string `json:"email"`
-	Password      string `json:"password"`
-	Color         string `json:"color"`
-	IsAdmin       bool   `json:"is_admin"`
-	DepartmentIDs []uint `json:"department_ids"`
-}
-
-// @Summary Create a user
-// @Description create new user
+// @Summary Create a new user
+// @Description Create a new user with department assignment
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param user body CreateUserDTO true "User to create"
+// @Param user body CreateUserDTO true "User information"
 // @Success 200 {object} models.APIResponse
 // @Failure 400 {object} models.APIResponse
 // @Failure 500 {object} models.APIResponse
 // @Router /users [post]
 func HandleCreateUser(c *fiber.Ctx) error {
-	dto := new(CreateUserDTO)
-	if err := c.BodyParser(dto); err != nil {
+	user := new(models.User)
+	if err := c.BodyParser(user); err != nil {
 		return c.Status(400).JSON(models.APIResponse{
 			Success: false,
 			Error:   "Invalid input",
 		})
-	}
-
-	user := models.User{
-		FirstName: dto.FirstName,
-		LastName:  dto.LastName,
-		Email:     dto.Email,
-		Password:  dto.Password,
-		Color:     dto.Color,
-		IsAdmin:   dto.IsAdmin,
-	}
-
-	if len(dto.DepartmentIDs) > 0 {
-		var departments []models.Department
-		if err := database.GetDB().Find(&departments, dto.DepartmentIDs).Error; err != nil {
-			return c.Status(400).JSON(models.APIResponse{
-				Success: false,
-				Error:   "Invalid department IDs",
-			})
-		}
-		user.Departments = departments
 	}
 
 	result := database.GetDB().Create(&user)
@@ -95,10 +73,11 @@ func HandleCreateUser(c *fiber.Ctx) error {
 }
 
 // @Summary Get a single user
-// @Description fetch user by ID
+// @Description Get user details by ID including department
 // @Tags users
-// @Param id path int true "User ID"
+// @Accept json
 // @Produce json
+// @Param id path int true "User ID"
 // @Success 200 {object} models.APIResponse
 // @Failure 404 {object} models.APIResponse
 // @Router /users/{id} [get]
@@ -106,7 +85,9 @@ func HandleGetOneUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	var user models.User
-	if err := database.GetDB().Preload("Departments").Where("id = ?", id).First(&user).Error; err != nil {
+	if err := database.GetDB().
+		Preload("Department").
+		First(&user, id).Error; err != nil {
 		return c.Status(404).JSON(models.APIResponse{
 			Success: false,
 			Error:   "User not found",
@@ -121,12 +102,12 @@ func HandleGetOneUser(c *fiber.Ctx) error {
 }
 
 // @Summary Update a user
-// @Description update user by ID
+// @Description Update user information by ID
 // @Tags users
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
-// @Param user body CreateUserDTO true "User update data"
+// @Param user body CreateUserDTO true "Updated user information"
 // @Success 200 {object} models.APIResponse
 // @Failure 400 {object} models.APIResponse
 // @Failure 404 {object} models.APIResponse
@@ -135,37 +116,18 @@ func HandleUpdateUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	var user models.User
-	if err := database.GetDB().Preload("Departments").Where("id = ?", id).First(&user).Error; err != nil {
+	if err := database.GetDB().First(&user, id).Error; err != nil {
 		return c.Status(404).JSON(models.APIResponse{
 			Success: false,
 			Error:   "User not found",
 		})
 	}
 
-	dto := new(CreateUserDTO)
-	if err := c.BodyParser(dto); err != nil {
+	if err := c.BodyParser(&user); err != nil {
 		return c.Status(400).JSON(models.APIResponse{
 			Success: false,
 			Error:   "Invalid input",
 		})
-	}
-
-	user.FirstName = dto.FirstName
-	user.LastName = dto.LastName
-	user.Email = dto.Email
-	user.Password = dto.Password
-	user.Color = dto.Color
-	user.IsAdmin = dto.IsAdmin
-
-	if len(dto.DepartmentIDs) > 0 {
-		var departments []models.Department
-		if err := database.GetDB().Find(&departments, dto.DepartmentIDs).Error; err != nil {
-			return c.Status(400).JSON(models.APIResponse{
-				Success: false,
-				Error:   "Invalid department IDs",
-			})
-		}
-		user.Departments = departments
 	}
 
 	database.GetDB().Save(&user)
@@ -177,17 +139,18 @@ func HandleUpdateUser(c *fiber.Ctx) error {
 }
 
 // @Summary Delete a user
-// @Description delete user by ID
+// @Description Delete user by ID
 // @Tags users
-// @Param id path int true "User ID"
+// @Accept json
 // @Produce json
+// @Param id path int true "User ID"
 // @Success 200 {object} models.APIResponse
 // @Failure 500 {object} models.APIResponse
 // @Router /users/{id} [delete]
 func HandleDeleteUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	result := database.GetDB().Where("id = ?", id).Delete(&models.User{})
+	result := database.GetDB().Delete(&models.User{}, id)
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
 			Success: false,

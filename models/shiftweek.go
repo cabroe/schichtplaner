@@ -1,9 +1,13 @@
 package models
 
-type User struct {
+import (
+	"time"
+)
+
+type ShiftWeek struct {
 	ID           uint       `gorm:"primarykey" json:"id"`
-	Name         string     `json:"name" gorm:"not null;default:'Unknown'"`
-	Email        string     `json:"email" gorm:"unique;not null;default:''"`
+	StartDate    time.Time  `json:"start_date" gorm:"not null"`
+	EndDate      time.Time  `json:"end_date" gorm:"not null"`
 	DepartmentID uint       `json:"department_id"`
 	Department   Department `json:"department"`
 	ShiftDays    []ShiftDay `json:"shift_days"`

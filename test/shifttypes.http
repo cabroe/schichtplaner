@@ -1,0 +1,13 @@
+### Get all shift types
+GET http://localhost:8080/shifttypes
+Accept: application/json
+
+### Create new shift type
+POST http://localhost:8080/shifttypes
+Content-Type: application/json
+
+{
+    "name": "Early Shift",
+    "description": "Morning shift from 6am to 2pm",
+    "duration": "8h"
+}

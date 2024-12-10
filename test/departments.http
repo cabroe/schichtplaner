@@ -1,0 +1,11 @@
+### Get all departments
+GET http://localhost:8080/departments
+Accept: application/json
+
+### Create new department
+POST http://localhost:8080/departments
+Content-Type: application/json
+
+{
+    "name": "IT Department"
+}

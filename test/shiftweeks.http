@@ -1,0 +1,13 @@
+### Get all shift weeks
+GET http://localhost:8080/shiftweeks
+Accept: application/json
+
+### Create new shift week
+POST http://localhost:8080/shiftweeks
+Content-Type: application/json
+
+{
+    "start_date": "2024-01-22",
+    "end_date": "2024-01-28",
+    "department_id": 1
+}

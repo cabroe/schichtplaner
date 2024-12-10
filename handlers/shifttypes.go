@@ -6,18 +6,20 @@ import (
 	"github.com/ptmmeiningen/schichtplaner/models"
 )
 
-type CreateDepartmentDTO struct {
-	Name string `json:"name"`
+type CreateShiftTypeDTO struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Duration    string `json:"duration"`
 }
 
-// @Summary Get all departments
-// @Tags departments
+// @Summary Get all shift types
+// @Tags shifttypes
 // @Produce json
 // @Success 200 {object} models.APIResponse
-// @Router /departments [get]
-func HandleAllDepartments(c *fiber.Ctx) error {
-	var departments []models.Department
-	result := database.GetDB().Preload("Users").Find(&departments)
+// @Router /shifttypes [get]
+func HandleAllShiftTypes(c *fiber.Ctx) error {
+	var shiftTypes []models.ShiftType
+	result := database.GetDB().Find(&shiftTypes)
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
 			Success: false,
@@ -26,36 +28,36 @@ func HandleAllDepartments(c *fiber.Ctx) error {
 	}
 	return c.JSON(models.APIResponse{
 		Success: true,
-		Data:    departments,
+		Data:    shiftTypes,
 	})
 }
 
-// @Summary Create department
-// @Tags departments
+// @Summary Create shift type
+// @Tags shifttypes
 // @Accept json
 // @Produce json
-// @Param department body CreateDepartmentDTO true "Department Data"
+// @Param shifttype body CreateShiftTypeDTO true "ShiftType Data"
 // @Success 200 {object} models.APIResponse
-// @Router /departments [post]
-func HandleCreateDepartment(c *fiber.Ctx) error {
-	department := new(models.Department)
-	if err := c.BodyParser(department); err != nil {
+// @Router /shifttypes [post]
+func HandleCreateShiftType(c *fiber.Ctx) error {
+	shiftType := new(models.ShiftType)
+	if err := c.BodyParser(shiftType); err != nil {
 		return c.Status(400).JSON(models.APIResponse{
 			Success: false,
 			Error:   "Invalid input",
 		})
 	}
 
-	result := database.GetDB().Create(&department)
+	result := database.GetDB().Create(&shiftType)
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
-			Success: false,
 			Error:   result.Error.Error(),
+			Success: false,
 		})
 	}
 
 	return c.JSON(models.APIResponse{
 		Success: true,
-		Data:    department,
+		Data:    shiftType,
 	})
 }

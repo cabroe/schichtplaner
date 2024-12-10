@@ -8,15 +8,7 @@ import (
 func SetupRoutes(app *fiber.App) {
 	app.Get("/health", handlers.HandleHealthCheck)
 
-	// setup the todos group
-	todos := app.Group("/todos")
-	todos.Get("/", handlers.HandleAllTodos)
-	todos.Post("/", handlers.HandleCreateTodo)
-	todos.Put("/:id", handlers.HandleUpdateTodo)
-	todos.Get("/:id", handlers.HandleGetOneTodo)
-	todos.Delete("/:id", handlers.HandleDeleteTodo)
-
-	// setup the users group
+	// User routes
 	users := app.Group("/users")
 	users.Get("/", handlers.HandleAllUsers)
 	users.Post("/", handlers.HandleCreateUser)
@@ -24,11 +16,23 @@ func SetupRoutes(app *fiber.App) {
 	users.Put("/:id", handlers.HandleUpdateUser)
 	users.Delete("/:id", handlers.HandleDeleteUser)
 
-	// setup the departments group
-	departments := app.Group(("/departments"))
+	// Department routes
+	departments := app.Group("/departments")
 	departments.Get("/", handlers.HandleAllDepartments)
 	departments.Post("/", handlers.HandleCreateDepartment)
-	departments.Get("/:id", handlers.HandleGetOneDepartment)
-	departments.Put("/:id", handlers.HandleUpdateDepartment)
-	departments.Delete("/:id", handlers.HandleDeleteDepartment)
+
+	// ShiftType routes
+	shiftTypes := app.Group("/shifttypes")
+	shiftTypes.Get("/", handlers.HandleAllShiftTypes)
+	shiftTypes.Post("/", handlers.HandleCreateShiftType)
+
+	// ShiftWeek routes
+	shiftWeeks := app.Group("/shiftweeks")
+	shiftWeeks.Get("/", handlers.HandleAllShiftWeeks)
+	shiftWeeks.Post("/", handlers.HandleCreateShiftWeek)
+
+	// ShiftDay routes
+	shiftDays := app.Group("/shiftdays")
+	shiftDays.Get("/", handlers.HandleAllShiftDays)
+	shiftDays.Post("/", handlers.HandleCreateShiftDay)
 }

@@ -6,18 +6,23 @@ import (
 	"github.com/ptmmeiningen/schichtplaner/models"
 )
 
-type CreateDepartmentDTO struct {
-	Name string `json:"name"`
+type CreateShiftWeekDTO struct {
+	StartDate    string `json:"start_date"`
+	EndDate      string `json:"end_date"`
+	DepartmentID uint   `json:"department_id"`
 }
 
-// @Summary Get all departments
-// @Tags departments
+// @Summary Get all shift weeks
+// @Tags shiftweeks
 // @Produce json
 // @Success 200 {object} models.APIResponse
-// @Router /departments [get]
-func HandleAllDepartments(c *fiber.Ctx) error {
-	var departments []models.Department
-	result := database.GetDB().Preload("Users").Find(&departments)
+// @Router /shiftweeks [get]
+func HandleAllShiftWeeks(c *fiber.Ctx) error {
+	var shiftWeeks []models.ShiftWeek
+	result := database.GetDB().
+		Preload("Department").
+		Preload("ShiftDays").
+		Find(&shiftWeeks)
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
 			Success: false,
@@ -26,27 +31,27 @@ func HandleAllDepartments(c *fiber.Ctx) error {
 	}
 	return c.JSON(models.APIResponse{
 		Success: true,
-		Data:    departments,
+		Data:    shiftWeeks,
 	})
 }
 
-// @Summary Create department
-// @Tags departments
+// @Summary Create shift week
+// @Tags shiftweeks
 // @Accept json
 // @Produce json
-// @Param department body CreateDepartmentDTO true "Department Data"
+// @Param shiftweek body CreateShiftWeekDTO true "ShiftWeek Data"
 // @Success 200 {object} models.APIResponse
-// @Router /departments [post]
-func HandleCreateDepartment(c *fiber.Ctx) error {
-	department := new(models.Department)
-	if err := c.BodyParser(department); err != nil {
+// @Router /shiftweeks [post]
+func HandleCreateShiftWeek(c *fiber.Ctx) error {
+	shiftWeek := new(models.ShiftWeek)
+	if err := c.BodyParser(shiftWeek); err != nil {
 		return c.Status(400).JSON(models.APIResponse{
 			Success: false,
 			Error:   "Invalid input",
 		})
 	}
 
-	result := database.GetDB().Create(&department)
+	result := database.GetDB().Create(&shiftWeek)
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
 			Success: false,
@@ -56,6 +61,6 @@ func HandleCreateDepartment(c *fiber.Ctx) error {
 
 	return c.JSON(models.APIResponse{
 		Success: true,
-		Data:    department,
+		Data:    shiftWeek,
 	})
 }

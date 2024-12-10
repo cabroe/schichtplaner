@@ -1,0 +1,14 @@
+### Get all shift days
+GET http://localhost:8080/shiftdays
+Accept: application/json
+
+### Create new shift day
+POST http://localhost:8080/shiftdays
+Content-Type: application/json
+
+{
+    "date": "2024-01-22",
+    "shift_week_id": 1,
+    "shift_type_id": 1,
+    "user_id": 1
+}

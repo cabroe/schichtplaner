@@ -1,42 +1,61 @@
 basePath: /
 definitions:
+  handlers.CreateAbsenceDTO:
+    properties:
+      description:
+        type: string
+      end_date:
+        type: string
+      start_date:
+        type: string
+      status:
+        type: string
+      type:
+        type: string
+      user_id:
+        type: integer
+    type: object
   handlers.CreateDepartmentDTO:
     properties:
-      color:
+      name:
         type: string
+    type: object
+  handlers.CreateShiftDayDTO:
+    properties:
+      date:
+        type: string
+      shift_type_id:
+        type: integer
+      shift_week_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  handlers.CreateShiftTypeDTO:
+    properties:
       description:
+        type: string
+      duration:
         type: string
       name:
         type: string
     type: object
-  handlers.CreateTodoDTO:
+  handlers.CreateShiftWeekDTO:
     properties:
-      completed:
-        type: boolean
-      date:
+      department_id:
+        type: integer
+      end_date:
         type: string
-      description:
-        type: string
-      title:
+      start_date:
         type: string
     type: object
   handlers.CreateUserDTO:
     properties:
-      color:
-        type: string
-      department_ids:
-        items:
-          type: integer
-        type: array
+      department_id:
+        type: integer
       email:
         type: string
-      first_name:
-        type: string
-      is_admin:
-        type: boolean
-      last_name:
-        type: string
-      password:
+      name:
         type: string
     type: object
   models.APIResponse:
@@ -62,11 +81,8 @@ info:
   title: Schichtplaner
   version: "0.1"
 paths:
-  /departments:
+  /absences:
     get:
-      consumes:
-      - '*/*'
-      description: fetch all departments
       produces:
       - application/json
       responses:
@@ -74,8 +90,36 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.APIResponse'
-        "500":
-          description: Internal Server Error
+      summary: Get all absences
+      tags:
+      - absences
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Absence Data
+        in: body
+        name: absence
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateAbsenceDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create absence
+      tags:
+      - absences
+  /departments:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/models.APIResponse'
       summary: Get all departments
@@ -84,9 +128,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: create new department
       parameters:
-      - description: Department to create
+      - description: Department Data
         in: body
         name: department
         required: true
@@ -99,94 +142,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.APIResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-      summary: Create a department
-      tags:
-      - departments
-  /departments/{id}:
-    delete:
-      description: delete department by ID
-      parameters:
-      - description: Department ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-      summary: Delete a department
-      tags:
-      - departments
-    get:
-      description: fetch department by ID
-      parameters:
-      - description: Department ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-      summary: Get a single department
-      tags:
-      - departments
-    put:
-      consumes:
-      - application/json
-      description: update department by ID
-      parameters:
-      - description: Department ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Department update data
-        in: body
-        name: department
-        required: true
-        schema:
-          $ref: '#/definitions/handlers.CreateDepartmentDTO'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-      summary: Update a department
+      summary: Create department
       tags:
       - departments
   /health:
@@ -202,11 +158,8 @@ paths:
       summary: Show the status of server.
       tags:
       - health
-  /todos:
+  /shiftdays:
     get:
-      consumes:
-      - '*/*'
-      description: fetch every todo available.
       produces:
       - application/json
       responses:
@@ -214,24 +167,19 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.APIResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-      summary: Get all todos.
+      summary: Get all shift days
       tags:
-      - todos
+      - shiftdays
     post:
       consumes:
       - application/json
-      description: create a single todo.
       parameters:
-      - description: Todo to create
+      - description: ShiftDay Data
         in: body
-        name: todo
+        name: shiftday
         required: true
         schema:
-          $ref: '#/definitions/handlers.CreateTodoDTO'
+          $ref: '#/definitions/handlers.CreateShiftDayDTO'
       produces:
       - application/json
       responses:
@@ -239,52 +187,11 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.APIResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-      summary: Create a todo.
+      summary: Create shift day
       tags:
-      - todos
-  /todos/{id}:
-    delete:
-      description: delete a single todo by id.
-      parameters:
-      - description: Todo ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-      summary: Delete a single todo.
-      tags:
-      - todos
+      - shiftdays
+  /shifttypes:
     get:
-      description: fetch a single todo.
-      parameters:
-      - description: Todo ID
-        in: path
-        name: id
-        required: true
-        type: integer
       produces:
       - application/json
       responses:
@@ -292,29 +199,19 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.APIResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-      summary: Get a single todo.
+      summary: Get all shift types
       tags:
-      - todos
-    put:
+      - shifttypes
+    post:
       consumes:
       - application/json
-      description: update a single todo.
       parameters:
-      - description: Todo update data
+      - description: ShiftType Data
         in: body
-        name: todo
+        name: shifttype
         required: true
         schema:
-          $ref: '#/definitions/handlers.CreateTodoDTO'
-      - description: Todo ID
-        in: path
-        name: id
-        required: true
-        type: string
+          $ref: '#/definitions/handlers.CreateShiftTypeDTO'
       produces:
       - application/json
       responses:
@@ -322,26 +219,46 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.APIResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-      summary: Update a todo.
+      summary: Create shift type
       tags:
-      - todos
+      - shifttypes
+  /shiftweeks:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get all shift weeks
+      tags:
+      - shiftweeks
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ShiftWeek Data
+        in: body
+        name: shiftweek
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateShiftWeekDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create shift week
+      tags:
+      - shiftweeks
   /users:
     get:
       consumes:
-      - '*/*'
-      description: fetch all users
+      - application/json
+      description: Fetch all users with their departments
       produces:
       - application/json
       responses:
@@ -359,9 +276,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: create new user
+      description: Create a new user with department assignment
       parameters:
-      - description: User to create
+      - description: User information
         in: body
         name: user
         required: true
@@ -382,12 +299,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.APIResponse'
-      summary: Create a user
+      summary: Create a new user
       tags:
       - users
   /users/{id}:
     delete:
-      description: delete user by ID
+      consumes:
+      - application/json
+      description: Delete user by ID
       parameters:
       - description: User ID
         in: path
@@ -409,7 +328,9 @@ paths:
       tags:
       - users
     get:
-      description: fetch user by ID
+      consumes:
+      - application/json
+      description: Get user details by ID including department
       parameters:
       - description: User ID
         in: path
@@ -433,14 +354,14 @@ paths:
     put:
       consumes:
       - application/json
-      description: update user by ID
+      description: Update user information by ID
       parameters:
       - description: User ID
         in: path
         name: id
         required: true
         type: integer
-      - description: User update data
+      - description: Updated user information
         in: body
         name: user
         required: true
