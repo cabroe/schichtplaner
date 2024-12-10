@@ -31,9 +31,6 @@ func SetupAndRunApp() (*fiber.App, error) {
 		return nil, err
 	}
 
-	// defer closing database
-	defer database.CloseDB()
-
 	// create app
 	app := fiber.New()
 
