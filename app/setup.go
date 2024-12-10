@@ -12,23 +12,23 @@ import (
 	"github.com/ptmmeiningen/schichtplaner/router"
 )
 
-func SetupAndRunApp() error {
+func SetupAndRunApp() (*fiber.App, error) {
 	// load env
 	err := config.LoadENV()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// start database
 	err = database.StartDB()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// start automigration
 	err = database.AutoMigrate()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// defer closing database
@@ -45,7 +45,7 @@ func SetupAndRunApp() error {
 
 	// attach CORS middleware
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*", // Erlaubt alle Ursprünge
+		AllowOrigins: "*",
 		AllowMethods: "GET,POST,PUT,DELETE",
 		AllowHeaders: "Origin,Content-Type,Accept",
 	}))
@@ -58,7 +58,7 @@ func SetupAndRunApp() error {
 
 	// get the port and start
 	port := os.Getenv("PORT")
-	app.Listen(":" + port)
+	go app.Listen(":" + port)
 
-	return nil
+	return app, nil
 }

@@ -18,7 +18,8 @@ func HandleAllShiftWeeks(c *fiber.Ctx) error {
 	var shiftWeeks []models.ShiftWeek
 	result := database.GetDB().
 		Preload("Department").
-		Preload("ShiftDays").
+		Preload("ShiftDays.ShiftType").
+		Preload("ShiftDays.User").
 		Find(&shiftWeeks)
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
@@ -51,6 +52,21 @@ func HandleCreateShiftWeek(c *fiber.Ctx) error {
 		})
 	}
 
+	// Validate required fields
+	if shiftWeek.DepartmentID == 0 {
+		return c.Status(400).JSON(models.APIResponse{
+			Success: false,
+			Error:   "Department ID is required",
+		})
+	}
+
+	if shiftWeek.StartDate.IsZero() || shiftWeek.EndDate.IsZero() {
+		return c.Status(400).JSON(models.APIResponse{
+			Success: false,
+			Error:   "Start date and end date are required",
+		})
+	}
+
 	// Validate Department exists
 	var department models.Department
 	if err := database.GetDB().First(&department, shiftWeek.DepartmentID).Error; err != nil {
@@ -79,7 +95,8 @@ func HandleCreateShiftWeek(c *fiber.Ctx) error {
 	// Reload with relationships
 	database.GetDB().
 		Preload("Department").
-		Preload("ShiftDays").
+		Preload("ShiftDays.ShiftType").
+		Preload("ShiftDays.User").
 		First(&shiftWeek, shiftWeek.ID)
 
 	return c.Status(201).JSON(models.APIResponse{
@@ -104,7 +121,8 @@ func HandleGetOneShiftWeek(c *fiber.Ctx) error {
 	var shiftWeek models.ShiftWeek
 	if err := database.GetDB().
 		Preload("Department").
-		Preload("ShiftDays").
+		Preload("ShiftDays.ShiftType").
+		Preload("ShiftDays.User").
 		First(&shiftWeek, id).Error; err != nil {
 		return c.Status(404).JSON(models.APIResponse{
 			Success: false,
@@ -147,6 +165,14 @@ func HandleUpdateShiftWeek(c *fiber.Ctx) error {
 		})
 	}
 
+	// Validate required fields
+	if shiftWeek.DepartmentID == 0 {
+		return c.Status(400).JSON(models.APIResponse{
+			Success: false,
+			Error:   "Department ID is required",
+		})
+	}
+
 	// Validate Department exists
 	if err := database.GetDB().First(&models.Department{}, shiftWeek.DepartmentID).Error; err != nil {
 		return c.Status(400).JSON(models.APIResponse{
@@ -155,7 +181,14 @@ func HandleUpdateShiftWeek(c *fiber.Ctx) error {
 		})
 	}
 
-	// Validate end date is after start date
+	// Validate dates
+	if shiftWeek.StartDate.IsZero() || shiftWeek.EndDate.IsZero() {
+		return c.Status(400).JSON(models.APIResponse{
+			Success: false,
+			Error:   "Start date and end date are required",
+		})
+	}
+
 	if shiftWeek.EndDate.Before(shiftWeek.StartDate) {
 		return c.Status(400).JSON(models.APIResponse{
 			Success: false,
@@ -173,7 +206,8 @@ func HandleUpdateShiftWeek(c *fiber.Ctx) error {
 	// Reload with relationships
 	database.GetDB().
 		Preload("Department").
-		Preload("ShiftDays").
+		Preload("ShiftDays.ShiftType").
+		Preload("ShiftDays.User").
 		First(&shiftWeek, id)
 
 	return c.JSON(models.APIResponse{

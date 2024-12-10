@@ -1,21 +1,35 @@
 package main
 
 import (
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/ptmmeiningen/schichtplaner/app"
 	_ "github.com/ptmmeiningen/schichtplaner/docs"
 )
 
-// @title Schichtplaner
-// @version 0.1
-// @description Golang backend API using Fiber and SQLite
+// @title Schichtplaner API
+// @version 1.0
+// @description Backend API für die Schichtplanung mit Fiber und SQLite
 // @contact.name Carsten Bröckert
 // @license.name MIT
 // @host localhost:8080
 // @BasePath /
 func main() {
-	// setup and run app
-	err := app.SetupAndRunApp()
+	// Graceful Shutdown Setup
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+
+	// Setup und Start der App
+	app, err := app.SetupAndRunApp()
 	if err != nil {
-		panic(err)
+		log.Fatalf("Failed to setup and run app: %v", err)
 	}
+
+	// Warte auf Shutdown Signal
+	<-c
+	log.Println("Shutting down gracefully...")
+	_ = app.Shutdown()
 }

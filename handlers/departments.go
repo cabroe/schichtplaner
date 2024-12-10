@@ -18,7 +18,8 @@ func HandleAllDepartments(c *fiber.Ctx) error {
 	var departments []models.Department
 	result := database.GetDB().
 		Preload("Users").
-		Preload("ShiftWeeks").
+		Preload("ShiftWeeks.ShiftDays.ShiftType").
+		Preload("ShiftWeeks.ShiftDays.User").
 		Find(&departments)
 
 	if result.Error != nil {
@@ -49,7 +50,8 @@ func HandleGetOneDepartment(c *fiber.Ctx) error {
 	var department models.Department
 	result := database.GetDB().
 		Preload("Users").
-		Preload("ShiftWeeks").
+		Preload("ShiftWeeks.ShiftDays.ShiftType").
+		Preload("ShiftWeeks.ShiftDays.User").
 		First(&department, id)
 
 	if result.Error != nil {
@@ -84,6 +86,13 @@ func HandleCreateDepartment(c *fiber.Ctx) error {
 		})
 	}
 
+	if department.Name == "" {
+		return c.Status(400).JSON(models.APIResponse{
+			Success: false,
+			Error:   "Department name is required",
+		})
+	}
+
 	result := database.GetDB().Create(&department)
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
@@ -92,10 +101,11 @@ func HandleCreateDepartment(c *fiber.Ctx) error {
 		})
 	}
 
-	// Reload the department with relationships
+	// Reload with all relationships
 	database.GetDB().
 		Preload("Users").
-		Preload("ShiftWeeks").
+		Preload("ShiftWeeks.ShiftDays.ShiftType").
+		Preload("ShiftWeeks.ShiftDays.User").
 		First(&department, department.ID)
 
 	return c.Status(201).JSON(models.APIResponse{
@@ -133,6 +143,13 @@ func HandleUpdateDepartment(c *fiber.Ctx) error {
 		})
 	}
 
+	if department.Name == "" {
+		return c.Status(400).JSON(models.APIResponse{
+			Success: false,
+			Error:   "Department name is required",
+		})
+	}
+
 	if err := database.GetDB().Save(&department).Error; err != nil {
 		return c.Status(500).JSON(models.APIResponse{
 			Success: false,
@@ -140,10 +157,11 @@ func HandleUpdateDepartment(c *fiber.Ctx) error {
 		})
 	}
 
-	// Reload the department with relationships
+	// Reload with all relationships
 	database.GetDB().
 		Preload("Users").
-		Preload("ShiftWeeks").
+		Preload("ShiftWeeks.ShiftDays.ShiftType").
+		Preload("ShiftWeeks.ShiftDays.User").
 		First(&department, id)
 
 	return c.JSON(models.APIResponse{

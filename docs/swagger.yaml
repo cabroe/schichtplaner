@@ -24,6 +24,8 @@ definitions:
     type: object
   models.Department:
     properties:
+      color:
+        type: string
       id:
         type: integer
       name:
@@ -31,6 +33,8 @@ definitions:
     type: object
   models.ShiftDay:
     properties:
+      created_at:
+        type: string
       date:
         type: string
       id:
@@ -39,11 +43,15 @@ definitions:
         type: integer
       shift_week_id:
         type: integer
+      updated_at:
+        type: string
       user_id:
         type: integer
     type: object
   models.ShiftType:
     properties:
+      color:
+        type: string
       description:
         type: string
       duration:
@@ -55,6 +63,8 @@ definitions:
     type: object
   models.ShiftWeek:
     properties:
+      created_at:
+        type: string
       department_id:
         type: integer
       end_date:
@@ -63,10 +73,14 @@ definitions:
         type: integer
       start_date:
         type: string
+      updated_at:
+        type: string
     type: object
   models.User:
     properties:
       color:
+        type: string
+      created_at:
         type: string
       department_id:
         type: integer
@@ -82,22 +96,24 @@ definitions:
         type: string
       password:
         type: string
+      updated_at:
+        type: string
     type: object
 host: localhost:8080
 info:
   contact:
     name: Carsten Bröckert
-  description: Golang backend API using Fiber and SQLite
+  description: Backend API für die Schichtplanung mit Fiber und SQLite
   license:
     name: MIT
-  title: Schichtplaner
-  version: "0.1"
+  title: Schichtplaner API
+  version: "1.0"
 paths:
   /departments:
     get:
       consumes:
       - application/json
-      description: Fetch all departments
+      description: Fetch all departments with their relationships
       produces:
       - application/json
       responses:
@@ -126,16 +142,12 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/models.APIResponse'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-        "500":
-          description: Internal Server Error
           schema:
             $ref: '#/definitions/models.APIResponse'
       summary: Create a department
@@ -159,6 +171,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
         "500":
           description: Internal Server Error
           schema:
@@ -169,7 +185,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get department details by ID
+      description: Get department details by ID including relationships
       parameters:
       - description: Department ID
         in: path
@@ -276,16 +292,12 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/models.APIResponse'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-        "500":
-          description: Internal Server Error
           schema:
             $ref: '#/definitions/models.APIResponse'
       summary: Create a shift day
@@ -307,6 +319,10 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/models.APIResponse'
         "500":
@@ -378,7 +394,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Fetch all shift types
+      description: Fetch all shift types with their relationships
       produces:
       - application/json
       responses:
@@ -396,7 +412,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new shift type
+      description: Create a new shift type with validations
       parameters:
       - description: ShiftType information
         in: body
@@ -407,16 +423,12 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/models.APIResponse'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-        "500":
-          description: Internal Server Error
           schema:
             $ref: '#/definitions/models.APIResponse'
       summary: Create a shift type
@@ -440,6 +452,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
         "500":
           description: Internal Server Error
           schema:
@@ -450,7 +466,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get shift type details by ID
+      description: Get shift type details by ID with relationships
       parameters:
       - description: ShiftType ID
         in: path
@@ -474,7 +490,7 @@ paths:
     put:
       consumes:
       - application/json
-      description: Update shift type information by ID
+      description: Update shift type information by ID with validations
       parameters:
       - description: ShiftType ID
         in: path
@@ -538,16 +554,12 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/models.APIResponse'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-        "500":
-          description: Internal Server Error
           schema:
             $ref: '#/definitions/models.APIResponse'
       summary: Create a shift week
@@ -569,6 +581,10 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/models.APIResponse'
         "500":
@@ -640,7 +656,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Fetch all users with their departments
+      description: Fetch all users with their relationships
       produces:
       - application/json
       responses:
@@ -658,7 +674,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new user with department assignment
+      description: Create a new user with validations
       parameters:
       - description: User information
         in: body
@@ -669,16 +685,12 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/models.APIResponse'
         "400":
           description: Bad Request
-          schema:
-            $ref: '#/definitions/models.APIResponse'
-        "500":
-          description: Internal Server Error
           schema:
             $ref: '#/definitions/models.APIResponse'
       summary: Create a new user
@@ -702,6 +714,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
         "500":
           description: Internal Server Error
           schema:
@@ -712,7 +728,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get user details by ID including department
+      description: Get user details by ID with relationships
       parameters:
       - description: User ID
         in: path
@@ -736,7 +752,7 @@ paths:
     put:
       consumes:
       - application/json
-      description: Update user information by ID
+      description: Update user information by ID with validations
       parameters:
       - description: User ID
         in: path

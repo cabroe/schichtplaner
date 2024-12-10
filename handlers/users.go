@@ -7,7 +7,7 @@ import (
 )
 
 // @Summary Get all users
-// @Description Fetch all users with their departments
+// @Description Fetch all users with their relationships
 // @Tags users
 // @Accept json
 // @Produce json
@@ -18,6 +18,8 @@ func HandleAllUsers(c *fiber.Ctx) error {
 	var users []models.User
 	result := database.GetDB().
 		Preload("Department").
+		Preload("ShiftDays.ShiftType").
+		Preload("ShiftDays.ShiftWeek").
 		Find(&users)
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
@@ -33,14 +35,13 @@ func HandleAllUsers(c *fiber.Ctx) error {
 }
 
 // @Summary Create a new user
-// @Description Create a new user with department assignment
+// @Description Create a new user with validations
 // @Tags users
 // @Accept json
 // @Produce json
 // @Param user body models.User true "User information"
-// @Success 200 {object} models.APIResponse
+// @Success 201 {object} models.APIResponse
 // @Failure 400 {object} models.APIResponse
-// @Failure 500 {object} models.APIResponse
 // @Router /users [post]
 func HandleCreateUser(c *fiber.Ctx) error {
 	user := new(models.User)
@@ -51,15 +52,28 @@ func HandleCreateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	// Validate Department exists if DepartmentID is provided
-	if user.DepartmentID != 0 {
-		var department models.Department
-		if err := database.GetDB().First(&department, user.DepartmentID).Error; err != nil {
-			return c.Status(400).JSON(models.APIResponse{
-				Success: false,
-				Error:   "Department not found",
-			})
-		}
+	// Validate required fields
+	if user.FirstName == "" || user.LastName == "" || user.Email == "" {
+		return c.Status(400).JSON(models.APIResponse{
+			Success: false,
+			Error:   "First name, last name and email are required",
+		})
+	}
+
+	if user.DepartmentID == 0 {
+		return c.Status(400).JSON(models.APIResponse{
+			Success: false,
+			Error:   "Department ID is required",
+		})
+	}
+
+	// Validate Department exists
+	var department models.Department
+	if err := database.GetDB().First(&department, user.DepartmentID).Error; err != nil {
+		return c.Status(400).JSON(models.APIResponse{
+			Success: false,
+			Error:   "Department not found",
+		})
 	}
 
 	result := database.GetDB().Create(&user)
@@ -70,7 +84,14 @@ func HandleCreateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.JSON(models.APIResponse{
+	// Reload with relationships
+	database.GetDB().
+		Preload("Department").
+		Preload("ShiftDays.ShiftType").
+		Preload("ShiftDays.ShiftWeek").
+		First(&user, user.ID)
+
+	return c.Status(201).JSON(models.APIResponse{
 		Success: true,
 		Message: "User successfully created",
 		Data:    user,
@@ -78,7 +99,7 @@ func HandleCreateUser(c *fiber.Ctx) error {
 }
 
 // @Summary Get a single user
-// @Description Get user details by ID including department
+// @Description Get user details by ID with relationships
 // @Tags users
 // @Accept json
 // @Produce json
@@ -92,6 +113,8 @@ func HandleGetOneUser(c *fiber.Ctx) error {
 	var user models.User
 	if err := database.GetDB().
 		Preload("Department").
+		Preload("ShiftDays.ShiftType").
+		Preload("ShiftDays.ShiftWeek").
 		First(&user, id).Error; err != nil {
 		return c.Status(404).JSON(models.APIResponse{
 			Success: false,
@@ -107,15 +130,14 @@ func HandleGetOneUser(c *fiber.Ctx) error {
 }
 
 // @Summary Update a user
-// @Description Update user information by ID
+// @Description Update user information by ID with validations
 // @Tags users
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
 // @Param user body models.User true "Updated user information"
 // @Success 200 {object} models.APIResponse
-// @Failure 400 {object} models.APIResponse
-// @Failure 404 {object} models.APIResponse
+// @Failure 400,404 {object} models.APIResponse
 // @Router /users/{id} [put]
 func HandleUpdateUser(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -135,18 +157,43 @@ func HandleUpdateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	// Validate Department exists if DepartmentID is provided
-	if user.DepartmentID != 0 {
-		var department models.Department
-		if err := database.GetDB().First(&department, user.DepartmentID).Error; err != nil {
-			return c.Status(400).JSON(models.APIResponse{
-				Success: false,
-				Error:   "Department not found",
-			})
-		}
+	// Validate required fields
+	if user.FirstName == "" || user.LastName == "" || user.Email == "" {
+		return c.Status(400).JSON(models.APIResponse{
+			Success: false,
+			Error:   "First name, last name and email are required",
+		})
 	}
 
-	database.GetDB().Save(&user)
+	if user.DepartmentID == 0 {
+		return c.Status(400).JSON(models.APIResponse{
+			Success: false,
+			Error:   "Department ID is required",
+		})
+	}
+
+	// Validate Department exists
+	if err := database.GetDB().First(&models.Department{}, user.DepartmentID).Error; err != nil {
+		return c.Status(400).JSON(models.APIResponse{
+			Success: false,
+			Error:   "Department not found",
+		})
+	}
+
+	if err := database.GetDB().Save(&user).Error; err != nil {
+		return c.Status(500).JSON(models.APIResponse{
+			Success: false,
+			Error:   err.Error(),
+		})
+	}
+
+	// Reload with relationships
+	database.GetDB().
+		Preload("Department").
+		Preload("ShiftDays.ShiftType").
+		Preload("ShiftDays.ShiftWeek").
+		First(&user, id)
+
 	return c.JSON(models.APIResponse{
 		Success: true,
 		Message: "User successfully updated",
@@ -155,19 +202,17 @@ func HandleUpdateUser(c *fiber.Ctx) error {
 }
 
 // @Summary Delete a user
-// @Description Delete user by ID with validation
+// @Description Delete user by ID
 // @Tags users
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
 // @Success 200 {object} models.APIResponse
-// @Failure 404 {object} models.APIResponse
-// @Failure 500 {object} models.APIResponse
+// @Failure 404,500 {object} models.APIResponse
 // @Router /users/{id} [delete]
 func HandleDeleteUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	// Check if user exists
 	var user models.User
 	if err := database.GetDB().First(&user, id).Error; err != nil {
 		return c.Status(404).JSON(models.APIResponse{

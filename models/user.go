@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type User struct {
 	ID           uint       `gorm:"primarykey" json:"id"`
 	FirstName    string     `json:"first_name" gorm:"not null"`
@@ -8,7 +10,9 @@ type User struct {
 	Password     string     `json:"password" gorm:"not null"`
 	Color        string     `json:"color" gorm:"not null"`
 	IsAdmin      bool       `json:"is_admin" gorm:"default:false"`
-	DepartmentID uint       `json:"department_id"`
+	DepartmentID uint       `json:"department_id" gorm:"not null"`
 	Department   Department `json:"department" swaggerignore:"true"`
 	ShiftDays    []ShiftDay `json:"shift_days" swaggerignore:"true"`
+	CreatedAt    time.Time  `json:"created_at"`
+	UpdatedAt    time.Time  `json:"updated_at"`
 }

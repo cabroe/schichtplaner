@@ -7,7 +7,7 @@ import (
 )
 
 // @Summary Get all shift types
-// @Description Fetch all shift types
+// @Description Fetch all shift types with their relationships
 // @Tags shifttypes
 // @Accept json
 // @Produce json
@@ -17,7 +17,8 @@ import (
 func HandleAllShiftTypes(c *fiber.Ctx) error {
 	var shiftTypes []models.ShiftType
 	result := database.GetDB().
-		Preload("ShiftDays").
+		Preload("ShiftDays.User").
+		Preload("ShiftDays.ShiftWeek").
 		Find(&shiftTypes)
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
@@ -33,7 +34,7 @@ func HandleAllShiftTypes(c *fiber.Ctx) error {
 }
 
 // @Summary Create a shift type
-// @Description Create a new shift type
+// @Description Create a new shift type with validations
 // @Tags shifttypes
 // @Accept json
 // @Produce json
@@ -50,6 +51,13 @@ func HandleCreateShiftType(c *fiber.Ctx) error {
 		})
 	}
 
+	if shiftType.Name == "" || shiftType.Color == "" {
+		return c.Status(400).JSON(models.APIResponse{
+			Success: false,
+			Error:   "Name and color are required",
+		})
+	}
+
 	result := database.GetDB().Create(&shiftType)
 	if result.Error != nil {
 		return c.Status(500).JSON(models.APIResponse{
@@ -60,7 +68,8 @@ func HandleCreateShiftType(c *fiber.Ctx) error {
 
 	// Reload with relationships
 	database.GetDB().
-		Preload("ShiftDays").
+		Preload("ShiftDays.User").
+		Preload("ShiftDays.ShiftWeek").
 		First(&shiftType, shiftType.ID)
 
 	return c.Status(201).JSON(models.APIResponse{
@@ -71,7 +80,7 @@ func HandleCreateShiftType(c *fiber.Ctx) error {
 }
 
 // @Summary Get a single shift type
-// @Description Get shift type details by ID
+// @Description Get shift type details by ID with relationships
 // @Tags shifttypes
 // @Accept json
 // @Produce json
@@ -84,7 +93,8 @@ func HandleGetOneShiftType(c *fiber.Ctx) error {
 
 	var shiftType models.ShiftType
 	if err := database.GetDB().
-		Preload("ShiftDays").
+		Preload("ShiftDays.User").
+		Preload("ShiftDays.ShiftWeek").
 		First(&shiftType, id).Error; err != nil {
 		return c.Status(404).JSON(models.APIResponse{
 			Success: false,
@@ -100,7 +110,7 @@ func HandleGetOneShiftType(c *fiber.Ctx) error {
 }
 
 // @Summary Update a shift type
-// @Description Update shift type information by ID
+// @Description Update shift type information by ID with validations
 // @Tags shifttypes
 // @Accept json
 // @Produce json
@@ -127,6 +137,13 @@ func HandleUpdateShiftType(c *fiber.Ctx) error {
 		})
 	}
 
+	if shiftType.Name == "" || shiftType.Color == "" {
+		return c.Status(400).JSON(models.APIResponse{
+			Success: false,
+			Error:   "Name and color are required",
+		})
+	}
+
 	if err := database.GetDB().Save(&shiftType).Error; err != nil {
 		return c.Status(500).JSON(models.APIResponse{
 			Success: false,
@@ -136,7 +153,8 @@ func HandleUpdateShiftType(c *fiber.Ctx) error {
 
 	// Reload with relationships
 	database.GetDB().
-		Preload("ShiftDays").
+		Preload("ShiftDays.User").
+		Preload("ShiftDays.ShiftWeek").
 		First(&shiftType, id)
 
 	return c.JSON(models.APIResponse{

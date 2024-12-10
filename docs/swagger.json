@@ -1,22 +1,22 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Golang backend API using Fiber and SQLite",
-        "title": "Schichtplaner",
+        "description": "Backend API für die Schichtplanung mit Fiber und SQLite",
+        "title": "Schichtplaner API",
         "contact": {
             "name": "Carsten Bröckert"
         },
         "license": {
             "name": "MIT"
         },
-        "version": "0.1"
+        "version": "1.0"
     },
     "host": "localhost:8080",
     "basePath": "/",
     "paths": {
         "/departments": {
             "get": {
-                "description": "Fetch all departments",
+                "description": "Fetch all departments with their relationships",
                 "consumes": [
                     "application/json"
                 ],
@@ -66,8 +66,8 @@
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
@@ -77,19 +77,13 @@
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
                     }
                 }
             }
         },
         "/departments/{id}": {
             "get": {
-                "description": "Get department details by ID",
+                "description": "Get department details by ID including relationships",
                 "consumes": [
                     "application/json"
                 ],
@@ -203,6 +197,12 @@
                             "$ref": "#/definitions/models.APIResponse"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -293,20 +293,14 @@
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
@@ -430,6 +424,12 @@
                             "$ref": "#/definitions/models.APIResponse"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -441,7 +441,7 @@
         },
         "/shifttypes": {
             "get": {
-                "description": "Fetch all shift types",
+                "description": "Fetch all shift types with their relationships",
                 "consumes": [
                     "application/json"
                 ],
@@ -468,7 +468,7 @@
                 }
             },
             "post": {
-                "description": "Create a new shift type",
+                "description": "Create a new shift type with validations",
                 "consumes": [
                     "application/json"
                 ],
@@ -491,8 +491,8 @@
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
@@ -502,19 +502,13 @@
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
                     }
                 }
             }
         },
         "/shifttypes/{id}": {
             "get": {
-                "description": "Get shift type details by ID",
+                "description": "Get shift type details by ID with relationships",
                 "consumes": [
                     "application/json"
                 ],
@@ -550,7 +544,7 @@
                 }
             },
             "put": {
-                "description": "Update shift type information by ID",
+                "description": "Update shift type information by ID with validations",
                 "consumes": [
                     "application/json"
                 ],
@@ -628,6 +622,12 @@
                             "$ref": "#/definitions/models.APIResponse"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -689,20 +689,14 @@
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
@@ -826,6 +820,12 @@
                             "$ref": "#/definitions/models.APIResponse"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -837,7 +837,7 @@
         },
         "/users": {
             "get": {
-                "description": "Fetch all users with their departments",
+                "description": "Fetch all users with their relationships",
                 "consumes": [
                     "application/json"
                 ],
@@ -864,7 +864,7 @@
                 }
             },
             "post": {
-                "description": "Create a new user with department assignment",
+                "description": "Create a new user with validations",
                 "consumes": [
                     "application/json"
                 ],
@@ -887,8 +887,8 @@
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
@@ -898,19 +898,13 @@
                         "schema": {
                             "$ref": "#/definitions/models.APIResponse"
                         }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.APIResponse"
-                        }
                     }
                 }
             }
         },
         "/users/{id}": {
             "get": {
-                "description": "Get user details by ID including department",
+                "description": "Get user details by ID with relationships",
                 "consumes": [
                     "application/json"
                 ],
@@ -946,7 +940,7 @@
                 }
             },
             "put": {
-                "description": "Update user information by ID",
+                "description": "Update user information by ID with validations",
                 "consumes": [
                     "application/json"
                 ],
@@ -1024,6 +1018,12 @@
                             "$ref": "#/definitions/models.APIResponse"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.APIResponse"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -1070,6 +1070,9 @@
         "models.Department": {
             "type": "object",
             "properties": {
+                "color": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -1081,6 +1084,9 @@
         "models.ShiftDay": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "date": {
                     "type": "string"
                 },
@@ -1093,6 +1099,9 @@
                 "shift_week_id": {
                     "type": "integer"
                 },
+                "updated_at": {
+                    "type": "string"
+                },
                 "user_id": {
                     "type": "integer"
                 }
@@ -1101,6 +1110,9 @@
         "models.ShiftType": {
             "type": "object",
             "properties": {
+                "color": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -1118,6 +1130,9 @@
         "models.ShiftWeek": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "department_id": {
                     "type": "integer"
                 },
@@ -1129,6 +1144,9 @@
                 },
                 "start_date": {
                     "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -1136,6 +1154,9 @@
             "type": "object",
             "properties": {
                 "color": {
+                    "type": "string"
+                },
+                "created_at": {
                     "type": "string"
                 },
                 "department_id": {
@@ -1157,6 +1178,9 @@
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
