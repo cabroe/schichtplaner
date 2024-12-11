@@ -32,9 +32,14 @@ func ValidateConnection() error {
 	return sqlDB.Ping()
 }
 
-// SetupTestDB erstellt eine In-Memory Testdatenbank
+// SetupTestDB erstellt eine physische Testdatenbank
 func SetupTestDB(t *testing.T, entities ...interface{}) *fiber.App {
-	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	testDbPath := os.Getenv("SQLITE_TEST_DB_PATH")
+	if testDbPath == "" {
+		testDbPath = "schichtplaner_test.db"
+	}
+
+	db, err := gorm.Open(sqlite.Open(testDbPath), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("Fehler beim Verbinden zur Testdatenbank: %v", err)
 	}
