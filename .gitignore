@@ -21,4 +21,4 @@
 tmp/
 
 # SQLite database
-schichtplaner.db
+*.db
