@@ -13,6 +13,7 @@ type HealthData struct {
 	Database  string `json:"database"`
 	Timestamp string `json:"timestamp"`
 	Version   string `json:"version"`
+	APIPath   string `json:"api_path"`
 }
 
 // @Summary Zeigt den Status des Servers
@@ -26,8 +27,8 @@ type HealthData struct {
 func HandleHealthCheck(c *fiber.Ctx) error {
 	dbStatus := "online"
 	systemStatus := "gesund"
+	apiPath := "/api/v1"
 
-	// Prüfe Datenbankverbindung
 	if err := database.ValidateConnection(); err != nil {
 		dbStatus = "offline"
 		systemStatus = "ungesund"
@@ -39,6 +40,7 @@ func HandleHealthCheck(c *fiber.Ctx) error {
 		Database:  dbStatus,
 		Timestamp: time.Now().Format(time.RFC3339),
 		Version:   "1.0.0",
+		APIPath:   apiPath,
 	}
 
 	return c.JSON(responses.SuccessResponse("System läuft einwandfrei", healthData))

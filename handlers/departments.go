@@ -70,8 +70,8 @@ func HandleCreateDepartment(c *fiber.Ctx) error {
 		return c.Status(400).JSON(responses.ErrorResponse("Ungültige Eingabe"))
 	}
 
-	if department.Name == "" {
-		return c.Status(400).JSON(responses.ErrorResponse("Abteilungsname ist erforderlich"))
+	if department.Name == "" || department.Color == "" {
+		return c.Status(400).JSON(responses.ErrorResponse("Name und Farbe sind erforderlich"))
 	}
 
 	result := database.GetDB().Create(&department)
@@ -110,8 +110,8 @@ func HandleUpdateDepartment(c *fiber.Ctx) error {
 		return c.Status(400).JSON(responses.ErrorResponse("Ungültige Eingabe"))
 	}
 
-	if department.Name == "" {
-		return c.Status(400).JSON(responses.ErrorResponse("Abteilungsname ist erforderlich"))
+	if department.Name == "" || department.Color == "" {
+		return c.Status(400).JSON(responses.ErrorResponse("Name und Farbe sind erforderlich"))
 	}
 
 	if err := database.GetDB().Save(&department).Error; err != nil {
