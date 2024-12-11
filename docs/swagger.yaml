@@ -4,9 +4,13 @@ definitions:
     properties:
       color:
         type: string
+      created_at:
+        type: string
       id:
         type: integer
       name:
+        type: string
+      updated_at:
         type: string
     type: object
   models.ShiftDay:
@@ -30,6 +34,8 @@ definitions:
     properties:
       color:
         type: string
+      created_at:
+        type: string
       description:
         type: string
       duration:
@@ -37,6 +43,8 @@ definitions:
       id:
         type: integer
       name:
+        type: string
+      updated_at:
         type: string
     type: object
   models.ShiftWeek:
@@ -100,7 +108,7 @@ info:
   title: Schichtplaner API
   version: "1.0"
 paths:
-  /departments:
+  /api/v1/departments:
     get:
       consumes:
       - application/json
@@ -144,7 +152,7 @@ paths:
       summary: Create a department
       tags:
       - departments
-  /departments/{id}:
+  /api/v1/departments/{id}:
     delete:
       consumes:
       - application/json
@@ -231,7 +239,7 @@ paths:
       summary: Update a department
       tags:
       - departments
-  /health:
+  /api/v1/health:
     get:
       consumes:
       - '*/*'
@@ -250,7 +258,7 @@ paths:
       summary: Zeigt den Status des Servers
       tags:
       - health
-  /shiftdays:
+  /api/v1/shiftdays:
     get:
       consumes:
       - application/json
@@ -294,7 +302,7 @@ paths:
       summary: Create a shift day
       tags:
       - shiftdays
-  /shiftdays/{id}:
+  /api/v1/shiftdays/{id}:
     delete:
       consumes:
       - application/json
@@ -381,7 +389,7 @@ paths:
       summary: Update a shift day
       tags:
       - shiftdays
-  /shifttypes:
+  /api/v1/shifttypes:
     get:
       consumes:
       - application/json
@@ -425,7 +433,7 @@ paths:
       summary: Create a shift type
       tags:
       - shifttypes
-  /shifttypes/{id}:
+  /api/v1/shifttypes/{id}:
     delete:
       consumes:
       - application/json
@@ -512,7 +520,7 @@ paths:
       summary: Update a shift type
       tags:
       - shifttypes
-  /shiftweeks:
+  /api/v1/shiftweeks:
     get:
       consumes:
       - application/json
@@ -556,7 +564,7 @@ paths:
       summary: Create a shift week
       tags:
       - shiftweeks
-  /shiftweeks/{id}:
+  /api/v1/shiftweeks/{id}:
     delete:
       consumes:
       - application/json
@@ -643,7 +651,7 @@ paths:
       summary: Update a shift week
       tags:
       - shiftweeks
-  /users:
+  /api/v1/users:
     get:
       consumes:
       - application/json
@@ -687,7 +695,7 @@ paths:
       summary: Create a new user
       tags:
       - users
-  /users/{id}:
+  /api/v1/users/{id}:
     delete:
       consumes:
       - application/json

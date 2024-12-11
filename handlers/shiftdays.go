@@ -14,7 +14,7 @@ import (
 // @Produce json
 // @Success 200 {object} responses.APIResponse
 // @Failure 500 {object} responses.APIResponse
-// @Router /shiftdays [get]
+// @Router /api/v1/shiftdays [get]
 func HandleAllShiftDays(c *fiber.Ctx) error {
 	var shiftDays []models.ShiftDay
 	result := database.GetDB().
@@ -36,7 +36,7 @@ func HandleAllShiftDays(c *fiber.Ctx) error {
 // @Param shiftday body models.ShiftDay true "ShiftDay Data"
 // @Success 201 {object} responses.APIResponse
 // @Failure 400 {object} responses.APIResponse
-// @Router /shiftdays [post]
+// @Router /api/v1/shiftdays [post]
 func HandleCreateShiftDay(c *fiber.Ctx) error {
 	shiftDay := new(models.ShiftDay)
 	if err := c.BodyParser(shiftDay); err != nil {
@@ -100,7 +100,7 @@ func HandleCreateShiftDay(c *fiber.Ctx) error {
 // @Param id path int true "ShiftDay ID"
 // @Success 200 {object} responses.APIResponse
 // @Failure 404 {object} responses.APIResponse
-// @Router /shiftdays/{id} [get]
+// @Router /api/v1/shiftdays/{id} [get]
 func HandleGetOneShiftDay(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -125,7 +125,7 @@ func HandleGetOneShiftDay(c *fiber.Ctx) error {
 // @Param shiftday body models.ShiftDay true "Updated ShiftDay Data"
 // @Success 200 {object} responses.APIResponse
 // @Failure 400,404 {object} responses.APIResponse
-// @Router /shiftdays/{id} [put]
+// @Router /api/v1/shiftdays/{id} [put]
 func HandleUpdateShiftDay(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -194,7 +194,7 @@ func HandleUpdateShiftDay(c *fiber.Ctx) error {
 // @Param id path int true "ShiftDay ID"
 // @Success 200 {object} responses.APIResponse
 // @Failure 404,500 {object} responses.APIResponse
-// @Router /shiftdays/{id} [delete]
+// @Router /api/v1/shiftdays/{id} [delete]
 func HandleDeleteShiftDay(c *fiber.Ctx) error {
 	id := c.Params("id")
 

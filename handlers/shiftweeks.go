@@ -14,7 +14,7 @@ import (
 // @Produce json
 // @Success 200 {object} responses.APIResponse
 // @Failure 500 {object} responses.APIResponse
-// @Router /shiftweeks [get]
+// @Router /api/v1/shiftweeks [get]
 func HandleAllShiftWeeks(c *fiber.Ctx) error {
 	var shiftWeeks []models.ShiftWeek
 	result := database.GetDB().
@@ -36,23 +36,22 @@ func HandleAllShiftWeeks(c *fiber.Ctx) error {
 // @Param shiftweek body models.ShiftWeek true "ShiftWeek Data"
 // @Success 201 {object} responses.APIResponse
 // @Failure 400 {object} responses.APIResponse
-// @Router /shiftweeks [post]
+// @Router /api/v1/shiftweeks [post]
 func HandleCreateShiftWeek(c *fiber.Ctx) error {
 	shiftWeek := new(models.ShiftWeek)
 	if err := c.BodyParser(shiftWeek); err != nil {
 		return c.Status(400).JSON(responses.ErrorResponse("Ungültige Eingabe"))
 	}
 
-	if shiftWeek.DepartmentID == 0 {
-		return c.Status(400).JSON(responses.ErrorResponse("Abteilung ist erforderlich"))
-	}
-
 	if shiftWeek.StartDate.IsZero() || shiftWeek.EndDate.IsZero() {
 		return c.Status(400).JSON(responses.ErrorResponse("Start- und Enddatum sind erforderlich"))
 	}
 
-	var department models.Department
-	if err := database.GetDB().First(&department, shiftWeek.DepartmentID).Error; err != nil {
+	if shiftWeek.DepartmentID == 0 {
+		return c.Status(400).JSON(responses.ErrorResponse("Abteilung ist erforderlich"))
+	}
+
+	if err := database.GetDB().First(&models.Department{}, shiftWeek.DepartmentID).Error; err != nil {
 		return c.Status(400).JSON(responses.ErrorResponse("Abteilung nicht gefunden"))
 	}
 
@@ -82,7 +81,7 @@ func HandleCreateShiftWeek(c *fiber.Ctx) error {
 // @Param id path int true "ShiftWeek ID"
 // @Success 200 {object} responses.APIResponse
 // @Failure 404 {object} responses.APIResponse
-// @Router /shiftweeks/{id} [get]
+// @Router /api/v1/shiftweeks/{id} [get]
 func HandleGetOneShiftWeek(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -107,7 +106,7 @@ func HandleGetOneShiftWeek(c *fiber.Ctx) error {
 // @Param shiftweek body models.ShiftWeek true "Updated ShiftWeek Data"
 // @Success 200 {object} responses.APIResponse
 // @Failure 400,404 {object} responses.APIResponse
-// @Router /shiftweeks/{id} [put]
+// @Router /api/v1/shiftweeks/{id} [put]
 func HandleUpdateShiftWeek(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -120,16 +119,16 @@ func HandleUpdateShiftWeek(c *fiber.Ctx) error {
 		return c.Status(400).JSON(responses.ErrorResponse("Ungültige Eingabe"))
 	}
 
+	if shiftWeek.StartDate.IsZero() || shiftWeek.EndDate.IsZero() {
+		return c.Status(400).JSON(responses.ErrorResponse("Start- und Enddatum sind erforderlich"))
+	}
+
 	if shiftWeek.DepartmentID == 0 {
 		return c.Status(400).JSON(responses.ErrorResponse("Abteilung ist erforderlich"))
 	}
 
 	if err := database.GetDB().First(&models.Department{}, shiftWeek.DepartmentID).Error; err != nil {
 		return c.Status(400).JSON(responses.ErrorResponse("Abteilung nicht gefunden"))
-	}
-
-	if shiftWeek.StartDate.IsZero() || shiftWeek.EndDate.IsZero() {
-		return c.Status(400).JSON(responses.ErrorResponse("Start- und Enddatum sind erforderlich"))
 	}
 
 	if shiftWeek.EndDate.Before(shiftWeek.StartDate) {
@@ -157,7 +156,7 @@ func HandleUpdateShiftWeek(c *fiber.Ctx) error {
 // @Param id path int true "ShiftWeek ID"
 // @Success 200 {object} responses.APIResponse
 // @Failure 404,500 {object} responses.APIResponse
-// @Router /shiftweeks/{id} [delete]
+// @Router /api/v1/shiftweeks/{id} [delete]
 func HandleDeleteShiftWeek(c *fiber.Ctx) error {
 	id := c.Params("id")
 

@@ -20,7 +20,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/departments": {
+        "/api/v1/departments": {
             "get": {
                 "description": "Fetch all departments with their relationships",
                 "consumes": [
@@ -87,7 +87,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/departments/{id}": {
+        "/api/v1/departments/{id}": {
             "get": {
                 "description": "Get department details by ID including relationships",
                 "consumes": [
@@ -218,7 +218,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/health": {
+        "/api/v1/health": {
             "get": {
                 "description": "Gibt den Status des Servers und seiner Komponenten zurück",
                 "consumes": [
@@ -247,7 +247,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/shiftdays": {
+        "/api/v1/shiftdays": {
             "get": {
                 "description": "Fetch all shift days with related data",
                 "consumes": [
@@ -314,7 +314,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/shiftdays/{id}": {
+        "/api/v1/shiftdays/{id}": {
             "get": {
                 "description": "Get shift day details by ID",
                 "consumes": [
@@ -445,7 +445,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/shifttypes": {
+        "/api/v1/shifttypes": {
             "get": {
                 "description": "Fetch all shift types with their relationships",
                 "consumes": [
@@ -512,7 +512,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/shifttypes/{id}": {
+        "/api/v1/shifttypes/{id}": {
             "get": {
                 "description": "Get shift type details by ID with relationships",
                 "consumes": [
@@ -643,7 +643,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/shiftweeks": {
+        "/api/v1/shiftweeks": {
             "get": {
                 "description": "Fetch all shift weeks with related data",
                 "consumes": [
@@ -710,7 +710,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/shiftweeks/{id}": {
+        "/api/v1/shiftweeks/{id}": {
             "get": {
                 "description": "Get shift week details by ID",
                 "consumes": [
@@ -841,7 +841,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users": {
+        "/api/v1/users": {
             "get": {
                 "description": "Fetch all users with their relationships",
                 "consumes": [
@@ -908,7 +908,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{id}": {
+        "/api/v1/users/{id}": {
             "get": {
                 "description": "Get user details by ID with relationships",
                 "consumes": [
@@ -1047,10 +1047,16 @@ const docTemplate = `{
                 "color": {
                     "type": "string"
                 },
+                "created_at": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -1087,6 +1093,9 @@ const docTemplate = `{
                 "color": {
                     "type": "string"
                 },
+                "created_at": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -1097,6 +1106,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }

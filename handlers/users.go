@@ -14,7 +14,7 @@ import (
 // @Produce json
 // @Success 200 {object} responses.APIResponse
 // @Failure 500 {object} responses.APIResponse
-// @Router /users [get]
+// @Router /api/v1/users [get]
 func HandleAllUsers(c *fiber.Ctx) error {
 	var users []models.User
 	result := database.GetDB().
@@ -36,7 +36,7 @@ func HandleAllUsers(c *fiber.Ctx) error {
 // @Param user body models.User true "User information"
 // @Success 201 {object} responses.APIResponse
 // @Failure 400 {object} responses.APIResponse
-// @Router /users [post]
+// @Router /api/v1/users [post]
 func HandleCreateUser(c *fiber.Ctx) error {
 	user := new(models.User)
 	if err := c.BodyParser(user); err != nil {
@@ -78,7 +78,7 @@ func HandleCreateUser(c *fiber.Ctx) error {
 // @Param id path int true "User ID"
 // @Success 200 {object} responses.APIResponse
 // @Failure 404 {object} responses.APIResponse
-// @Router /users/{id} [get]
+// @Router /api/v1/users/{id} [get]
 func HandleGetOneUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -103,7 +103,7 @@ func HandleGetOneUser(c *fiber.Ctx) error {
 // @Param user body models.User true "Updated user information"
 // @Success 200 {object} responses.APIResponse
 // @Failure 400,404 {object} responses.APIResponse
-// @Router /users/{id} [put]
+// @Router /api/v1/users/{id} [put]
 func HandleUpdateUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -149,7 +149,7 @@ func HandleUpdateUser(c *fiber.Ctx) error {
 // @Param id path int true "User ID"
 // @Success 200 {object} responses.APIResponse
 // @Failure 404,500 {object} responses.APIResponse
-// @Router /users/{id} [delete]
+// @Router /api/v1/users/{id} [delete]
 func HandleDeleteUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 

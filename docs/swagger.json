@@ -14,7 +14,7 @@
     "host": "localhost:8080",
     "basePath": "/",
     "paths": {
-        "/departments": {
+        "/api/v1/departments": {
             "get": {
                 "description": "Fetch all departments with their relationships",
                 "consumes": [
@@ -81,7 +81,7 @@
                 }
             }
         },
-        "/departments/{id}": {
+        "/api/v1/departments/{id}": {
             "get": {
                 "description": "Get department details by ID including relationships",
                 "consumes": [
@@ -212,7 +212,7 @@
                 }
             }
         },
-        "/health": {
+        "/api/v1/health": {
             "get": {
                 "description": "Gibt den Status des Servers und seiner Komponenten zurück",
                 "consumes": [
@@ -241,7 +241,7 @@
                 }
             }
         },
-        "/shiftdays": {
+        "/api/v1/shiftdays": {
             "get": {
                 "description": "Fetch all shift days with related data",
                 "consumes": [
@@ -308,7 +308,7 @@
                 }
             }
         },
-        "/shiftdays/{id}": {
+        "/api/v1/shiftdays/{id}": {
             "get": {
                 "description": "Get shift day details by ID",
                 "consumes": [
@@ -439,7 +439,7 @@
                 }
             }
         },
-        "/shifttypes": {
+        "/api/v1/shifttypes": {
             "get": {
                 "description": "Fetch all shift types with their relationships",
                 "consumes": [
@@ -506,7 +506,7 @@
                 }
             }
         },
-        "/shifttypes/{id}": {
+        "/api/v1/shifttypes/{id}": {
             "get": {
                 "description": "Get shift type details by ID with relationships",
                 "consumes": [
@@ -637,7 +637,7 @@
                 }
             }
         },
-        "/shiftweeks": {
+        "/api/v1/shiftweeks": {
             "get": {
                 "description": "Fetch all shift weeks with related data",
                 "consumes": [
@@ -704,7 +704,7 @@
                 }
             }
         },
-        "/shiftweeks/{id}": {
+        "/api/v1/shiftweeks/{id}": {
             "get": {
                 "description": "Get shift week details by ID",
                 "consumes": [
@@ -835,7 +835,7 @@
                 }
             }
         },
-        "/users": {
+        "/api/v1/users": {
             "get": {
                 "description": "Fetch all users with their relationships",
                 "consumes": [
@@ -902,7 +902,7 @@
                 }
             }
         },
-        "/users/{id}": {
+        "/api/v1/users/{id}": {
             "get": {
                 "description": "Get user details by ID with relationships",
                 "consumes": [
@@ -1041,10 +1041,16 @@
                 "color": {
                     "type": "string"
                 },
+                "created_at": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -1081,6 +1087,9 @@
                 "color": {
                     "type": "string"
                 },
+                "created_at": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -1091,6 +1100,9 @@
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }

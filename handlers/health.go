@@ -22,7 +22,7 @@ type HealthData struct {
 // @Produce json
 // @Success 200 {object} responses.APIResponse
 // @Failure 503 {object} responses.APIResponse
-// @Router /health [get]
+// @Router /api/v1/health [get]
 func HandleHealthCheck(c *fiber.Ctx) error {
 	dbStatus := "online"
 	systemStatus := "gesund"

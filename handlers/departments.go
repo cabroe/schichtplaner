@@ -14,7 +14,7 @@ import (
 // @Produce json
 // @Success 200 {object} responses.APIResponse
 // @Failure 500 {object} responses.APIResponse
-// @Router /departments [get]
+// @Router /api/v1/departments [get]
 func HandleAllDepartments(c *fiber.Ctx) error {
 	var departments []models.Department
 	result := database.GetDB().
@@ -37,7 +37,7 @@ func HandleAllDepartments(c *fiber.Ctx) error {
 // @Param id path int true "Department ID"
 // @Success 200 {object} responses.APIResponse
 // @Failure 404 {object} responses.APIResponse
-// @Router /departments/{id} [get]
+// @Router /api/v1/departments/{id} [get]
 func HandleGetOneDepartment(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -63,7 +63,7 @@ func HandleGetOneDepartment(c *fiber.Ctx) error {
 // @Param department body models.Department true "Department information"
 // @Success 201 {object} responses.APIResponse
 // @Failure 400 {object} responses.APIResponse
-// @Router /departments [post]
+// @Router /api/v1/departments [post]
 func HandleCreateDepartment(c *fiber.Ctx) error {
 	department := new(models.Department)
 	if err := c.BodyParser(department); err != nil {
@@ -79,7 +79,6 @@ func HandleCreateDepartment(c *fiber.Ctx) error {
 		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
 	}
 
-	// Reload with all relationships
 	database.GetDB().
 		Preload("Users").
 		Preload("ShiftWeeks.ShiftDays.ShiftType").
@@ -98,7 +97,7 @@ func HandleCreateDepartment(c *fiber.Ctx) error {
 // @Param department body models.Department true "Updated department information"
 // @Success 200 {object} responses.APIResponse
 // @Failure 400,404 {object} responses.APIResponse
-// @Router /departments/{id} [put]
+// @Router /api/v1/departments/{id} [put]
 func HandleUpdateDepartment(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -119,7 +118,6 @@ func HandleUpdateDepartment(c *fiber.Ctx) error {
 		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
 
-	// Reload with all relationships
 	database.GetDB().
 		Preload("Users").
 		Preload("ShiftWeeks.ShiftDays.ShiftType").
@@ -137,7 +135,7 @@ func HandleUpdateDepartment(c *fiber.Ctx) error {
 // @Param id path int true "Department ID"
 // @Success 200 {object} responses.APIResponse
 // @Failure 404,500 {object} responses.APIResponse
-// @Router /departments/{id} [delete]
+// @Router /api/v1/departments/{id} [delete]
 func HandleDeleteDepartment(c *fiber.Ctx) error {
 	id := c.Params("id")
 

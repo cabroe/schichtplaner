@@ -14,7 +14,7 @@ import (
 // @Produce json
 // @Success 200 {object} responses.APIResponse
 // @Failure 500 {object} responses.APIResponse
-// @Router /shifttypes [get]
+// @Router /api/v1/shifttypes [get]
 func HandleAllShiftTypes(c *fiber.Ctx) error {
 	var shiftTypes []models.ShiftType
 	result := database.GetDB().
@@ -35,7 +35,7 @@ func HandleAllShiftTypes(c *fiber.Ctx) error {
 // @Param shifttype body models.ShiftType true "ShiftType information"
 // @Success 201 {object} responses.APIResponse
 // @Failure 400 {object} responses.APIResponse
-// @Router /shifttypes [post]
+// @Router /api/v1/shifttypes [post]
 func HandleCreateShiftType(c *fiber.Ctx) error {
 	shiftType := new(models.ShiftType)
 	if err := c.BodyParser(shiftType); err != nil {
@@ -67,7 +67,7 @@ func HandleCreateShiftType(c *fiber.Ctx) error {
 // @Param id path int true "ShiftType ID"
 // @Success 200 {object} responses.APIResponse
 // @Failure 404 {object} responses.APIResponse
-// @Router /shifttypes/{id} [get]
+// @Router /api/v1/shifttypes/{id} [get]
 func HandleGetOneShiftType(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -91,7 +91,7 @@ func HandleGetOneShiftType(c *fiber.Ctx) error {
 // @Param shifttype body models.ShiftType true "Updated shift type information"
 // @Success 200 {object} responses.APIResponse
 // @Failure 400,404 {object} responses.APIResponse
-// @Router /shifttypes/{id} [put]
+// @Router /api/v1/shifttypes/{id} [put]
 func HandleUpdateShiftType(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -128,7 +128,7 @@ func HandleUpdateShiftType(c *fiber.Ctx) error {
 // @Param id path int true "ShiftType ID"
 // @Success 200 {object} responses.APIResponse
 // @Failure 404,500 {object} responses.APIResponse
-// @Router /shifttypes/{id} [delete]
+// @Router /api/v1/shifttypes/{id} [delete]
 func HandleDeleteShiftType(c *fiber.Ctx) error {
 	id := c.Params("id")
 
