@@ -6,10 +6,14 @@ import (
 )
 
 func SetupRoutes(app *fiber.App) {
-	app.Get("/health", handlers.HandleHealthCheck)
+	// API v1 routes
+	v1 := app.Group("/api/v1")
+
+	// Health check
+	v1.Get("/health", handlers.HandleHealthCheck)
 
 	// User routes
-	users := app.Group("/users")
+	users := v1.Group("/users")
 	users.Get("/", handlers.HandleAllUsers)
 	users.Post("/", handlers.HandleCreateUser)
 	users.Get("/:id", handlers.HandleGetOneUser)
@@ -17,7 +21,7 @@ func SetupRoutes(app *fiber.App) {
 	users.Delete("/:id", handlers.HandleDeleteUser)
 
 	// Department routes
-	departments := app.Group("/departments")
+	departments := v1.Group("/departments")
 	departments.Get("/", handlers.HandleAllDepartments)
 	departments.Get("/:id", handlers.HandleGetOneDepartment)
 	departments.Post("/", handlers.HandleCreateDepartment)
@@ -25,7 +29,7 @@ func SetupRoutes(app *fiber.App) {
 	departments.Delete("/:id", handlers.HandleDeleteDepartment)
 
 	// ShiftDay routes
-	shiftDays := app.Group("/shiftdays")
+	shiftDays := v1.Group("/shiftdays")
 	shiftDays.Get("/", handlers.HandleAllShiftDays)
 	shiftDays.Get("/:id", handlers.HandleGetOneShiftDay)
 	shiftDays.Post("/", handlers.HandleCreateShiftDay)
@@ -33,7 +37,7 @@ func SetupRoutes(app *fiber.App) {
 	shiftDays.Delete("/:id", handlers.HandleDeleteShiftDay)
 
 	// ShiftType routes
-	shiftTypes := app.Group("/shifttypes")
+	shiftTypes := v1.Group("/shifttypes")
 	shiftTypes.Get("/", handlers.HandleAllShiftTypes)
 	shiftTypes.Get("/:id", handlers.HandleGetOneShiftType)
 	shiftTypes.Post("/", handlers.HandleCreateShiftType)
@@ -41,10 +45,15 @@ func SetupRoutes(app *fiber.App) {
 	shiftTypes.Delete("/:id", handlers.HandleDeleteShiftType)
 
 	// ShiftWeek routes
-	shiftWeeks := app.Group("/shiftweeks")
+	shiftWeeks := v1.Group("/shiftweeks")
 	shiftWeeks.Get("/", handlers.HandleAllShiftWeeks)
 	shiftWeeks.Get("/:id", handlers.HandleGetOneShiftWeek)
 	shiftWeeks.Post("/", handlers.HandleCreateShiftWeek)
 	shiftWeeks.Put("/:id", handlers.HandleUpdateShiftWeek)
 	shiftWeeks.Delete("/:id", handlers.HandleDeleteShiftWeek)
+
+	// Hier können Sie weitere API-Versionen hinzufügen
+	// Beispiel für v2:
+	// v2 := app.Group("/api/v2")
+	// ... v2 Routen
 }
