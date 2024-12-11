@@ -36,7 +36,7 @@ func ValidateConnection() error {
 func SetupTestDB(t *testing.T, entities ...interface{}) *fiber.App {
 	testDbPath := os.Getenv("SQLITE_TEST_DB_PATH")
 	if testDbPath == "" {
-		testDbPath = "schichtplaner_test.db"
+		testDbPath = "schichtplaner-test.db"
 	}
 
 	db, err := gorm.Open(sqlite.Open(testDbPath), &gorm.Config{})
