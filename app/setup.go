@@ -31,7 +31,7 @@ func SetupAndRunApp() (*fiber.App, error) {
 
 	// Fiber-App mit Konfiguration erstellen
 	app := fiber.New(fiber.Config{
-		AppName: "Schichtplaner API v1",
+		AppName: "Schichtplaner",
 	})
 
 	// Middleware für Panic Recovery einbinden
