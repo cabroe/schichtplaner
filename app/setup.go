@@ -12,49 +12,57 @@ import (
 	"github.com/ptmmeiningen/schichtplaner/router"
 )
 
+// SetupAndRunApp initialisiert und startet die Anwendung
 func SetupAndRunApp() (*fiber.App, error) {
-	// load env
-	err := config.LoadENV()
-	if err != nil {
+	// Umgebungsvariablen laden
+	if err := config.LoadENV(); err != nil {
 		return nil, err
 	}
 
-	// start database
-	err = database.StartDB()
-	if err != nil {
+	// Datenbankverbindung herstellen
+	if err := database.StartDB(); err != nil {
 		return nil, err
 	}
 
-	// start automigration
-	err = database.AutoMigrate()
-	if err != nil {
+	// Datenbank-Migrationen durchführen
+	if err := database.AutoMigrate(); err != nil {
 		return nil, err
 	}
 
-	// create app
-	app := fiber.New()
+	// Fiber-App mit Konfiguration erstellen
+	app := fiber.New(fiber.Config{
+		AppName: "Schichtplaner API v1",
+	})
 
-	// attach logger middleware
+	// Middleware für Panic Recovery einbinden
 	app.Use(recover.New())
+
+	// Logger-Middleware mit Zeitstempeln konfigurieren
 	app.Use(logger.New(logger.Config{
-		Format: "[${ip}]:${port} ${status} - ${method} ${path} ${latency}\n",
+		Format:     "[${time}] ${ip}:${port} ${status} - ${method} ${path} ${latency}\n",
+		TimeFormat: "2006-01-02 15:04:05",
 	}))
 
-	// attach CORS middleware
+	// CORS-Middleware für API-Zugriff konfigurieren
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*",
-		AllowMethods: "GET,POST,PUT,DELETE",
-		AllowHeaders: "Origin,Content-Type,Accept",
+		AllowOrigins:  "*",                                        // Alle Ursprünge erlauben
+		AllowMethods:  "GET,POST,PUT,DELETE,OPTIONS",              // HTTP-Methoden definieren
+		AllowHeaders:  "Origin,Content-Type,Accept,Authorization", // Erlaubte Header
+		ExposeHeaders: "Content-Length",                           // Exponierte Header
+		MaxAge:        86400,                                      // Cache-Dauer für CORS-Preflight
 	}))
 
-	// setup routes
+	// Routen und Swagger einrichten
 	router.SetupRoutes(app)
-
-	// attach swagger
 	config.AddSwaggerRoutes(app)
 
-	// get the port and start
+	// Server-Port aus Umgebungsvariablen oder Standard
 	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	// Server im Hintergrund starten
 	go app.Listen(":" + port)
 
 	return app, nil
