@@ -8,6 +8,6 @@ import (
 )
 
 func AddSwaggerRoutes(app *fiber.App) {
-	// setup swagger
-	app.Get("/swagger/*", swagger.HandlerDefault)
+	// setup swagger unter /api/v1/swagger
+	app.Get("/api/v1/swagger/*", swagger.HandlerDefault)
 }
