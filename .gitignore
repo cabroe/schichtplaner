@@ -16,9 +16,21 @@
 
 # env
 .env
+.env.test
 
 # air
 tmp/
+build-errors.log
 
 # SQLite database
 *.db
+
+# IDE
+.idea/
+.vscode/
+
+# Swagger
+docs/
+
+# Binary output
+bin/

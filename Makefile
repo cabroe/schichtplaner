@@ -1,10 +1,10 @@
-.PHONY: dev swagger build test clean seed
+.PHONY: dev swagger build test clean seed install
 
 dev:
 	air
 
 swagger:
-	swag init --dir ./,./handlers
+	swag init
 
 build:
 	go build -o bin/schichtplaner
@@ -15,6 +15,7 @@ test:
 clean:
 	rm -rf bin/
 	rm -rf tmp/
+	rm -f *.db
 
 seed:
 	go run cmd/seed.go
@@ -22,3 +23,4 @@ seed:
 install:
 	go mod download
 	go mod tidy
+	go install github.com/swaggo/swag/cmd/swag@latest
