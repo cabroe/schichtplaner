@@ -10,9 +10,9 @@ import (
 	_ "github.com/ptmmeiningen/schichtplaner/docs"
 )
 
-// @title Schichtplaner API
+// @title Schichtplaner
 // @version 1.0
-// @description Backend API für die Schichtplanung mit Fiber und SQLite
+// @description Schichtplanung mit Go, Fiber und SQLite
 // @contact.name Carsten Bröckert
 // @license.name MIT
 // @host localhost:8080

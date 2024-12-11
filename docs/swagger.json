@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Backend API für die Schichtplanung mit Fiber und SQLite",
-        "title": "Schichtplaner API",
+        "description": "Schichtplanung mit Go, Fiber und SQLite",
+        "title": "Schichtplaner",
         "contact": {
             "name": "Carsten Bröckert"
         },

@@ -102,10 +102,10 @@ host: localhost:8080
 info:
   contact:
     name: Carsten Bröckert
-  description: Backend API für die Schichtplanung mit Fiber und SQLite
+  description: Schichtplanung mit Go, Fiber und SQLite
   license:
     name: MIT
-  title: Schichtplaner API
+  title: Schichtplaner
   version: "1.0"
 paths:
   /api/v1/departments:
