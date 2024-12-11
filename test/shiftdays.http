@@ -1,13 +1,13 @@
 ### Get all shift days
-GET http://localhost:8080/shiftdays
+GET http://localhost:8080/api/v1/shiftdays
 Accept: application/json
 
 ### Get single shift day
-GET http://localhost:8080/shiftdays/1
+GET http://localhost:8080/api/v1/shiftdays/1
 Accept: application/json
 
 ### Create new shift day
-POST http://localhost:8080/shiftdays
+POST http://localhost:8080/api/v1/shiftdays
 Content-Type: application/json
 
 {
@@ -18,7 +18,7 @@ Content-Type: application/json
 }
 
 ### Update shift day
-PUT http://localhost:8080/shiftdays/1
+PUT http://localhost:8080/api/v1/shiftdays/1
 Content-Type: application/json
 
 {
@@ -29,5 +29,5 @@ Content-Type: application/json
 }
 
 ### Delete shift day
-DELETE http://localhost:8080/shiftdays/1
+DELETE http://localhost:8080/api/v1/shiftdays/1
 Accept: application/json

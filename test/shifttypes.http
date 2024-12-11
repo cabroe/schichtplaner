@@ -1,13 +1,13 @@
 ### Get all shift types
-GET http://localhost:8080/shifttypes
+GET http://localhost:8080/api/v1/shifttypes
 Accept: application/json
 
 ### Get single shift type
-GET http://localhost:8080/shifttypes/1
+GET http://localhost:8080/api/v1/shifttypes/1
 Accept: application/json
 
 ### Create new shift type
-POST http://localhost:8080/shifttypes
+POST http://localhost:8080/api/v1/shifttypes
 Content-Type: application/json
 
 {
@@ -18,7 +18,7 @@ Content-Type: application/json
 }
 
 ### Update shift type
-PUT http://localhost:8080/shifttypes/1
+PUT http://localhost:8080/api/v1/shifttypes/1
 Content-Type: application/json
 
 {
@@ -29,5 +29,5 @@ Content-Type: application/json
 }
 
 ### Delete shift type
-DELETE http://localhost:8080/shifttypes/1
+DELETE http://localhost:8080/api/v1/shifttypes/1
 Accept: application/json

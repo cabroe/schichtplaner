@@ -1,13 +1,13 @@
 ### Get all shift weeks
-GET http://localhost:8080/shiftweeks
+GET http://localhost:8080/api/v1/shiftweeks
 Accept: application/json
 
 ### Get single shift week
-GET http://localhost:8080/shiftweeks/1
+GET http://localhost:8080/api/v1/shiftweeks/1
 Accept: application/json
 
 ### Create new shift week
-POST http://localhost:8080/shiftweeks
+POST http://localhost:8080/api/v1/shiftweeks
 Content-Type: application/json
 
 {
@@ -17,7 +17,7 @@ Content-Type: application/json
 }
 
 ### Update shift week
-PUT http://localhost:8080/shiftweeks/1
+PUT http://localhost:8080/api/v1/shiftweeks/1
 Content-Type: application/json
 
 {
@@ -27,5 +27,5 @@ Content-Type: application/json
 }
 
 ### Delete shift week
-DELETE http://localhost:8080/shiftweeks/1
+DELETE http://localhost:8080/api/v1/shiftweeks/1
 Accept: application/json

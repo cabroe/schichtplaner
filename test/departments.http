@@ -1,13 +1,13 @@
 ### Get all departments
-GET http://localhost:8080/departments
+GET http://localhost:8080/api/v1/departments
 Accept: application/json
 
 ### Get single department
-GET http://localhost:8080/departments/1
+GET http://localhost:8080/api/v1/departments/1
 Accept: application/json
 
 ### Create new department
-POST http://localhost:8080/departments
+POST http://localhost:8080/api/v1/departments
 Content-Type: application/json
 
 {
@@ -16,7 +16,7 @@ Content-Type: application/json
 }
 
 ### Update department
-PUT http://localhost:8080/departments/1
+PUT http://localhost:8080/api/v1/departments/1
 Content-Type: application/json
 
 {
@@ -25,5 +25,5 @@ Content-Type: application/json
 }
 
 ### Delete department
-DELETE http://localhost:8080/departments/1
+DELETE http://localhost:8080/api/v1/departments/1
 Accept: application/json
