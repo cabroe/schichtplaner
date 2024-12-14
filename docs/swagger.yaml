@@ -1,5 +1,39 @@
 basePath: /
 definitions:
+  handlers.HealthData:
+    properties:
+      api_path:
+        type: string
+      database:
+        type: string
+      environment:
+        type: string
+      go_version:
+        type: string
+      goroutines:
+        type: integer
+      mem_stats:
+        $ref: '#/definitions/handlers.SimpleMemStats'
+      num_cpu:
+        type: integer
+      status:
+        type: string
+      timestamp:
+        type: string
+      version:
+        type: string
+    type: object
+  handlers.SimpleMemStats:
+    properties:
+      alloc:
+        type: integer
+      num_gc:
+        type: integer
+      sys:
+        type: integer
+      total_alloc:
+        type: integer
+    type: object
   models.Department:
     properties:
       color:
@@ -10,8 +44,16 @@ definitions:
         type: integer
       name:
         type: string
+      shift_weeks:
+        items:
+          $ref: '#/definitions/models.ShiftWeek'
+        type: array
       updated_at:
         type: string
+      users:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
     type: object
   models.ShiftDay:
     properties:
@@ -112,27 +154,35 @@ paths:
     get:
       consumes:
       - application/json
-      description: Fetch all departments with their relationships
+      description: Ruft alle Abteilungen mit zugehörigen Benutzern und Schichtwochen
+        ab
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Department'
+                  type: array
+              type: object
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Get all departments
+      summary: Alle Abteilungen abrufen
       tags:
       - departments
     post:
       consumes:
       - application/json
-      description: Create a new department
+      description: Erstellt eine neue Abteilung mit den angegebenen Daten
       parameters:
-      - description: Department information
+      - description: Abteilungsdaten
         in: body
         name: department
         required: true
@@ -144,21 +194,26 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Department'
+              type: object
         "400":
           description: Bad Request
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Create a department
+      summary: Neue Abteilung erstellen
       tags:
       - departments
   /api/v1/departments/{id}:
     delete:
       consumes:
       - application/json
-      description: Delete department by ID
+      description: Löscht eine Abteilung und ihre Beziehungen
       parameters:
-      - description: Department ID
+      - description: Abteilungs-ID
         in: path
         name: id
         required: true
@@ -178,15 +233,15 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Delete a department
+      summary: Abteilung löschen
       tags:
       - departments
     get:
       consumes:
       - application/json
-      description: Get department details by ID including relationships
+      description: Ruft eine spezifische Abteilung mit allen Details ab
       parameters:
-      - description: Department ID
+      - description: Abteilungs-ID
         in: path
         name: id
         required: true
@@ -197,25 +252,30 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Department'
+              type: object
         "404":
           description: Not Found
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Get a single department
+      summary: Einzelne Abteilung abrufen
       tags:
       - departments
     put:
       consumes:
       - application/json
-      description: Update department information by ID
+      description: Aktualisiert eine bestehende Abteilung
       parameters:
-      - description: Department ID
+      - description: Abteilungs-ID
         in: path
         name: id
         required: true
         type: integer
-      - description: Updated department information
+      - description: Aktualisierte Abteilungsdaten
         in: body
         name: department
         required: true
@@ -227,7 +287,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Department'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -236,33 +301,38 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Update a department
+      summary: Abteilung aktualisieren
       tags:
       - departments
   /api/v1/health:
     get:
       consumes:
       - '*/*'
-      description: Gibt den Status des Servers und seiner Komponenten zurück
+      description: Gibt detaillierte Informationen über den Systemzustand zurück
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.HealthData'
+              type: object
         "503":
           description: Service Unavailable
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Zeigt den Status des Servers
+      summary: Systemstatus abrufen
       tags:
       - health
   /api/v1/shiftdays:
     get:
       consumes:
       - application/json
-      description: Fetch all shift days with related data
+      description: Ruft alle Schichttage mit relevanten Beziehungen ab
       produces:
       - application/json
       responses:
@@ -274,15 +344,15 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Get all shift days
+      summary: Alle Schichttage abrufen
       tags:
       - shiftdays
     post:
       consumes:
       - application/json
-      description: Create a new shift day with validations
+      description: Erstellt einen neuen Schichttag mit Validierungen
       parameters:
-      - description: ShiftDay Data
+      - description: Schichttag-Daten
         in: body
         name: shiftday
         required: true
@@ -299,16 +369,16 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Create a shift day
+      summary: Schichttag erstellen
       tags:
       - shiftdays
   /api/v1/shiftdays/{id}:
     delete:
       consumes:
       - application/json
-      description: Delete shift day by ID
+      description: Löscht einen Schichttag
       parameters:
-      - description: ShiftDay ID
+      - description: Schichttag-ID
         in: path
         name: id
         required: true
@@ -328,15 +398,15 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Delete a shift day
+      summary: Schichttag löschen
       tags:
       - shiftdays
     get:
       consumes:
       - application/json
-      description: Get shift day details by ID
+      description: Ruft einen spezifischen Schichttag ab
       parameters:
-      - description: ShiftDay ID
+      - description: Schichttag-ID
         in: path
         name: id
         required: true
@@ -352,20 +422,20 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Get a single shift day
+      summary: Einzelnen Schichttag abrufen
       tags:
       - shiftdays
     put:
       consumes:
       - application/json
-      description: Update shift day information by ID
+      description: Aktualisiert einen bestehenden Schichttag
       parameters:
-      - description: ShiftDay ID
+      - description: Schichttag-ID
         in: path
         name: id
         required: true
         type: integer
-      - description: Updated ShiftDay Data
+      - description: Aktualisierte Schichttag-Daten
         in: body
         name: shiftday
         required: true
@@ -386,14 +456,14 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Update a shift day
+      summary: Schichttag aktualisieren
       tags:
       - shiftdays
   /api/v1/shifttypes:
     get:
       consumes:
       - application/json
-      description: Fetch all shift types with their relationships
+      description: Ruft alle Schichttypen mit ihren Beziehungen ab
       produces:
       - application/json
       responses:
@@ -405,15 +475,15 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Get all shift types
+      summary: Alle Schichttypen abrufen
       tags:
       - shifttypes
     post:
       consumes:
       - application/json
-      description: Create a new shift type with validations
+      description: Erstellt einen neuen Schichttyp mit Validierungen
       parameters:
-      - description: ShiftType information
+      - description: Schichttyp-Daten
         in: body
         name: shifttype
         required: true
@@ -430,16 +500,16 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Create a shift type
+      summary: Schichttyp erstellen
       tags:
       - shifttypes
   /api/v1/shifttypes/{id}:
     delete:
       consumes:
       - application/json
-      description: Delete shift type by ID
+      description: Löscht einen Schichttyp
       parameters:
-      - description: ShiftType ID
+      - description: Schichttyp-ID
         in: path
         name: id
         required: true
@@ -459,15 +529,15 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Delete a shift type
+      summary: Schichttyp löschen
       tags:
       - shifttypes
     get:
       consumes:
       - application/json
-      description: Get shift type details by ID with relationships
+      description: Ruft einen spezifischen Schichttyp ab
       parameters:
-      - description: ShiftType ID
+      - description: Schichttyp-ID
         in: path
         name: id
         required: true
@@ -483,20 +553,20 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Get a single shift type
+      summary: Einzelnen Schichttyp abrufen
       tags:
       - shifttypes
     put:
       consumes:
       - application/json
-      description: Update shift type information by ID with validations
+      description: Aktualisiert einen bestehenden Schichttyp
       parameters:
-      - description: ShiftType ID
+      - description: Schichttyp-ID
         in: path
         name: id
         required: true
         type: integer
-      - description: Updated shift type information
+      - description: Aktualisierte Schichttyp-Daten
         in: body
         name: shifttype
         required: true
@@ -517,14 +587,14 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Update a shift type
+      summary: Schichttyp aktualisieren
       tags:
       - shifttypes
   /api/v1/shiftweeks:
     get:
       consumes:
       - application/json
-      description: Fetch all shift weeks with related data
+      description: Ruft alle Schichtwochen mit relevanten Beziehungen ab
       produces:
       - application/json
       responses:
@@ -536,15 +606,15 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Get all shift weeks
+      summary: Alle Schichtwochen abrufen
       tags:
       - shiftweeks
     post:
       consumes:
       - application/json
-      description: Create a new shift week with validations
+      description: Erstellt eine neue Schichtwoche mit Validierungen
       parameters:
-      - description: ShiftWeek Data
+      - description: Schichtwoche-Daten
         in: body
         name: shiftweek
         required: true
@@ -561,16 +631,16 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Create a shift week
+      summary: Schichtwoche erstellen
       tags:
       - shiftweeks
   /api/v1/shiftweeks/{id}:
     delete:
       consumes:
       - application/json
-      description: Delete shift week by ID
+      description: Löscht eine Schichtwoche
       parameters:
-      - description: ShiftWeek ID
+      - description: Schichtwoche-ID
         in: path
         name: id
         required: true
@@ -590,15 +660,15 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Delete a shift week
+      summary: Schichtwoche löschen
       tags:
       - shiftweeks
     get:
       consumes:
       - application/json
-      description: Get shift week details by ID
+      description: Ruft eine spezifische Schichtwoche ab
       parameters:
-      - description: ShiftWeek ID
+      - description: Schichtwoche-ID
         in: path
         name: id
         required: true
@@ -614,20 +684,20 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Get a single shift week
+      summary: Einzelne Schichtwoche abrufen
       tags:
       - shiftweeks
     put:
       consumes:
       - application/json
-      description: Update shift week information by ID
+      description: Aktualisiert eine bestehende Schichtwoche
       parameters:
-      - description: ShiftWeek ID
+      - description: Schichtwoche-ID
         in: path
         name: id
         required: true
         type: integer
-      - description: Updated ShiftWeek Data
+      - description: Aktualisierte Schichtwoche-Daten
         in: body
         name: shiftweek
         required: true
@@ -648,14 +718,14 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Update a shift week
+      summary: Schichtwoche aktualisieren
       tags:
       - shiftweeks
   /api/v1/users:
     get:
       consumes:
       - application/json
-      description: Fetch all users with their relationships
+      description: Ruft alle Benutzer mit ihren Berechtigungen und Schichten ab
       produces:
       - application/json
       responses:
@@ -667,15 +737,15 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Get all users
+      summary: Alle Benutzer abrufen
       tags:
       - users
     post:
       consumes:
       - application/json
-      description: Create a new user with validations
+      description: Erstellt einen neuen Benutzer mit Validierungen
       parameters:
-      - description: User information
+      - description: Benutzer-Daten
         in: body
         name: user
         required: true
@@ -692,16 +762,16 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Create a new user
+      summary: Benutzer erstellen
       tags:
       - users
   /api/v1/users/{id}:
     delete:
       consumes:
       - application/json
-      description: Delete user by ID
+      description: Löscht einen Benutzer und seine zugehörigen Daten
       parameters:
-      - description: User ID
+      - description: Benutzer-ID
         in: path
         name: id
         required: true
@@ -721,15 +791,15 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Delete a user
+      summary: Benutzer löschen
       tags:
       - users
     get:
       consumes:
       - application/json
-      description: Get user details by ID with relationships
+      description: Ruft einen spezifischen Benutzer mit allen Details ab
       parameters:
-      - description: User ID
+      - description: Benutzer-ID
         in: path
         name: id
         required: true
@@ -745,20 +815,20 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Get a single user
+      summary: Einzelnen Benutzer abrufen
       tags:
       - users
     put:
       consumes:
       - application/json
-      description: Update user information by ID with validations
+      description: Aktualisiert einen bestehenden Benutzer
       parameters:
-      - description: User ID
+      - description: Benutzer-ID
         in: path
         name: id
         required: true
         type: integer
-      - description: Updated user information
+      - description: Aktualisierte Benutzer-Daten
         in: body
         name: user
         required: true
@@ -779,7 +849,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Update a user
+      summary: Benutzer aktualisieren
       tags:
       - users
 swagger: "2.0"

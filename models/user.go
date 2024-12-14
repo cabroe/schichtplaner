@@ -11,7 +11,7 @@ type User struct {
 	Color        string     `json:"color" gorm:"not null"`
 	IsAdmin      bool       `json:"is_admin" gorm:"default:false"`
 	DepartmentID uint       `json:"department_id" gorm:"not null"`
-	Department   Department `json:"department" swaggerignore:"true"`
+	Department   Department `json:"-"` // Ausschluss von der JSON-Serialisierung
 	ShiftDays    []ShiftDay `json:"shift_days" swaggerignore:"true"`
 	CreatedAt    time.Time  `json:"created_at"`
 	UpdatedAt    time.Time  `json:"updated_at"`

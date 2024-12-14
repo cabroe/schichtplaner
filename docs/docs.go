@@ -22,7 +22,7 @@ const docTemplate = `{
     "paths": {
         "/api/v1/departments": {
             "get": {
-                "description": "Fetch all departments with their relationships",
+                "description": "Ruft alle Abteilungen mit zugehörigen Benutzern und Schichtwochen ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -32,12 +32,27 @@ const docTemplate = `{
                 "tags": [
                     "departments"
                 ],
-                "summary": "Get all departments",
+                "summary": "Alle Abteilungen abrufen",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Department"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "500": {
@@ -49,7 +64,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create a new department",
+                "description": "Erstellt eine neue Abteilung mit den angegebenen Daten",
                 "consumes": [
                     "application/json"
                 ],
@@ -59,10 +74,10 @@ const docTemplate = `{
                 "tags": [
                     "departments"
                 ],
-                "summary": "Create a department",
+                "summary": "Neue Abteilung erstellen",
                 "parameters": [
                     {
-                        "description": "Department information",
+                        "description": "Abteilungsdaten",
                         "name": "department",
                         "in": "body",
                         "required": true,
@@ -75,7 +90,19 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Department"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -89,7 +116,7 @@ const docTemplate = `{
         },
         "/api/v1/departments/{id}": {
             "get": {
-                "description": "Get department details by ID including relationships",
+                "description": "Ruft eine spezifische Abteilung mit allen Details ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -99,11 +126,11 @@ const docTemplate = `{
                 "tags": [
                     "departments"
                 ],
-                "summary": "Get a single department",
+                "summary": "Einzelne Abteilung abrufen",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Department ID",
+                        "description": "Abteilungs-ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -113,7 +140,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Department"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "404": {
@@ -125,7 +164,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update department information by ID",
+                "description": "Aktualisiert eine bestehende Abteilung",
                 "consumes": [
                     "application/json"
                 ],
@@ -135,17 +174,17 @@ const docTemplate = `{
                 "tags": [
                     "departments"
                 ],
-                "summary": "Update a department",
+                "summary": "Abteilung aktualisieren",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Department ID",
+                        "description": "Abteilungs-ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Updated department information",
+                        "description": "Aktualisierte Abteilungsdaten",
                         "name": "department",
                         "in": "body",
                         "required": true,
@@ -158,7 +197,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Department"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -176,7 +227,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete department by ID",
+                "description": "Löscht eine Abteilung und ihre Beziehungen",
                 "consumes": [
                     "application/json"
                 ],
@@ -186,11 +237,11 @@ const docTemplate = `{
                 "tags": [
                     "departments"
                 ],
-                "summary": "Delete a department",
+                "summary": "Abteilung löschen",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Department ID",
+                        "description": "Abteilungs-ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -220,7 +271,7 @@ const docTemplate = `{
         },
         "/api/v1/health": {
             "get": {
-                "description": "Gibt den Status des Servers und seiner Komponenten zurück",
+                "description": "Gibt detaillierte Informationen über den Systemzustand zurück",
                 "consumes": [
                     "*/*"
                 ],
@@ -230,12 +281,24 @@ const docTemplate = `{
                 "tags": [
                     "health"
                 ],
-                "summary": "Zeigt den Status des Servers",
+                "summary": "Systemstatus abrufen",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/handlers.HealthData"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "503": {
@@ -249,7 +312,7 @@ const docTemplate = `{
         },
         "/api/v1/shiftdays": {
             "get": {
-                "description": "Fetch all shift days with related data",
+                "description": "Ruft alle Schichttage mit relevanten Beziehungen ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -259,7 +322,7 @@ const docTemplate = `{
                 "tags": [
                     "shiftdays"
                 ],
-                "summary": "Get all shift days",
+                "summary": "Alle Schichttage abrufen",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -276,7 +339,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create a new shift day with validations",
+                "description": "Erstellt einen neuen Schichttag mit Validierungen",
                 "consumes": [
                     "application/json"
                 ],
@@ -286,10 +349,10 @@ const docTemplate = `{
                 "tags": [
                     "shiftdays"
                 ],
-                "summary": "Create a shift day",
+                "summary": "Schichttag erstellen",
                 "parameters": [
                     {
-                        "description": "ShiftDay Data",
+                        "description": "Schichttag-Daten",
                         "name": "shiftday",
                         "in": "body",
                         "required": true,
@@ -316,7 +379,7 @@ const docTemplate = `{
         },
         "/api/v1/shiftdays/{id}": {
             "get": {
-                "description": "Get shift day details by ID",
+                "description": "Ruft einen spezifischen Schichttag ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -326,11 +389,11 @@ const docTemplate = `{
                 "tags": [
                     "shiftdays"
                 ],
-                "summary": "Get a single shift day",
+                "summary": "Einzelnen Schichttag abrufen",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ShiftDay ID",
+                        "description": "Schichttag-ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -352,7 +415,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update shift day information by ID",
+                "description": "Aktualisiert einen bestehenden Schichttag",
                 "consumes": [
                     "application/json"
                 ],
@@ -362,17 +425,17 @@ const docTemplate = `{
                 "tags": [
                     "shiftdays"
                 ],
-                "summary": "Update a shift day",
+                "summary": "Schichttag aktualisieren",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ShiftDay ID",
+                        "description": "Schichttag-ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Updated ShiftDay Data",
+                        "description": "Aktualisierte Schichttag-Daten",
                         "name": "shiftday",
                         "in": "body",
                         "required": true,
@@ -403,7 +466,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete shift day by ID",
+                "description": "Löscht einen Schichttag",
                 "consumes": [
                     "application/json"
                 ],
@@ -413,11 +476,11 @@ const docTemplate = `{
                 "tags": [
                     "shiftdays"
                 ],
-                "summary": "Delete a shift day",
+                "summary": "Schichttag löschen",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ShiftDay ID",
+                        "description": "Schichttag-ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -447,7 +510,7 @@ const docTemplate = `{
         },
         "/api/v1/shifttypes": {
             "get": {
-                "description": "Fetch all shift types with their relationships",
+                "description": "Ruft alle Schichttypen mit ihren Beziehungen ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -457,7 +520,7 @@ const docTemplate = `{
                 "tags": [
                     "shifttypes"
                 ],
-                "summary": "Get all shift types",
+                "summary": "Alle Schichttypen abrufen",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -474,7 +537,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create a new shift type with validations",
+                "description": "Erstellt einen neuen Schichttyp mit Validierungen",
                 "consumes": [
                     "application/json"
                 ],
@@ -484,10 +547,10 @@ const docTemplate = `{
                 "tags": [
                     "shifttypes"
                 ],
-                "summary": "Create a shift type",
+                "summary": "Schichttyp erstellen",
                 "parameters": [
                     {
-                        "description": "ShiftType information",
+                        "description": "Schichttyp-Daten",
                         "name": "shifttype",
                         "in": "body",
                         "required": true,
@@ -514,7 +577,7 @@ const docTemplate = `{
         },
         "/api/v1/shifttypes/{id}": {
             "get": {
-                "description": "Get shift type details by ID with relationships",
+                "description": "Ruft einen spezifischen Schichttyp ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -524,11 +587,11 @@ const docTemplate = `{
                 "tags": [
                     "shifttypes"
                 ],
-                "summary": "Get a single shift type",
+                "summary": "Einzelnen Schichttyp abrufen",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ShiftType ID",
+                        "description": "Schichttyp-ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -550,7 +613,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update shift type information by ID with validations",
+                "description": "Aktualisiert einen bestehenden Schichttyp",
                 "consumes": [
                     "application/json"
                 ],
@@ -560,17 +623,17 @@ const docTemplate = `{
                 "tags": [
                     "shifttypes"
                 ],
-                "summary": "Update a shift type",
+                "summary": "Schichttyp aktualisieren",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ShiftType ID",
+                        "description": "Schichttyp-ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Updated shift type information",
+                        "description": "Aktualisierte Schichttyp-Daten",
                         "name": "shifttype",
                         "in": "body",
                         "required": true,
@@ -601,7 +664,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete shift type by ID",
+                "description": "Löscht einen Schichttyp",
                 "consumes": [
                     "application/json"
                 ],
@@ -611,11 +674,11 @@ const docTemplate = `{
                 "tags": [
                     "shifttypes"
                 ],
-                "summary": "Delete a shift type",
+                "summary": "Schichttyp löschen",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ShiftType ID",
+                        "description": "Schichttyp-ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -645,7 +708,7 @@ const docTemplate = `{
         },
         "/api/v1/shiftweeks": {
             "get": {
-                "description": "Fetch all shift weeks with related data",
+                "description": "Ruft alle Schichtwochen mit relevanten Beziehungen ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -655,7 +718,7 @@ const docTemplate = `{
                 "tags": [
                     "shiftweeks"
                 ],
-                "summary": "Get all shift weeks",
+                "summary": "Alle Schichtwochen abrufen",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -672,7 +735,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create a new shift week with validations",
+                "description": "Erstellt eine neue Schichtwoche mit Validierungen",
                 "consumes": [
                     "application/json"
                 ],
@@ -682,10 +745,10 @@ const docTemplate = `{
                 "tags": [
                     "shiftweeks"
                 ],
-                "summary": "Create a shift week",
+                "summary": "Schichtwoche erstellen",
                 "parameters": [
                     {
-                        "description": "ShiftWeek Data",
+                        "description": "Schichtwoche-Daten",
                         "name": "shiftweek",
                         "in": "body",
                         "required": true,
@@ -712,7 +775,7 @@ const docTemplate = `{
         },
         "/api/v1/shiftweeks/{id}": {
             "get": {
-                "description": "Get shift week details by ID",
+                "description": "Ruft eine spezifische Schichtwoche ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -722,11 +785,11 @@ const docTemplate = `{
                 "tags": [
                     "shiftweeks"
                 ],
-                "summary": "Get a single shift week",
+                "summary": "Einzelne Schichtwoche abrufen",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ShiftWeek ID",
+                        "description": "Schichtwoche-ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -748,7 +811,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update shift week information by ID",
+                "description": "Aktualisiert eine bestehende Schichtwoche",
                 "consumes": [
                     "application/json"
                 ],
@@ -758,17 +821,17 @@ const docTemplate = `{
                 "tags": [
                     "shiftweeks"
                 ],
-                "summary": "Update a shift week",
+                "summary": "Schichtwoche aktualisieren",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ShiftWeek ID",
+                        "description": "Schichtwoche-ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Updated ShiftWeek Data",
+                        "description": "Aktualisierte Schichtwoche-Daten",
                         "name": "shiftweek",
                         "in": "body",
                         "required": true,
@@ -799,7 +862,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete shift week by ID",
+                "description": "Löscht eine Schichtwoche",
                 "consumes": [
                     "application/json"
                 ],
@@ -809,11 +872,11 @@ const docTemplate = `{
                 "tags": [
                     "shiftweeks"
                 ],
-                "summary": "Delete a shift week",
+                "summary": "Schichtwoche löschen",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ShiftWeek ID",
+                        "description": "Schichtwoche-ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -843,7 +906,7 @@ const docTemplate = `{
         },
         "/api/v1/users": {
             "get": {
-                "description": "Fetch all users with their relationships",
+                "description": "Ruft alle Benutzer mit ihren Berechtigungen und Schichten ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -853,7 +916,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Get all users",
+                "summary": "Alle Benutzer abrufen",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -870,7 +933,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create a new user with validations",
+                "description": "Erstellt einen neuen Benutzer mit Validierungen",
                 "consumes": [
                     "application/json"
                 ],
@@ -880,10 +943,10 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Create a new user",
+                "summary": "Benutzer erstellen",
                 "parameters": [
                     {
-                        "description": "User information",
+                        "description": "Benutzer-Daten",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -910,7 +973,7 @@ const docTemplate = `{
         },
         "/api/v1/users/{id}": {
             "get": {
-                "description": "Get user details by ID with relationships",
+                "description": "Ruft einen spezifischen Benutzer mit allen Details ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -920,11 +983,11 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Get a single user",
+                "summary": "Einzelnen Benutzer abrufen",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "Benutzer-ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -946,7 +1009,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update user information by ID with validations",
+                "description": "Aktualisiert einen bestehenden Benutzer",
                 "consumes": [
                     "application/json"
                 ],
@@ -956,17 +1019,17 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Update a user",
+                "summary": "Benutzer aktualisieren",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "Benutzer-ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Updated user information",
+                        "description": "Aktualisierte Benutzer-Daten",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -997,7 +1060,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete user by ID",
+                "description": "Löscht einen Benutzer und seine zugehörigen Daten",
                 "consumes": [
                     "application/json"
                 ],
@@ -1007,11 +1070,11 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Delete a user",
+                "summary": "Benutzer löschen",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "Benutzer-ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1041,6 +1104,58 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "handlers.HealthData": {
+            "type": "object",
+            "properties": {
+                "api_path": {
+                    "type": "string"
+                },
+                "database": {
+                    "type": "string"
+                },
+                "environment": {
+                    "type": "string"
+                },
+                "go_version": {
+                    "type": "string"
+                },
+                "goroutines": {
+                    "type": "integer"
+                },
+                "mem_stats": {
+                    "$ref": "#/definitions/handlers.SimpleMemStats"
+                },
+                "num_cpu": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.SimpleMemStats": {
+            "type": "object",
+            "properties": {
+                "alloc": {
+                    "type": "integer"
+                },
+                "num_gc": {
+                    "type": "integer"
+                },
+                "sys": {
+                    "type": "integer"
+                },
+                "total_alloc": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.Department": {
             "type": "object",
             "properties": {
@@ -1056,8 +1171,20 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "shift_weeks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ShiftWeek"
+                    }
+                },
                 "updated_at": {
                     "type": "string"
+                },
+                "users": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.User"
+                    }
                 }
             }
         },
