@@ -1,25 +1,12 @@
-### Basis Gesundheitscheck
+### Get system health
 GET http://localhost:8080/api/v1/health
 Accept: application/json
 
-### Gesundheitscheck mit curl
+### Get system health with curl
 curl -X GET http://localhost:8080/api/v1/health \
     -H "Accept: application/json"
 
-### Detaillierter Gesundheitscheck
+### Get system health with detailed response
 GET http://localhost:8080/api/v1/health
 Accept: application/json
 X-Request-ID: health-check-001
-
-### Gesundheitscheck mit zusätzlichen Headers
-GET http://localhost:8080/api/v1/health
-Accept: application/json
-X-Request-ID: health-check-002
-User-Agent: HealthMonitor/1.0
-X-Environment: testing
-
-### Gesundheitscheck für Monitoring
-GET http://localhost:8080/api/v1/health
-Accept: application/json
-Cache-Control: no-cache
-X-Monitor-ID: monitor-001

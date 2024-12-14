@@ -13,7 +13,7 @@ definitions:
       goroutines:
         type: integer
       mem_stats:
-        $ref: '#/definitions/handlers.SimpleMemStats'
+        $ref: '#/definitions/handlers.SystemStats'
       num_cpu:
         type: integer
       status:
@@ -23,7 +23,7 @@ definitions:
       version:
         type: string
     type: object
-  handlers.SimpleMemStats:
+  handlers.SystemStats:
     properties:
       alloc:
         type: integer
@@ -40,6 +40,10 @@ definitions:
         type: string
       created_at:
         type: string
+      employees:
+        items:
+          $ref: '#/definitions/models.Employee'
+        type: array
       id:
         type: integer
       name:
@@ -50,61 +54,8 @@ definitions:
         type: array
       updated_at:
         type: string
-      users:
-        items:
-          $ref: '#/definitions/models.User'
-        type: array
     type: object
-  models.ShiftDay:
-    properties:
-      created_at:
-        type: string
-      date:
-        type: string
-      id:
-        type: integer
-      shift_type_id:
-        type: integer
-      shift_week_id:
-        type: integer
-      updated_at:
-        type: string
-      user_id:
-        type: integer
-    type: object
-  models.ShiftType:
-    properties:
-      color:
-        type: string
-      created_at:
-        type: string
-      description:
-        type: string
-      duration:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  models.ShiftWeek:
-    properties:
-      created_at:
-        type: string
-      department_id:
-        type: integer
-      end_date:
-        type: string
-      id:
-        type: integer
-      start_date:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  models.User:
+  models.Employee:
     properties:
       color:
         type: string
@@ -127,14 +78,73 @@ definitions:
       updated_at:
         type: string
     type: object
+  models.ShiftDay:
+    properties:
+      created_at:
+        type: string
+      date:
+        type: string
+      employee_id:
+        type: integer
+      id:
+        type: integer
+      notes:
+        type: string
+      shift_type_id:
+        type: integer
+      shift_week_id:
+        type: integer
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.ShiftType:
+    properties:
+      color:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      duration:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.ShiftWeek:
+    properties:
+      created_at:
+        type: string
+      department_id:
+        type: integer
+      end_date:
+        type: string
+      id:
+        type: integer
+      notes:
+        type: string
+      start_date:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
   responses.APIResponse:
     properties:
       data: {}
       error:
-        example: Ein Fehler ist aufgetreten
+        example: Fehler bei der Verarbeitung
         type: string
       message:
-        example: Operation erfolgreich durchgeführt
+        example: Operation erfolgreich
         type: string
       success:
         example: true
@@ -144,17 +154,17 @@ host: localhost:8080
 info:
   contact:
     name: Carsten Bröckert
-  description: Schichtplanung mit Go, Fiber und SQLite
+  description: REST-API für die Verwaltung von Schichtplänen
   license:
     name: MIT
-  title: Schichtplaner
+  title: Schichtplaner API
   version: "1.0"
 paths:
   /api/v1/departments:
     get:
       consumes:
       - application/json
-      description: Ruft alle Abteilungen mit zugehörigen Benutzern und Schichtwochen
+      description: Ruft alle Abteilungen mit zugehörigen Mitarbeitern und Schichtwochen
         ab
       produces:
       - application/json
@@ -204,7 +214,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Neue Abteilung erstellen
+      summary: Abteilung erstellen
       tags:
       - departments
   /api/v1/departments/{id}:
@@ -304,6 +314,187 @@ paths:
       summary: Abteilung aktualisieren
       tags:
       - departments
+  /api/v1/employees:
+    get:
+      consumes:
+      - application/json
+      description: Ruft alle Mitarbeiter mit ihren Berechtigungen und Schichten ab
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Alle Mitarbeiter abrufen
+      tags:
+      - employees
+    post:
+      consumes:
+      - application/json
+      description: Erstellt einen neuen Mitarbeiter mit Validierungen
+      parameters:
+      - description: Mitarbeiter-Daten
+        in: body
+        name: employee
+        required: true
+        schema:
+          $ref: '#/definitions/models.Employee'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Mitarbeiter erstellen
+      tags:
+      - employees
+  /api/v1/employees/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Löscht einen Mitarbeiter
+      parameters:
+      - description: Mitarbeiter-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Mitarbeiter löschen
+      tags:
+      - employees
+    get:
+      consumes:
+      - application/json
+      description: Ruft einen spezifischen Mitarbeiter mit Details ab
+      parameters:
+      - description: Mitarbeiter-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Einzelnen Mitarbeiter abrufen
+      tags:
+      - employees
+    put:
+      consumes:
+      - application/json
+      description: Aktualisiert einen bestehenden Mitarbeiter
+      parameters:
+      - description: Mitarbeiter-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Aktualisierte Mitarbeiter-Daten
+        in: body
+        name: employee
+        required: true
+        schema:
+          $ref: '#/definitions/models.Employee'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Mitarbeiter aktualisieren
+      tags:
+      - employees
+  /api/v1/employees/department/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Ruft alle Mitarbeiter einer bestimmten Abteilung ab
+      parameters:
+      - description: Abteilungs-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Mitarbeiter nach Abteilung abrufen
+      tags:
+      - employees
+  /api/v1/employees/shifts/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Ruft alle Schichten eines bestimmten Mitarbeiters ab
+      parameters:
+      - description: Mitarbeiter-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Schichten eines Mitarbeiters abrufen
+      tags:
+      - employees
   /api/v1/health:
     get:
       consumes:
@@ -404,7 +595,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Ruft einen spezifischen Schichttag ab
+      description: Ruft einen spezifischen Schichttag mit allen Details ab
       parameters:
       - description: Schichttag-ID
         in: path
@@ -535,7 +726,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Ruft einen spezifischen Schichttyp ab
+      description: Ruft einen spezifischen Schichttyp mit Details ab
       parameters:
       - description: Schichttyp-ID
         in: path
@@ -721,135 +912,4 @@ paths:
       summary: Schichtwoche aktualisieren
       tags:
       - shiftweeks
-  /api/v1/users:
-    get:
-      consumes:
-      - application/json
-      description: Ruft alle Benutzer mit ihren Berechtigungen und Schichten ab
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-      summary: Alle Benutzer abrufen
-      tags:
-      - users
-    post:
-      consumes:
-      - application/json
-      description: Erstellt einen neuen Benutzer mit Validierungen
-      parameters:
-      - description: Benutzer-Daten
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/models.User'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-      summary: Benutzer erstellen
-      tags:
-      - users
-  /api/v1/users/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Löscht einen Benutzer und seine zugehörigen Daten
-      parameters:
-      - description: Benutzer-ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-      summary: Benutzer löschen
-      tags:
-      - users
-    get:
-      consumes:
-      - application/json
-      description: Ruft einen spezifischen Benutzer mit allen Details ab
-      parameters:
-      - description: Benutzer-ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-      summary: Einzelnen Benutzer abrufen
-      tags:
-      - users
-    put:
-      consumes:
-      - application/json
-      description: Aktualisiert einen bestehenden Benutzer
-      parameters:
-      - description: Benutzer-ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Aktualisierte Benutzer-Daten
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/models.User'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-      summary: Benutzer aktualisieren
-      tags:
-      - users
 swagger: "2.0"

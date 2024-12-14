@@ -29,9 +29,10 @@ func SetupAndRunApp() (*fiber.App, error) {
 		return nil, err
 	}
 
-	// Fiber-App mit Konfiguration erstellen
+	// Fiber-App mit Basiskonfiguration erstellen
 	app := fiber.New(fiber.Config{
-		AppName: "Schichtplaner",
+		AppName:      "Schichtplaner",
+		ErrorHandler: customErrorHandler,
 	})
 
 	// Middleware für Panic Recovery einbinden
@@ -45,14 +46,15 @@ func SetupAndRunApp() (*fiber.App, error) {
 
 	// CORS-Middleware für API-Zugriff konfigurieren
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:  "*",                                        // Alle Ursprünge erlauben
-		AllowMethods:  "GET,POST,PUT,DELETE,OPTIONS",              // HTTP-Methoden definieren
-		AllowHeaders:  "Origin,Content-Type,Accept,Authorization", // Erlaubte Header
-		ExposeHeaders: "Content-Length",                           // Exponierte Header
-		MaxAge:        86400,                                      // Cache-Dauer für CORS-Preflight
+		AllowOrigins:     os.Getenv("ALLOWED_ORIGINS"),
+		AllowMethods:     "GET,POST,PUT,DELETE",
+		AllowHeaders:     "Origin,Content-Type,Accept,Authorization",
+		ExposeHeaders:    "Content-Length",
+		AllowCredentials: false,
+		MaxAge:           3600,
 	}))
 
-	// Routen und Swagger einrichten
+	// Routen und Swagger-Dokumentation einrichten
 	router.SetupRoutes(app)
 	config.AddSwaggerRoutes(app)
 
@@ -66,4 +68,19 @@ func SetupAndRunApp() (*fiber.App, error) {
 	go app.Listen(":" + port)
 
 	return app, nil
+}
+
+// Benutzerdefinierter Error-Handler für einheitliche Fehlerbehandlung
+func customErrorHandler(c *fiber.Ctx, err error) error {
+	// HTTP-Statuscode ermitteln
+	code := fiber.StatusInternalServerError
+	if e, ok := err.(*fiber.Error); ok {
+		code = e.Code
+	}
+
+	// Fehlerantwort im JSON-Format zurückgeben
+	return c.Status(code).JSON(fiber.Map{
+		"success": false,
+		"message": err.Error(),
+	})
 }

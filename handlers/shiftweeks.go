@@ -22,15 +22,15 @@ func HandleAllShiftWeeks(c *fiber.Ctx) error {
 	var shiftWeeks []models.ShiftWeek
 	result := database.GetDB().
 		Preload("Department", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, name, color")
+			return db.Select("id")
 		}).
 		Preload("ShiftDays", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, date, shift_type_id, user_id, shift_week_id")
+			return db.Select("id, date, shift_type_id, employee_id, shift_week_id")
 		}).
 		Preload("ShiftDays.ShiftType", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id, name, description, duration, color")
 		}).
-		Preload("ShiftDays.User", func(db *gorm.DB) *gorm.DB {
+		Preload("ShiftDays.Employee", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id, first_name, last_name, email, color, department_id")
 		}).
 		Find(&shiftWeeks)
@@ -65,11 +65,10 @@ func HandleCreateShiftWeek(c *fiber.Ctx) error {
 		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
 	}
 
-	// Lade die Beziehungen nach der Erstellung
 	database.GetDB().
-		Preload("Department").
-		Preload("ShiftDays.ShiftType").
-		Preload("ShiftDays.User").
+		Preload("Department", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id")
+		}).
 		First(&shiftWeek, shiftWeek.ID)
 
 	return c.Status(201).JSON(responses.SuccessResponse("Schichtwoche erfolgreich erstellt", shiftWeek))
@@ -89,9 +88,9 @@ func HandleGetOneShiftWeek(c *fiber.Ctx) error {
 	var shiftWeek models.ShiftWeek
 
 	result := database.GetDB().
-		Preload("Department").
-		Preload("ShiftDays.ShiftType").
-		Preload("ShiftDays.User").
+		Preload("Department", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id")
+		}).
 		First(&shiftWeek, id)
 
 	if result.Error != nil {
@@ -131,11 +130,10 @@ func HandleUpdateShiftWeek(c *fiber.Ctx) error {
 		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
 
-	// Lade aktualisierte Beziehungen
 	database.GetDB().
-		Preload("Department").
-		Preload("ShiftDays.ShiftType").
-		Preload("ShiftDays.User").
+		Preload("Department", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id")
+		}).
 		First(&shiftWeek, id)
 
 	return c.JSON(responses.SuccessResponse("Schichtwoche erfolgreich aktualisiert", shiftWeek))
@@ -158,7 +156,6 @@ func HandleDeleteShiftWeek(c *fiber.Ctx) error {
 		return c.Status(404).JSON(responses.ErrorResponse("Schichtwoche nicht gefunden"))
 	}
 
-	// Prüfe ob noch Schichttage existieren
 	var shiftDayCount int64
 	database.GetDB().Model(&models.ShiftDay{}).Where("shift_week_id = ?", id).Count(&shiftDayCount)
 	if shiftDayCount > 0 {
@@ -173,7 +170,6 @@ func HandleDeleteShiftWeek(c *fiber.Ctx) error {
 	return c.JSON(responses.SuccessResponse("Schichtwoche erfolgreich gelöscht", nil))
 }
 
-// Hilfsfunktion zur Validierung einer Schichtwoche
 func validateShiftWeek(shiftWeek *models.ShiftWeek) error {
 	if shiftWeek.StartDate.IsZero() || shiftWeek.EndDate.IsZero() {
 		return fmt.Errorf("Start- und Enddatum sind erforderlich")
@@ -185,7 +181,6 @@ func validateShiftWeek(shiftWeek *models.ShiftWeek) error {
 		return fmt.Errorf("Abteilung ist erforderlich")
 	}
 
-	// Prüfe ob die Abteilung existiert
 	var department models.Department
 	if err := database.GetDB().First(&department, shiftWeek.DepartmentID).Error; err != nil {
 		return fmt.Errorf("Abteilung nicht gefunden")

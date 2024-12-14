@@ -9,13 +9,11 @@ import (
 )
 
 func main() {
-	// Datenbankverbindung herstellen
 	if err := database.StartDB(); err != nil {
 		log.Fatal(err)
 	}
 	defer database.CloseDB()
 
-	// Datenbank-Migrationen durchführen
 	if err := database.AutoMigrate(); err != nil {
 		log.Fatal(err)
 	}
@@ -40,8 +38,8 @@ func main() {
 		database.GetDB().Create(&st)
 	}
 
-	// Test-Benutzer erstellen
-	users := []models.User{
+	// Test-Mitarbeiter erstellen
+	employees := []models.Employee{
 		{
 			FirstName:    "Max",
 			LastName:     "Mustermann",
@@ -67,8 +65,8 @@ func main() {
 			DepartmentID: 3,
 		},
 	}
-	for _, user := range users {
-		database.GetDB().Create(&user)
+	for _, employee := range employees {
+		database.GetDB().Create(&employee)
 	}
 
 	// Test-Schichtwochen erstellen

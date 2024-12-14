@@ -11,7 +11,7 @@ import (
 )
 
 // @Summary Alle Abteilungen abrufen
-// @Description Ruft alle Abteilungen mit zugehörigen Benutzern und Schichtwochen ab
+// @Description Ruft alle Abteilungen mit zugehörigen Mitarbeitern und Schichtwochen ab
 // @Tags departments
 // @Accept json
 // @Produce json
@@ -21,14 +21,11 @@ import (
 func HandleAllDepartments(c *fiber.Ctx) error {
 	var departments []models.Department
 	result := database.GetDB().
-		Preload("Users", func(db *gorm.DB) *gorm.DB {
+		Preload("Employees", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id, first_name, last_name, email, color, department_id, is_admin")
 		}).
 		Preload("ShiftWeeks", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id, start_date, end_date, department_id")
-		}).
-		Preload("ShiftWeeks.ShiftDays", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, date, shift_type_id, user_id, shift_week_id")
 		}).
 		Find(&departments)
 
@@ -38,37 +35,7 @@ func HandleAllDepartments(c *fiber.Ctx) error {
 	return c.JSON(responses.SuccessResponse("Abteilungen erfolgreich abgerufen", departments))
 }
 
-// @Summary Einzelne Abteilung abrufen
-// @Description Ruft eine spezifische Abteilung mit allen Details ab
-// @Tags departments
-// @Accept json
-// @Produce json
-// @Param id path int true "Abteilungs-ID"
-// @Success 200 {object} responses.APIResponse{data=models.Department}
-// @Failure 404 {object} responses.APIResponse
-// @Router /api/v1/departments/{id} [get]
-func HandleGetOneDepartment(c *fiber.Ctx) error {
-	id := c.Params("id")
-	var department models.Department
-
-	result := database.GetDB().
-		Preload("Users", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, first_name, last_name, email, color, department_id, is_admin")
-		}).
-		Preload("ShiftWeeks", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, start_date, end_date, department_id")
-		}).
-		Preload("ShiftWeeks.ShiftDays.ShiftType").
-		Preload("ShiftWeeks.ShiftDays.User").
-		First(&department, id)
-
-	if result.Error != nil {
-		return c.Status(404).JSON(responses.ErrorResponse("Abteilung nicht gefunden"))
-	}
-	return c.JSON(responses.SuccessResponse("Abteilung erfolgreich abgerufen", department))
-}
-
-// @Summary Neue Abteilung erstellen
+// @Summary Abteilung erstellen
 // @Description Erstellt eine neue Abteilung mit den angegebenen Daten
 // @Tags departments
 // @Accept json
@@ -92,13 +59,37 @@ func HandleCreateDepartment(c *fiber.Ctx) error {
 		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
 	}
 
-	// Lade die erstellte Abteilung mit allen Beziehungen
 	database.GetDB().
-		Preload("Users").
+		Preload("Employees").
 		Preload("ShiftWeeks").
 		First(&department, department.ID)
 
 	return c.Status(201).JSON(responses.SuccessResponse("Abteilung erfolgreich erstellt", department))
+}
+
+// @Summary Einzelne Abteilung abrufen
+// @Description Ruft eine spezifische Abteilung mit allen Details ab
+// @Tags departments
+// @Accept json
+// @Produce json
+// @Param id path int true "Abteilungs-ID"
+// @Success 200 {object} responses.APIResponse{data=models.Department}
+// @Failure 404 {object} responses.APIResponse
+// @Router /api/v1/departments/{id} [get]
+func HandleGetOneDepartment(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var department models.Department
+
+	result := database.GetDB().
+		Preload("Employees").
+		Preload("ShiftWeeks.ShiftDays.ShiftType").
+		First(&department, id)
+
+	if result.Error != nil {
+		return c.Status(404).JSON(responses.ErrorResponse("Abteilung nicht gefunden"))
+	}
+
+	return c.JSON(responses.SuccessResponse("Abteilung erfolgreich abgerufen", department))
 }
 
 // @Summary Abteilung aktualisieren
@@ -131,9 +122,8 @@ func HandleUpdateDepartment(c *fiber.Ctx) error {
 		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
 
-	// Lade aktualisierte Beziehungen
 	database.GetDB().
-		Preload("Users").
+		Preload("Employees").
 		Preload("ShiftWeeks").
 		First(&department, id)
 
@@ -157,28 +147,19 @@ func HandleDeleteDepartment(c *fiber.Ctx) error {
 		return c.Status(404).JSON(responses.ErrorResponse("Abteilung nicht gefunden"))
 	}
 
-	// Prüfe ob noch Benutzer oder Schichtwochen zugeordnet sind
-	var userCount int64
-	database.GetDB().Model(&models.User{}).Where("department_id = ?", id).Count(&userCount)
-	if userCount > 0 {
-		return c.Status(400).JSON(responses.ErrorResponse("Abteilung kann nicht gelöscht werden, da noch Benutzer zugeordnet sind"))
+	var employeeCount int64
+	database.GetDB().Model(&models.Employee{}).Where("department_id = ?", id).Count(&employeeCount)
+	if employeeCount > 0 {
+		return c.Status(400).JSON(responses.ErrorResponse("Abteilung kann nicht gelöscht werden, da noch Mitarbeiter zugeordnet sind"))
 	}
 
-	var shiftWeekCount int64
-	database.GetDB().Model(&models.ShiftWeek{}).Where("department_id = ?", id).Count(&shiftWeekCount)
-	if shiftWeekCount > 0 {
-		return c.Status(400).JSON(responses.ErrorResponse("Abteilung kann nicht gelöscht werden, da noch Schichtwochen zugeordnet sind"))
-	}
-
-	result := database.GetDB().Delete(&department)
-	if result.Error != nil {
-		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
+	if err := database.GetDB().Delete(&department).Error; err != nil {
+		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
 
 	return c.JSON(responses.SuccessResponse("Abteilung erfolgreich gelöscht", nil))
 }
 
-// Hilfsfunktion zur Validierung einer Abteilung
 func validateDepartment(department *models.Department) error {
 	if department.Name == "" {
 		return fmt.Errorf("Name ist erforderlich")

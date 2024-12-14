@@ -22,7 +22,7 @@ const docTemplate = `{
     "paths": {
         "/api/v1/departments": {
             "get": {
-                "description": "Ruft alle Abteilungen mit zugehörigen Benutzern und Schichtwochen ab",
+                "description": "Ruft alle Abteilungen mit zugehörigen Mitarbeitern und Schichtwochen ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -74,7 +74,7 @@ const docTemplate = `{
                 "tags": [
                     "departments"
                 ],
-                "summary": "Neue Abteilung erstellen",
+                "summary": "Abteilung erstellen",
                 "parameters": [
                     {
                         "description": "Abteilungsdaten",
@@ -269,6 +269,280 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/employees": {
+            "get": {
+                "description": "Ruft alle Mitarbeiter mit ihren Berechtigungen und Schichten ab",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "employees"
+                ],
+                "summary": "Alle Mitarbeiter abrufen",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Erstellt einen neuen Mitarbeiter mit Validierungen",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "employees"
+                ],
+                "summary": "Mitarbeiter erstellen",
+                "parameters": [
+                    {
+                        "description": "Mitarbeiter-Daten",
+                        "name": "employee",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Employee"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/employees/department/{id}": {
+            "get": {
+                "description": "Ruft alle Mitarbeiter einer bestimmten Abteilung ab",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "employees"
+                ],
+                "summary": "Mitarbeiter nach Abteilung abrufen",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Abteilungs-ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/employees/shifts/{id}": {
+            "get": {
+                "description": "Ruft alle Schichten eines bestimmten Mitarbeiters ab",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "employees"
+                ],
+                "summary": "Schichten eines Mitarbeiters abrufen",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Mitarbeiter-ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/employees/{id}": {
+            "get": {
+                "description": "Ruft einen spezifischen Mitarbeiter mit Details ab",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "employees"
+                ],
+                "summary": "Einzelnen Mitarbeiter abrufen",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Mitarbeiter-ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Aktualisiert einen bestehenden Mitarbeiter",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "employees"
+                ],
+                "summary": "Mitarbeiter aktualisieren",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Mitarbeiter-ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Aktualisierte Mitarbeiter-Daten",
+                        "name": "employee",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Employee"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Löscht einen Mitarbeiter",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "employees"
+                ],
+                "summary": "Mitarbeiter löschen",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Mitarbeiter-ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/health": {
             "get": {
                 "description": "Gibt detaillierte Informationen über den Systemzustand zurück",
@@ -379,7 +653,7 @@ const docTemplate = `{
         },
         "/api/v1/shiftdays/{id}": {
             "get": {
-                "description": "Ruft einen spezifischen Schichttag ab",
+                "description": "Ruft einen spezifischen Schichttag mit allen Details ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -577,7 +851,7 @@ const docTemplate = `{
         },
         "/api/v1/shifttypes/{id}": {
             "get": {
-                "description": "Ruft einen spezifischen Schichttyp ab",
+                "description": "Ruft einen spezifischen Schichttyp mit Details ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -903,204 +1177,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/api/v1/users": {
-            "get": {
-                "description": "Ruft alle Benutzer mit ihren Berechtigungen und Schichten ab",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Alle Benutzer abrufen",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Erstellt einen neuen Benutzer mit Validierungen",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Benutzer erstellen",
-                "parameters": [
-                    {
-                        "description": "Benutzer-Daten",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.User"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/users/{id}": {
-            "get": {
-                "description": "Ruft einen spezifischen Benutzer mit allen Details ab",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Einzelnen Benutzer abrufen",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Benutzer-ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Aktualisiert einen bestehenden Benutzer",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Benutzer aktualisieren",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Benutzer-ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Aktualisierte Benutzer-Daten",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.User"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Löscht einen Benutzer und seine zugehörigen Daten",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Benutzer löschen",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Benutzer-ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -1123,7 +1199,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "mem_stats": {
-                    "$ref": "#/definitions/handlers.SimpleMemStats"
+                    "$ref": "#/definitions/handlers.SystemStats"
                 },
                 "num_cpu": {
                     "type": "integer"
@@ -1139,7 +1215,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.SimpleMemStats": {
+        "handlers.SystemStats": {
             "type": "object",
             "properties": {
                 "alloc": {
@@ -1165,6 +1241,12 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "employees": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Employee"
+                    }
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -1179,91 +1261,10 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
-                },
-                "users": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.User"
-                    }
                 }
             }
         },
-        "models.ShiftDay": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "date": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "shift_type_id": {
-                    "type": "integer"
-                },
-                "shift_week_id": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.ShiftType": {
-            "type": "object",
-            "properties": {
-                "color": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "duration": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.ShiftWeek": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "department_id": {
-                    "type": "integer"
-                },
-                "end_date": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "start_date": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.User": {
+        "models.Employee": {
             "type": "object",
             "properties": {
                 "color": {
@@ -1298,17 +1299,107 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ShiftDay": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "employee_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "shift_type_id": {
+                    "type": "integer"
+                },
+                "shift_week_id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ShiftType": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ShiftWeek": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "department_id": {
+                    "type": "integer"
+                },
+                "end_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "responses.APIResponse": {
             "type": "object",
             "properties": {
                 "data": {},
                 "error": {
                     "type": "string",
-                    "example": "Ein Fehler ist aufgetreten"
+                    "example": "Fehler bei der Verarbeitung"
                 },
                 "message": {
                     "type": "string",
-                    "example": "Operation erfolgreich durchgeführt"
+                    "example": "Operation erfolgreich"
                 },
                 "success": {
                     "type": "boolean",
@@ -1325,8 +1416,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8080",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "Schichtplaner",
-	Description:      "Schichtplanung mit Go, Fiber und SQLite",
+	Title:            "Schichtplaner API",
+	Description:      "REST-API für die Verwaltung von Schichtplänen",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

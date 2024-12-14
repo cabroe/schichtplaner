@@ -9,24 +9,26 @@ import (
 	"github.com/ptmmeiningen/schichtplaner/pkg/responses"
 )
 
-type SimpleMemStats struct {
+// SystemStats enthält grundlegende Systemstatistiken
+type SystemStats struct {
 	Alloc      uint64 `json:"alloc"`
 	TotalAlloc uint64 `json:"total_alloc"`
 	Sys        uint64 `json:"sys"`
 	NumGC      uint32 `json:"num_gc"`
 }
 
+// HealthData definiert die Struktur der Gesundheitsdaten
 type HealthData struct {
-	Status      string         `json:"status"`
-	Database    string         `json:"database"`
-	Timestamp   time.Time      `json:"timestamp"`
-	Version     string         `json:"version"`
-	APIPath     string         `json:"api_path"`
-	Environment string         `json:"environment"`
-	GoVersion   string         `json:"go_version"`
-	NumCPU      int            `json:"num_cpu"`
-	Goroutines  int            `json:"goroutines"`
-	MemStats    SimpleMemStats `json:"mem_stats"`
+	Status      string      `json:"status"`
+	Database    string      `json:"database"`
+	Timestamp   time.Time   `json:"timestamp"`
+	Version     string      `json:"version"`
+	APIPath     string      `json:"api_path"`
+	Environment string      `json:"environment"`
+	GoVersion   string      `json:"go_version"`
+	NumCPU      int         `json:"num_cpu"`
+	Goroutines  int         `json:"goroutines"`
+	MemStats    SystemStats `json:"mem_stats"`
 }
 
 // @Summary Systemstatus abrufen
@@ -41,18 +43,16 @@ func HandleHealthCheck(c *fiber.Ctx) error {
 	dbStatus := "online"
 	systemStatus := "gesund"
 
-	// Prüfe Datenbankverbindung
 	if err := database.ValidateConnection(); err != nil {
 		dbStatus = "offline"
 		systemStatus = "ungesund"
 		return c.Status(503).JSON(responses.ErrorResponse("System ist nicht verfügbar"))
 	}
 
-	// Sammle Memory-Statistiken
 	var memStats runtime.MemStats
 	runtime.ReadMemStats(&memStats)
 
-	simpleMemStats := SimpleMemStats{
+	systemStats := SystemStats{
 		Alloc:      memStats.Alloc,
 		TotalAlloc: memStats.TotalAlloc,
 		Sys:        memStats.Sys,
@@ -69,12 +69,13 @@ func HandleHealthCheck(c *fiber.Ctx) error {
 		GoVersion:   runtime.Version(),
 		NumCPU:      runtime.NumCPU(),
 		Goroutines:  runtime.NumGoroutine(),
-		MemStats:    simpleMemStats,
+		MemStats:    systemStats,
 	}
 
 	return c.JSON(responses.SuccessResponse("System läuft einwandfrei", healthData))
 }
 
+// getEnvironment ermittelt die aktuelle Ausführungsumgebung
 func getEnvironment() string {
 	env := "production"
 	if runtime.GOOS == "darwin" || runtime.GOOS == "windows" {

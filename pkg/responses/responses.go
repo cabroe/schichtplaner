@@ -1,14 +1,14 @@
 package responses
 
-// APIResponse Standardisiertes API Antwortformat
+// APIResponse definiert das standardisierte API-Antwortformat
 type APIResponse struct {
 	Success bool        `json:"success" example:"true"`
-	Message string      `json:"message,omitempty" example:"Operation erfolgreich durchgeführt"`
-	Error   string      `json:"error,omitempty" example:"Ein Fehler ist aufgetreten"`
+	Message string      `json:"message,omitempty" example:"Operation erfolgreich"`
+	Error   string      `json:"error,omitempty" example:"Fehler bei der Verarbeitung"`
 	Data    interface{} `json:"data,omitempty"`
 }
 
-// SuccessResponse Erstellt eine erfolgreiche API-Antwort
+// SuccessResponse erstellt eine erfolgreiche API-Antwort
 func SuccessResponse(message string, data interface{}) APIResponse {
 	return APIResponse{
 		Success: true,
@@ -17,10 +17,19 @@ func SuccessResponse(message string, data interface{}) APIResponse {
 	}
 }
 
-// ErrorResponse Erstellt eine Fehler-API-Antwort
+// ErrorResponse erstellt eine Fehler-API-Antwort
 func ErrorResponse(errorMessage string) APIResponse {
 	return APIResponse{
 		Success: false,
 		Error:   errorMessage,
+	}
+}
+
+// ValidationResponse erstellt eine Antwort für Validierungsfehler
+func ValidationResponse(validationErrors []string) APIResponse {
+	return APIResponse{
+		Success: false,
+		Error:   "Validierungsfehler",
+		Data:    validationErrors,
 	}
 }

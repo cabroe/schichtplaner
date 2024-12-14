@@ -22,9 +22,9 @@ func HandleAllShiftTypes(c *fiber.Ctx) error {
 	var shiftTypes []models.ShiftType
 	result := database.GetDB().
 		Preload("ShiftDays", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, date, shift_type_id, user_id, shift_week_id")
+			return db.Select("id, date, shift_type_id, employee_id, shift_week_id")
 		}).
-		Preload("ShiftDays.User", func(db *gorm.DB) *gorm.DB {
+		Preload("ShiftDays.Employee", func(db *gorm.DB) *gorm.DB {
 			return db.Select("id, first_name, last_name, email, color, department_id")
 		}).
 		Find(&shiftTypes)
@@ -59,16 +59,15 @@ func HandleCreateShiftType(c *fiber.Ctx) error {
 		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
 	}
 
-	// Lade die Beziehungen nach der Erstellung
 	database.GetDB().
-		Preload("ShiftDays.User").
+		Preload("ShiftDays.Employee").
 		First(&shiftType, shiftType.ID)
 
 	return c.Status(201).JSON(responses.SuccessResponse("Schichttyp erfolgreich erstellt", shiftType))
 }
 
 // @Summary Einzelnen Schichttyp abrufen
-// @Description Ruft einen spezifischen Schichttyp ab
+// @Description Ruft einen spezifischen Schichttyp mit Details ab
 // @Tags shifttypes
 // @Accept json
 // @Produce json
@@ -81,7 +80,7 @@ func HandleGetOneShiftType(c *fiber.Ctx) error {
 	var shiftType models.ShiftType
 
 	result := database.GetDB().
-		Preload("ShiftDays.User").
+		Preload("ShiftDays.Employee").
 		First(&shiftType, id)
 
 	if result.Error != nil {
@@ -121,9 +120,8 @@ func HandleUpdateShiftType(c *fiber.Ctx) error {
 		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
 
-	// Lade aktualisierte Beziehungen
 	database.GetDB().
-		Preload("ShiftDays.User").
+		Preload("ShiftDays.Employee").
 		First(&shiftType, id)
 
 	return c.JSON(responses.SuccessResponse("Schichttyp erfolgreich aktualisiert", shiftType))
@@ -146,22 +144,19 @@ func HandleDeleteShiftType(c *fiber.Ctx) error {
 		return c.Status(404).JSON(responses.ErrorResponse("Schichttyp nicht gefunden"))
 	}
 
-	// Prüfe ob noch Schichttage mit diesem Typ existieren
 	var shiftDayCount int64
 	database.GetDB().Model(&models.ShiftDay{}).Where("shift_type_id = ?", id).Count(&shiftDayCount)
 	if shiftDayCount > 0 {
 		return c.Status(400).JSON(responses.ErrorResponse("Schichttyp kann nicht gelöscht werden, da noch Schichttage zugeordnet sind"))
 	}
 
-	result := database.GetDB().Delete(&shiftType)
-	if result.Error != nil {
-		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
+	if err := database.GetDB().Delete(&shiftType).Error; err != nil {
+		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
 
 	return c.JSON(responses.SuccessResponse("Schichttyp erfolgreich gelöscht", nil))
 }
 
-// Hilfsfunktion zur Validierung eines Schichttyps
 func validateShiftType(shiftType *models.ShiftType) error {
 	if shiftType.Name == "" {
 		return fmt.Errorf("Name ist erforderlich")

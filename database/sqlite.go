@@ -15,17 +15,14 @@ import (
 
 var db *gorm.DB
 
-// GetDB gibt die aktuelle Datenbankinstanz zurück
 func GetDB() *gorm.DB {
 	return db
 }
 
-// SetDB setzt eine neue Datenbankinstanz
 func SetDB(database *gorm.DB) {
 	db = database
 }
 
-// ValidateConnection prüft die Datenbankverbindung
 func ValidateConnection() error {
 	sqlDB, err := db.DB()
 	if err != nil {
@@ -34,7 +31,6 @@ func ValidateConnection() error {
 	return sqlDB.Ping()
 }
 
-// StartDB initialisiert die Hauptdatenbankverbindung
 func StartDB() error {
 	dbPath := os.Getenv("SQLITE_DB_PATH")
 	if dbPath == "" {
@@ -54,12 +50,12 @@ func StartDB() error {
 		return errors.New("Fehler beim Öffnen der SQLite Datenbank: " + err.Error())
 	}
 
-	// Performance-Optimierungen
 	sqlDB, err := db.DB()
 	if err != nil {
 		return err
 	}
 
+	// Performance-Optimierungen
 	sqlDB.SetMaxIdleConns(10)
 	sqlDB.SetMaxOpenConns(100)
 	sqlDB.SetConnMaxLifetime(time.Hour)
@@ -67,7 +63,6 @@ func StartDB() error {
 	return nil
 }
 
-// CloseDB schließt die aktuelle Datenbankverbindung sicher
 func CloseDB() {
 	if db != nil {
 		sqlDB, err := db.DB()
@@ -77,11 +72,10 @@ func CloseDB() {
 	}
 }
 
-// AutoMigrate führt die Datenbankmigrationen für alle Modelle durch
 func AutoMigrate() error {
 	err := db.AutoMigrate(
 		&models.Department{},
-		&models.User{},
+		&models.Employee{},
 		&models.ShiftType{},
 		&models.ShiftWeek{},
 		&models.ShiftDay{},
@@ -92,7 +86,6 @@ func AutoMigrate() error {
 	return nil
 }
 
-// SetupTestDB erstellt eine Testdatenbank für Integrationstests
 func SetupTestDB(t *testing.T, entities ...interface{}) *fiber.App {
 	testDbPath := os.Getenv("SQLITE_TEST_DB_PATH")
 	if testDbPath == "" {
@@ -115,4 +108,20 @@ func SetupTestDB(t *testing.T, entities ...interface{}) *fiber.App {
 	SetDB(testDB)
 
 	return fiber.New()
+}
+
+func CleanTestDB() error {
+	if db != nil {
+		err := db.Migrator().DropTable(
+			&models.ShiftDay{},
+			&models.ShiftWeek{},
+			&models.ShiftType{},
+			&models.Employee{},
+			&models.Department{},
+		)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
