@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/ptmmeiningen/schichtplaner/database"
@@ -16,7 +17,7 @@ import (
 // @Tags employees
 // @Accept json
 // @Produce json
-// @Success 200 {object} responses.APIResponse
+// @Success 200 {object} responses.APIResponse{data=[]models.Employee}
 // @Failure 500 {object} responses.APIResponse
 // @Router /api/v1/employees [get]
 func HandleAllEmployees(c *fiber.Ctx) error {
@@ -34,7 +35,7 @@ func HandleAllEmployees(c *fiber.Ctx) error {
 	if result.Error != nil {
 		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
 	}
-	return c.JSON(responses.SuccessResponse("Mitarbeiter erfolgreich abgerufen", employees))
+	return c.JSON(responses.SuccessResponse(responses.MsgSuccessGet, employees))
 }
 
 // @Summary Mitarbeiter erstellen
@@ -43,13 +44,13 @@ func HandleAllEmployees(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param employee body models.Employee true "Mitarbeiter-Daten"
-// @Success 201 {object} responses.APIResponse
+// @Success 201 {object} responses.APIResponse{data=models.Employee}
 // @Failure 400 {object} responses.APIResponse
 // @Router /api/v1/employees [post]
 func HandleCreateEmployee(c *fiber.Ctx) error {
 	employee := new(models.Employee)
 	if err := c.BodyParser(employee); err != nil {
-		return c.Status(400).JSON(responses.ErrorResponse("Ungültige Eingabe"))
+		return c.Status(400).JSON(responses.ErrorResponse(responses.ErrInvalidInput))
 	}
 
 	if err := validateEmployee(employee); err != nil {
@@ -72,7 +73,7 @@ func HandleCreateEmployee(c *fiber.Ctx) error {
 		Preload("ShiftDays.ShiftType").
 		First(&employee, employee.ID)
 
-	return c.Status(201).JSON(responses.SuccessResponse("Mitarbeiter erfolgreich erstellt", employee))
+	return c.Status(201).JSON(responses.SuccessResponse(responses.MsgSuccessCreate, employee))
 }
 
 // @Summary Einzelnen Mitarbeiter abrufen
@@ -81,7 +82,7 @@ func HandleCreateEmployee(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path int true "Mitarbeiter-ID"
-// @Success 200 {object} responses.APIResponse
+// @Success 200 {object} responses.APIResponse{data=models.Employee}
 // @Failure 404 {object} responses.APIResponse
 // @Router /api/v1/employees/{id} [get]
 func HandleGetOneEmployee(c *fiber.Ctx) error {
@@ -94,10 +95,10 @@ func HandleGetOneEmployee(c *fiber.Ctx) error {
 		First(&employee, id)
 
 	if result.Error != nil {
-		return c.Status(404).JSON(responses.ErrorResponse("Mitarbeiter nicht gefunden"))
+		return c.Status(404).JSON(responses.ErrorResponse(responses.ErrNotFound))
 	}
 
-	return c.JSON(responses.SuccessResponse("Mitarbeiter erfolgreich abgerufen", employee))
+	return c.JSON(responses.SuccessResponse(responses.MsgSuccessGet, employee))
 }
 
 // @Summary Mitarbeiter aktualisieren
@@ -107,7 +108,7 @@ func HandleGetOneEmployee(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "Mitarbeiter-ID"
 // @Param employee body models.Employee true "Aktualisierte Mitarbeiter-Daten"
-// @Success 200 {object} responses.APIResponse
+// @Success 200 {object} responses.APIResponse{data=models.Employee}
 // @Failure 400,404 {object} responses.APIResponse
 // @Router /api/v1/employees/{id} [put]
 func HandleUpdateEmployee(c *fiber.Ctx) error {
@@ -115,11 +116,11 @@ func HandleUpdateEmployee(c *fiber.Ctx) error {
 	var employee models.Employee
 
 	if err := database.GetDB().First(&employee, id).Error; err != nil {
-		return c.Status(404).JSON(responses.ErrorResponse("Mitarbeiter nicht gefunden"))
+		return c.Status(404).JSON(responses.ErrorResponse(responses.ErrNotFound))
 	}
 
 	if err := c.BodyParser(&employee); err != nil {
-		return c.Status(400).JSON(responses.ErrorResponse("Ungültige Eingabe"))
+		return c.Status(400).JSON(responses.ErrorResponse(responses.ErrInvalidInput))
 	}
 
 	if err := validateEmployee(&employee); err != nil {
@@ -143,7 +144,7 @@ func HandleUpdateEmployee(c *fiber.Ctx) error {
 		Preload("ShiftDays.ShiftType").
 		First(&employee, id)
 
-	return c.JSON(responses.SuccessResponse("Mitarbeiter erfolgreich aktualisiert", employee))
+	return c.JSON(responses.SuccessResponse(responses.MsgSuccessUpdate, employee))
 }
 
 // @Summary Mitarbeiter löschen
@@ -160,7 +161,7 @@ func HandleDeleteEmployee(c *fiber.Ctx) error {
 	var employee models.Employee
 
 	if err := database.GetDB().First(&employee, id).Error; err != nil {
-		return c.Status(404).JSON(responses.ErrorResponse("Mitarbeiter nicht gefunden"))
+		return c.Status(404).JSON(responses.ErrorResponse(responses.ErrNotFound))
 	}
 
 	var shiftDayCount int64
@@ -173,33 +174,37 @@ func HandleDeleteEmployee(c *fiber.Ctx) error {
 		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
 
-	return c.JSON(responses.SuccessResponse("Mitarbeiter erfolgreich gelöscht", nil))
+	return c.JSON(responses.SuccessResponse(responses.MsgSuccessDelete, nil))
 }
 
-// @Summary Mitarbeiter nach Abteilung abrufen
-// @Description Ruft alle Mitarbeiter einer bestimmten Abteilung ab
+// @Summary Verfügbare Mitarbeiter abrufen
+// @Description Ruft alle Mitarbeiter ab, die an einem bestimmten Datum noch keine Schicht haben
 // @Tags employees
 // @Accept json
 // @Produce json
-// @Param id path int true "Abteilungs-ID"
-// @Success 200 {object} responses.APIResponse
-// @Failure 404 {object} responses.APIResponse
-// @Router /api/v1/employees/department/{id} [get]
-func HandleEmployeesByDepartment(c *fiber.Ctx) error {
-	departmentID := c.Params("id")
-	var employees []models.Employee
-
-	result := database.GetDB().
-		Where("department_id = ?", departmentID).
-		Preload("Department").
-		Preload("ShiftDays.ShiftType").
-		Find(&employees)
-
-	if result.Error != nil {
-		return c.Status(404).JSON(responses.ErrorResponse("Keine Mitarbeiter in dieser Abteilung gefunden"))
+// @Param date path string true "Datum (YYYY-MM-DD)"
+// @Success 200 {object} responses.APIResponse{data=[]models.Employee}
+// @Failure 400,404 {object} responses.APIResponse
+// @Router /api/v1/employees/available/{date} [get]
+func HandleGetAvailableEmployees(c *fiber.Ctx) error {
+	dateStr := c.Params("date")
+	date, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		return c.Status(400).JSON(responses.ErrorResponse("Ungültiges Datumsformat. Bitte YYYY-MM-DD verwenden"))
 	}
 
-	return c.JSON(responses.SuccessResponse("Mitarbeiter erfolgreich abgerufen", employees))
+	var availableEmployees []models.Employee
+	result := database.GetDB().
+		Joins("LEFT JOIN shift_days ON employees.id = shift_days.employee_id AND shift_days.date = ?", date).
+		Where("shift_days.id IS NULL").
+		Preload("Department").
+		Find(&availableEmployees)
+
+	if result.Error != nil {
+		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
+	}
+
+	return c.JSON(responses.SuccessResponse("Verfügbare Mitarbeiter erfolgreich abgerufen", availableEmployees))
 }
 
 // @Summary Schichten eines Mitarbeiters abrufen
@@ -208,7 +213,7 @@ func HandleEmployeesByDepartment(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path int true "Mitarbeiter-ID"
-// @Success 200 {object} responses.APIResponse
+// @Success 200 {object} responses.APIResponse{data=[]models.ShiftDay}
 // @Failure 404 {object} responses.APIResponse
 // @Router /api/v1/employees/shifts/{id} [get]
 func HandleEmployeeShifts(c *fiber.Ctx) error {
@@ -221,7 +226,7 @@ func HandleEmployeeShifts(c *fiber.Ctx) error {
 		First(&employee, employeeID)
 
 	if result.Error != nil {
-		return c.Status(404).JSON(responses.ErrorResponse("Mitarbeiter nicht gefunden"))
+		return c.Status(404).JSON(responses.ErrorResponse(responses.ErrNotFound))
 	}
 
 	return c.JSON(responses.SuccessResponse("Schichten erfolgreich abgerufen", employee.ShiftDays))

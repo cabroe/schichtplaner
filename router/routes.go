@@ -20,6 +20,8 @@ func SetupRoutes(app *fiber.App) {
 	employees.Put("/:id", handlers.HandleUpdateEmployee)
 	employees.Delete("/:id", handlers.HandleDeleteEmployee)
 	employees.Get("/department/:id", handlers.HandleGetDepartmentEmployees)
+	employees.Get("/shifts/:id", handlers.HandleEmployeeShifts)
+	employees.Get("/available/:date", handlers.HandleGetAvailableEmployees)
 
 	// Department routes
 	departments := v1.Group("/departments")
@@ -28,6 +30,7 @@ func SetupRoutes(app *fiber.App) {
 	departments.Get("/:id", handlers.HandleGetOneDepartment)
 	departments.Put("/:id", handlers.HandleUpdateDepartment)
 	departments.Delete("/:id", handlers.HandleDeleteDepartment)
+	departments.Get("/:id/stats", handlers.HandleDepartmentStats)
 
 	// ShiftDay routes
 	shiftDays := v1.Group("/shiftdays")
@@ -36,6 +39,8 @@ func SetupRoutes(app *fiber.App) {
 	shiftDays.Get("/:id", handlers.HandleGetOneShiftDay)
 	shiftDays.Put("/:id", handlers.HandleUpdateShiftDay)
 	shiftDays.Delete("/:id", handlers.HandleDeleteShiftDay)
+	shiftDays.Get("/week/:id", handlers.HandleGetShiftDaysByWeek)
+	shiftDays.Get("/conflicts", handlers.HandleCheckShiftConflicts)
 
 	// ShiftType routes
 	shiftTypes := v1.Group("/shifttypes")
@@ -44,6 +49,7 @@ func SetupRoutes(app *fiber.App) {
 	shiftTypes.Get("/:id", handlers.HandleGetOneShiftType)
 	shiftTypes.Put("/:id", handlers.HandleUpdateShiftType)
 	shiftTypes.Delete("/:id", handlers.HandleDeleteShiftType)
+	shiftTypes.Get("/department/:id", handlers.HandleGetDepartmentShiftTypes)
 
 	// ShiftWeek routes
 	shiftWeeks := v1.Group("/shiftweeks")
@@ -53,4 +59,7 @@ func SetupRoutes(app *fiber.App) {
 	shiftWeeks.Put("/:id", handlers.HandleUpdateShiftWeek)
 	shiftWeeks.Delete("/:id", handlers.HandleDeleteShiftWeek)
 	shiftWeeks.Get("/department/:id", handlers.HandleGetDepartmentShiftWeeks)
+	shiftWeeks.Put("/:id/status", handlers.HandleUpdateShiftWeekStatus)
+	shiftWeeks.Get("/:id/stats", handlers.HandleShiftWeekStats)
+	shiftWeeks.Post("/copy/:id", handlers.HandleCopyShiftWeek)
 }

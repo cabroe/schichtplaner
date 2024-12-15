@@ -1,39 +1,5 @@
 basePath: /
 definitions:
-  handlers.HealthData:
-    properties:
-      api_path:
-        type: string
-      database:
-        type: string
-      environment:
-        type: string
-      go_version:
-        type: string
-      goroutines:
-        type: integer
-      mem_stats:
-        $ref: '#/definitions/handlers.SystemStats'
-      num_cpu:
-        type: integer
-      status:
-        type: string
-      timestamp:
-        type: string
-      version:
-        type: string
-    type: object
-  handlers.SystemStats:
-    properties:
-      alloc:
-        type: integer
-      num_gc:
-        type: integer
-      sys:
-        type: integer
-      total_alloc:
-        type: integer
-    type: object
   models.Department:
     properties:
       color:
@@ -172,7 +138,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Department'
+                  type: array
+              type: object
         "500":
           description: Internal Server Error
           schema:
@@ -197,7 +170,12 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Department'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -250,7 +228,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Department'
+              type: object
         "404":
           description: Not Found
           schema:
@@ -280,7 +263,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Department'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -290,6 +278,69 @@ paths:
           schema:
             $ref: '#/definitions/responses.APIResponse'
       summary: Abteilung aktualisieren
+      tags:
+      - departments
+  /api/v1/departments/{id}/employees:
+    get:
+      consumes:
+      - application/json
+      description: Ruft alle Mitarbeiter einer spezifischen Abteilung ab
+      parameters:
+      - description: Abteilungs-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Employee'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Mitarbeiter einer Abteilung abrufen
+      tags:
+      - departments
+  /api/v1/departments/{id}/stats:
+    get:
+      consumes:
+      - application/json
+      description: Ruft statistische Daten einer Abteilung ab
+      parameters:
+      - description: Abteilungs-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Abteilungsstatistiken abrufen
       tags:
       - departments
   /api/v1/employees:
@@ -303,7 +354,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Employee'
+                  type: array
+              type: object
         "500":
           description: Internal Server Error
           schema:
@@ -328,7 +386,12 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Employee'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -381,7 +444,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Employee'
+              type: object
         "404":
           description: Not Found
           schema:
@@ -411,7 +479,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Employee'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -423,29 +496,41 @@ paths:
       summary: Mitarbeiter aktualisieren
       tags:
       - employees
-  /api/v1/employees/department/{id}:
+  /api/v1/employees/available/{date}:
     get:
       consumes:
       - application/json
-      description: Ruft alle Mitarbeiter einer bestimmten Abteilung ab
+      description: Ruft alle Mitarbeiter ab, die an einem bestimmten Datum noch keine
+        Schicht haben
       parameters:
-      - description: Abteilungs-ID
+      - description: Datum (YYYY-MM-DD)
         in: path
-        name: id
+        name: date
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Employee'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
             $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Mitarbeiter nach Abteilung abrufen
+      summary: Verfügbare Mitarbeiter abrufen
       tags:
       - employees
   /api/v1/employees/shifts/{id}:
@@ -465,7 +550,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.ShiftDay'
+                  type: array
+              type: object
         "404":
           description: Not Found
           schema:
@@ -477,19 +569,14 @@ paths:
     get:
       consumes:
       - '*/*'
-      description: Gibt detaillierte Informationen über den Systemzustand zurück
+      description: Prüft ob das System verfügbar ist
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/responses.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/handlers.HealthData'
-              type: object
+            $ref: '#/definitions/responses.APIResponse'
         "503":
           description: Service Unavailable
           schema:
@@ -508,7 +595,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.ShiftDay'
+                  type: array
+              type: object
         "500":
           description: Internal Server Error
           schema:
@@ -533,7 +627,12 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ShiftDay'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -586,7 +685,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ShiftDay'
+              type: object
         "404":
           description: Not Found
           schema:
@@ -616,7 +720,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ShiftDay'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -626,6 +735,65 @@ paths:
           schema:
             $ref: '#/definitions/responses.APIResponse'
       summary: Schichttag aktualisieren
+      tags:
+      - shiftdays
+  /api/v1/shiftdays/conflicts:
+    get:
+      consumes:
+      - application/json
+      description: Prüft auf Überschneidungen bei Schichten
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    additionalProperties: true
+                    type: object
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Schichtkonflikte prüfen
+      tags:
+      - shiftdays
+  /api/v1/shiftdays/week/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Ruft alle Schichttage einer bestimmten Woche ab
+      parameters:
+      - description: Schichtwoche-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.ShiftDay'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Schichttage nach Woche abrufen
       tags:
       - shiftdays
   /api/v1/shifttypes:
@@ -639,7 +807,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.ShiftType'
+                  type: array
+              type: object
         "500":
           description: Internal Server Error
           schema:
@@ -664,7 +839,12 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ShiftType'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -717,7 +897,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ShiftType'
+              type: object
         "404":
           description: Not Found
           schema:
@@ -747,7 +932,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ShiftType'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -757,6 +947,38 @@ paths:
           schema:
             $ref: '#/definitions/responses.APIResponse'
       summary: Schichttyp aktualisieren
+      tags:
+      - shifttypes
+  /api/v1/shifttypes/department/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Ruft alle Schichttypen einer spezifischen Abteilung ab
+      parameters:
+      - description: Abteilungs-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.ShiftType'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Schichttypen einer Abteilung abrufen
       tags:
       - shifttypes
   /api/v1/shiftweeks:
@@ -770,7 +992,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.ShiftWeek'
+                  type: array
+              type: object
         "500":
           description: Internal Server Error
           schema:
@@ -795,7 +1024,12 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ShiftWeek'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -807,7 +1041,7 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Löscht eine Schichtwoche
+      description: Löscht eine Schichtwoche und zugehörige Schichttage
       parameters:
       - description: Schichtwoche-ID
         in: path
@@ -835,7 +1069,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Ruft eine spezifische Schichtwoche ab
+      description: Ruft eine spezifische Schichtwoche mit allen Details ab
       parameters:
       - description: Schichtwoche-ID
         in: path
@@ -848,7 +1082,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ShiftWeek'
+              type: object
         "404":
           description: Not Found
           schema:
@@ -878,7 +1117,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/responses.APIResponse'
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ShiftWeek'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -888,6 +1132,107 @@ paths:
           schema:
             $ref: '#/definitions/responses.APIResponse'
       summary: Schichtwoche aktualisieren
+      tags:
+      - shiftweeks
+  /api/v1/shiftweeks/{id}/stats:
+    get:
+      consumes:
+      - application/json
+      description: Ruft statistische Daten einer Schichtwoche ab
+      parameters:
+      - description: Schichtwoche-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Statistiken einer Schichtwoche abrufen
+      tags:
+      - shiftweeks
+  /api/v1/shiftweeks/{id}/status:
+    put:
+      consumes:
+      - application/json
+      description: Aktualisiert den Status einer Schichtwoche (draft/published/archived)
+      parameters:
+      - description: Schichtwoche-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Status-Update
+        in: body
+        name: status
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ShiftWeek'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Status einer Schichtwoche aktualisieren
+      tags:
+      - shiftweeks
+  /api/v1/shiftweeks/copy/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Erstellt eine Kopie einer bestehenden Schichtwoche
+      parameters:
+      - description: Quell-Schichtwoche-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ShiftWeek'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Schichtwoche kopieren
       tags:
       - shiftweeks
   /api/v1/shiftweeks/department/{id}:

@@ -96,26 +96,36 @@ func main() {
 			StartDate:    startDate,
 			EndDate:      startDate.AddDate(0, 0, 7),
 			DepartmentID: 1,
+			Status:       models.StatusPublished,
+			Notes:        "Aktuelle Woche",
 		},
 		{
 			StartDate:    startDate.AddDate(0, 0, 7),
 			EndDate:      startDate.AddDate(0, 0, 14),
 			DepartmentID: 1,
+			Status:       models.StatusDraft,
+			Notes:        "Nächste Woche in Planung",
 		},
 		{
 			StartDate:    startDate.AddDate(0, 0, 14),
 			EndDate:      startDate.AddDate(0, 0, 21),
 			DepartmentID: 1,
+			Status:       models.StatusDraft,
+			Notes:        "Übernächste Woche",
 		},
 		{
 			StartDate:    startDate,
 			EndDate:      startDate.AddDate(0, 0, 7),
 			DepartmentID: 2,
+			Status:       models.StatusArchived,
+			Notes:        "Archivierte Woche",
 		},
 		{
 			StartDate:    startDate.AddDate(0, 0, 7),
 			EndDate:      startDate.AddDate(0, 0, 14),
 			DepartmentID: 2,
+			Status:       models.StatusPublished,
+			Notes:        "Aktuelle Woche HR",
 		},
 	}
 
@@ -127,8 +137,8 @@ func main() {
 		for i := 0; i < 7; i++ {
 			shiftDay := models.ShiftDay{
 				Date:        week.StartDate.AddDate(0, 0, i),
-				ShiftTypeID: uint((i % 3) + 1), // Wechsel zwischen Schichttypen 1-3
-				EmployeeID:  uint((i % 3) + 1), // Wechsel zwischen Mitarbeitern 1-3
+				ShiftTypeID: uint((i % 3) + 1),
+				EmployeeID:  uint((i % 3) + 1),
 				ShiftWeekID: week.ID,
 			}
 			database.GetDB().Create(&shiftDay)
