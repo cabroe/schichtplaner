@@ -15,7 +15,7 @@ import (
 // @Tags departments
 // @Accept json
 // @Produce json
-// @Success 200 {object} responses.APIResponse{data=[]models.Department}
+// @Success 200 {object} responses.APIResponse
 // @Failure 500 {object} responses.APIResponse
 // @Router /api/v1/departments [get]
 func HandleAllDepartments(c *fiber.Ctx) error {
@@ -41,7 +41,7 @@ func HandleAllDepartments(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param department body models.Department true "Abteilungsdaten"
-// @Success 201 {object} responses.APIResponse{data=models.Department}
+// @Success 201 {object} responses.APIResponse
 // @Failure 400 {object} responses.APIResponse
 // @Router /api/v1/departments [post]
 func HandleCreateDepartment(c *fiber.Ctx) error {
@@ -73,7 +73,7 @@ func HandleCreateDepartment(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path int true "Abteilungs-ID"
-// @Success 200 {object} responses.APIResponse{data=models.Department}
+// @Success 200 {object} responses.APIResponse
 // @Failure 404 {object} responses.APIResponse
 // @Router /api/v1/departments/{id} [get]
 func HandleGetOneDepartment(c *fiber.Ctx) error {
@@ -99,7 +99,7 @@ func HandleGetOneDepartment(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "Abteilungs-ID"
 // @Param department body models.Department true "Aktualisierte Abteilungsdaten"
-// @Success 200 {object} responses.APIResponse{data=models.Department}
+// @Success 200 {object} responses.APIResponse
 // @Failure 400,404 {object} responses.APIResponse
 // @Router /api/v1/departments/{id} [put]
 func HandleUpdateDepartment(c *fiber.Ctx) error {
@@ -168,4 +168,33 @@ func validateDepartment(department *models.Department) error {
 		return fmt.Errorf("Farbe ist erforderlich")
 	}
 	return nil
+}
+
+// @Summary Mitarbeiter einer Abteilung abrufen
+// @Description Ruft alle Mitarbeiter einer spezifischen Abteilung ab
+// @Tags departments
+// @Accept json
+// @Produce json
+// @Param id path int true "Abteilungs-ID"
+// @Success 200 {object} responses.APIResponse
+// @Failure 404 {object} responses.APIResponse
+// @Router /api/v1/employees/department/{id} [get]
+func HandleGetDepartmentEmployees(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var employees []models.Employee
+
+	result := database.GetDB().
+		Where("department_id = ?", id).
+		Select("id, first_name, last_name, email, color, department_id, is_admin").
+		Find(&employees)
+
+	if result.Error != nil {
+		return c.Status(404).JSON(responses.ErrorResponse("Keine Mitarbeiter in dieser Abteilung gefunden"))
+	}
+
+	if len(employees) == 0 {
+		return c.Status(404).JSON(responses.ErrorResponse("Keine Mitarbeiter in dieser Abteilung gefunden"))
+	}
+
+	return c.JSON(responses.SuccessResponse("Mitarbeiter erfolgreich abgerufen", employees))
 }

@@ -188,3 +188,40 @@ func validateShiftWeek(shiftWeek *models.ShiftWeek) error {
 
 	return nil
 }
+
+// @Summary Schichtwochen einer Abteilung abrufen
+// @Description Ruft alle Schichtwochen einer spezifischen Abteilung ab
+// @Tags shiftweeks
+// @Accept json
+// @Produce json
+// @Param id path int true "Abteilungs-ID"
+// @Success 200 {object} responses.APIResponse{data=[]models.ShiftWeek}
+// @Failure 404 {object} responses.APIResponse
+// @Router /api/v1/shiftweeks/department/{id} [get]
+func HandleGetDepartmentShiftWeeks(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var shiftWeeks []models.ShiftWeek
+
+	result := database.GetDB().
+		Where("department_id = ?", id).
+		Preload("ShiftDays", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, date, shift_type_id, employee_id, shift_week_id")
+		}).
+		Preload("ShiftDays.ShiftType", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, name, description, duration, color")
+		}).
+		Preload("ShiftDays.Employee", func(db *gorm.DB) *gorm.DB {
+			return db.Select("id, first_name, last_name, email, color, department_id")
+		}).
+		Find(&shiftWeeks)
+
+	if result.Error != nil {
+		return c.Status(404).JSON(responses.ErrorResponse("Keine Schichtwochen in dieser Abteilung gefunden"))
+	}
+
+	if len(shiftWeeks) == 0 {
+		return c.Status(404).JSON(responses.ErrorResponse("Keine Schichtwochen in dieser Abteilung gefunden"))
+	}
+
+	return c.JSON(responses.SuccessResponse("Schichtwochen erfolgreich abgerufen", shiftWeeks))
+}

@@ -172,14 +172,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/responses.APIResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/models.Department'
-                  type: array
-              type: object
+            $ref: '#/definitions/responses.APIResponse'
         "500":
           description: Internal Server Error
           schema:
@@ -204,12 +197,7 @@ paths:
         "201":
           description: Created
           schema:
-            allOf:
-            - $ref: '#/definitions/responses.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/models.Department'
-              type: object
+            $ref: '#/definitions/responses.APIResponse'
         "400":
           description: Bad Request
           schema:
@@ -262,12 +250,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/responses.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/models.Department'
-              type: object
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
@@ -297,12 +280,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/responses.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/models.Department'
-              type: object
+            $ref: '#/definitions/responses.APIResponse'
         "400":
           description: Bad Request
           schema:
@@ -910,6 +888,38 @@ paths:
           schema:
             $ref: '#/definitions/responses.APIResponse'
       summary: Schichtwoche aktualisieren
+      tags:
+      - shiftweeks
+  /api/v1/shiftweeks/department/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Ruft alle Schichtwochen einer spezifischen Abteilung ab
+      parameters:
+      - description: Abteilungs-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.ShiftWeek'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Schichtwochen einer Abteilung abrufen
       tags:
       - shiftweeks
 swagger: "2.0"

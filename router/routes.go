@@ -19,6 +19,7 @@ func SetupRoutes(app *fiber.App) {
 	employees.Get("/:id", handlers.HandleGetOneEmployee)
 	employees.Put("/:id", handlers.HandleUpdateEmployee)
 	employees.Delete("/:id", handlers.HandleDeleteEmployee)
+	employees.Get("/department/:id", handlers.HandleGetDepartmentEmployees)
 
 	// Department routes
 	departments := v1.Group("/departments")
@@ -51,4 +52,5 @@ func SetupRoutes(app *fiber.App) {
 	shiftWeeks.Get("/:id", handlers.HandleGetOneShiftWeek)
 	shiftWeeks.Put("/:id", handlers.HandleUpdateShiftWeek)
 	shiftWeeks.Delete("/:id", handlers.HandleDeleteShiftWeek)
+	shiftWeeks.Get("/department/:id", handlers.HandleGetDepartmentShiftWeeks)
 }

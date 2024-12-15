@@ -103,11 +103,24 @@ func HandleGetOneShiftType(c *fiber.Ctx) error {
 func HandleUpdateShiftType(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var shiftType models.ShiftType
+	var existingShiftType models.ShiftType
 
+	// Prüfen ob der neue Name bereits existiert (außer bei der zu aktualisierenden ID)
+	if err := c.BodyParser(&existingShiftType); err != nil {
+		return c.Status(400).JSON(responses.ErrorResponse("Ungültige Eingabe"))
+	}
+
+	result := database.GetDB().Where("name = ? AND id != ?", existingShiftType.Name, id).First(&models.ShiftType{})
+	if result.RowsAffected > 0 {
+		return c.Status(400).JSON(responses.ErrorResponse("Ein Schichttyp mit diesem Namen existiert bereits"))
+	}
+
+	// Ursprünglichen Datensatz laden
 	if err := database.GetDB().First(&shiftType, id).Error; err != nil {
 		return c.Status(404).JSON(responses.ErrorResponse("Schichttyp nicht gefunden"))
 	}
 
+	// Aktualisierung durchführen
 	if err := c.BodyParser(&shiftType); err != nil {
 		return c.Status(400).JSON(responses.ErrorResponse("Ungültige Eingabe"))
 	}
@@ -119,10 +132,6 @@ func HandleUpdateShiftType(c *fiber.Ctx) error {
 	if err := database.GetDB().Save(&shiftType).Error; err != nil {
 		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
-
-	database.GetDB().
-		Preload("ShiftDays.Employee").
-		First(&shiftType, id)
 
 	return c.JSON(responses.SuccessResponse("Schichttyp erfolgreich aktualisiert", shiftType))
 }
