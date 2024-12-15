@@ -1,12 +1,12 @@
-### Get all shift weeks
+### Alle Schichtwochen abrufen
 GET http://localhost:8080/api/v1/shiftweeks
 Accept: application/json
 
-### Get single shift week
+### Einzelne Schichtwoche abrufen
 GET http://localhost:8080/api/v1/shiftweeks/1
 Accept: application/json
 
-### Create new shift week
+### Neue Schichtwoche erstellen
 POST http://localhost:8080/api/v1/shiftweeks
 Content-Type: application/json
 
@@ -14,11 +14,11 @@ Content-Type: application/json
     "start_date": "2024-01-15T00:00:00Z",
     "end_date": "2024-01-21T23:59:59Z",
     "department_id": 1,
-    "status": "planned",
-    "notes": "Regular week"
+    "status": "geplant",
+    "notes": "Standardwoche"
 }
 
-### Update shift week
+### Schichtwoche aktualisieren
 PUT http://localhost:8080/api/v1/shiftweeks/1
 Content-Type: application/json
 
@@ -26,14 +26,30 @@ Content-Type: application/json
     "start_date": "2024-01-22T00:00:00Z",
     "end_date": "2024-01-28T23:59:59Z",
     "department_id": 1,
-    "status": "confirmed",
-    "notes": "Updated schedule"
+    "status": "bestätigt",
+    "notes": "Aktualisierter Plan"
 }
 
-### Delete shift week
+### Schichtwoche löschen
 DELETE http://localhost:8080/api/v1/shiftweeks/1
 Accept: application/json
 
-### Get shift weeks by department
+### Schichtwochen einer Abteilung abrufen
 GET http://localhost:8080/api/v1/shiftweeks/department/1
+Accept: application/json
+
+### Status einer Schichtwoche aktualisieren
+PUT http://localhost:8080/api/v1/shiftweeks/1/status
+Content-Type: application/json
+
+{
+    "status": "bestätigt"
+}
+
+### Statistiken einer Schichtwoche abrufen
+GET http://localhost:8080/api/v1/shiftweeks/1/stats
+Accept: application/json
+
+### Schichtwoche kopieren
+POST http://localhost:8080/api/v1/shiftweeks/copy/1
 Accept: application/json
