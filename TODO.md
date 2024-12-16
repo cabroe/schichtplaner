@@ -138,3 +138,39 @@ Benutzerfreundlichere Endpunkte: Vereinfachung der API-Endpunkte und bessere Dok
 Performance-Optimierungen: Verbesserung der Antwortzeiten der API und Handling von größeren Datenmengen effizienter gestalten.
 
 Haben Sie spezielle Anforderungen oder Funktionen im Sinn, die Sie gerne verbessert sehen würden?
+
+
+
+
+-----
+
+
+
+Vite als Build-Tool
+TypeScript für typsichere Entwicklung
+Tailwind CSS für Styling
+shadcn/ui für UI-Komponenten
+Layout-Struktur:
+
+Das Dashboard soll den gesamten Viewport (100vh) ausfüllen
+Eine Sidebar mit:
+Logo-Bereich (gleiche Höhe wie Topbar)
+Navigationsmenü
+Konsistente Breite auf Desktop
+Eine Topbar mit:
+Gleiche Höhe wie Logo-Bereich
+Responsive Anpassung
+Hauptinhalt-Bereich:
+Flexibel skalierbar
+Scrollbar bei Überlauf
+Responsive Verhalten:
+
+Mobile: Sidebar versteckt sich, Toggle-Menü in Topbar
+Tablet: Kompakte Sidebar mit Icons
+Desktop: Vollständige Sidebar sichtbar
+Zusätzliche Anforderungen:
+
+Klare Komponenten-Struktur
+Einfache, wartbare Code-Organisation
+Typescript Interfaces für Komponenten-Props
+Einheitliche Styling-Variablen
