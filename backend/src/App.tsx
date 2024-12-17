@@ -1,13 +1,29 @@
-import BackendLayout from './layouts/layout'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Layout from './layouts/layout'
+import LoginPage from './app/login/page'
+import DashboardPage from './app/dashboard/page'
+import EmployeePage from './app/employee/page'
 import './App.css'
 
 function App() {
   return (
-    <div className="min-h-screen">
-      <BackendLayout>
-        <h1>Dashboard Content</h1>
-      </BackendLayout>
-    </div>
+    <BrowserRouter>
+      <div className="min-h-screen">
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={
+            <Layout>
+              <DashboardPage />
+            </Layout>
+          } />
+          <Route path="/employees" element={
+            <Layout>
+              <EmployeePage />
+            </Layout>
+          } />
+        </Routes>
+      </div>
+    </BrowserRouter>
   )
 }
 

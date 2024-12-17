@@ -48,3 +48,12 @@ export default tseslint.config({
   },
 })
 ```
+
+
+
+
+
+
+## shadcn ui
+
+npx shadcn add dialog
