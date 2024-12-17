@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Department } from "@/types/api"
 import { API_ROUTES, API_CONFIG } from "@/config/api"
-import { DepartmentTable } from "@/components/department-table"
+import { DepartmentTable } from "@/components/department/table"
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { SearchBar } from "@/components/search-bar"
-import { DepartmentDialog } from "@/components/department-dialog"
+import { DepartmentDialog } from "@/components/department/dialog"
 
 interface DepartmentFormData {
   name: string
