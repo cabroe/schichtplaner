@@ -1,7 +1,14 @@
+MAKEFLAGS += --jobs
+
 .PHONY: dev swagger build test clean seed install
 
-dev:
+dev-backend:
+	cd backend && npm run dev
+
+dev-api:
 	air
+
+dev: dev-api dev-backend
 
 swagger:
 	swag init
