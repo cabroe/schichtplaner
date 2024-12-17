@@ -5,35 +5,102 @@ import { EmployeeTable } from "@/components/employee-table"
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { SearchBar } from "@/components/search-bar"
+import { EmployeeDialog } from "@/components/dialogs/employee-dialog"
+
+interface EmployeeFormData {
+  first_name: string
+  last_name: string
+  email: string
+  password?: string
+  color: string
+  department_id: number
+  is_admin: boolean
+}
 
 export default function EmployeePage() {
   const [employees, setEmployees] = useState<Employee[]>([])
   const [departments, setDepartments] = useState<Department[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const [showDialog, setShowDialog] = useState(false)
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | undefined>()
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [employeesResponse, departmentsResponse] = await Promise.all([
-          fetch(API_ROUTES.EMPLOYEES, API_CONFIG),
-          fetch(API_ROUTES.DEPARTMENTS, API_CONFIG)
-        ])
-
-        const employeesResult = await employeesResponse.json()
-        const departmentsResult = await departmentsResponse.json()
-
-        setEmployees(Array.isArray(employeesResult.data) ? employeesResult.data : [employeesResult.data])
-        setDepartments(departmentsResult.data)
-      } catch (error) {
-        console.error('Fehler beim Laden der Daten:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
     fetchData()
   }, [])
+
+  const fetchData = async () => {
+    try {
+      const [employeesResponse, departmentsResponse] = await Promise.all([
+        fetch(API_ROUTES.EMPLOYEES, API_CONFIG),
+        fetch(API_ROUTES.DEPARTMENTS, API_CONFIG)
+      ])
+
+      const employeesResult = await employeesResponse.json()
+      const departmentsResult = await departmentsResponse.json()
+
+      setEmployees(Array.isArray(employeesResult.data) ? employeesResult.data : [employeesResult.data])
+      setDepartments(departmentsResult.data)
+    } catch (error) {
+      console.error('Fehler beim Laden der Daten:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleCreateEmployee = async (data: EmployeeFormData) => {
+    try {
+      const response = await fetch(API_ROUTES.EMPLOYEES, {
+        ...API_CONFIG,
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+      if (response.ok) {
+        fetchData()
+      }
+    } catch (error) {
+      console.error('Fehler beim Erstellen:', error)
+    }
+  }
+
+  const handleUpdateEmployee = async (data: EmployeeFormData & { id: number }) => {
+    try {
+      const response = await fetch(`${API_ROUTES.EMPLOYEES}/${data.id}`, {
+        ...API_CONFIG,
+        method: 'PUT',
+        body: JSON.stringify(data)
+      })
+      if (response.ok) {
+        fetchData()
+      }
+    } catch (error) {
+      console.error('Fehler beim Aktualisieren:', error)
+    }
+  }
+
+  const handleDeleteEmployee = async (employee: Employee) => {
+    try {
+      const response = await fetch(`${API_ROUTES.EMPLOYEES}/${employee.id}`, {
+        ...API_CONFIG,
+        method: 'DELETE'
+      })
+      if (response.ok) {
+        fetchData()
+      }
+    } catch (error) {
+      console.error('Fehler beim Löschen:', error)
+    }
+  }
+
+  const handleSubmit = (data: EmployeeFormData) => {
+    if (selectedEmployee) {
+      handleUpdateEmployee({ ...data, id: selectedEmployee.id })
+    } else {
+      handleCreateEmployee(data)
+    }
+    setShowDialog(false)
+    setSelectedEmployee(undefined)
+  }
 
   const getDepartmentName = (departmentId: number) => {
     const department = departments.find(d => d.id === departmentId)
@@ -54,7 +121,7 @@ export default function EmployeePage() {
     <div className="p-4 md:p-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <h1 className="text-2xl font-bold">Mitarbeiter</h1>
-        <Button>
+        <Button onClick={() => setShowDialog(true)}>
           <PlusCircle className="mr-2 h-4 w-4" />
           <span className="hidden sm:inline">Mitarbeiter hinzufügen</span>
           <span className="sm:hidden">Hinzufügen</span>
@@ -72,6 +139,22 @@ export default function EmployeePage() {
       <EmployeeTable 
         employees={filteredEmployees}
         getDepartmentName={getDepartmentName}
+        onEdit={(employee) => {
+          setSelectedEmployee(employee)
+          setShowDialog(true)
+        }}
+        onDelete={handleDeleteEmployee}
+      />
+
+      <EmployeeDialog 
+        isOpen={showDialog}
+        onClose={() => {
+          setShowDialog(false)
+          setSelectedEmployee(undefined)
+        }}
+        onSubmit={handleSubmit}
+        initialData={selectedEmployee}
+        departments={departments}
       />
     </div>
   )

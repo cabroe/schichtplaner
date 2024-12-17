@@ -4,8 +4,8 @@ export interface Department {
     color: string
     employees?: Employee[]
     shiftWeeks?: ShiftWeek[]
-    createdAt: string
-    updatedAt: string
+    created_at: string
+    updated_at: string
   }
   
   export interface Employee {
@@ -18,8 +18,8 @@ export interface Department {
     is_admin: boolean
     department_id: number
     shift_days?: ShiftDay[]
-    createdAt: string
-    updatedAt: string
+    created_at: string
+    updated_at: string
   }
   
   export const ShiftWeekStatus = {
@@ -39,8 +39,8 @@ export interface Department {
     shift_days?: ShiftDay[]
     status: ShiftWeekStatusType
     notes: string
-    createdAt: string
-    updatedAt: string
+    created_at: string
+    updated_at: string
   }
   
   export interface ShiftDay {
@@ -53,8 +53,8 @@ export interface Department {
     employee?: Employee
     notes: string
     status: string
-    createdAt: string
-    updatedAt: string
+    created_at: string
+    updated_at: string
   }
   
   export interface ShiftType {

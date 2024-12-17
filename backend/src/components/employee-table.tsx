@@ -8,13 +8,16 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Employee } from "@/types/api"
+import { Edit, Trash2 } from "lucide-react"
 
 interface EmployeeTableProps {
   employees: Employee[]
   getDepartmentName: (departmentId: number) => string
+  onEdit: (employee: Employee) => void
+  onDelete?: (employee: Employee) => void
 }
 
-export function EmployeeTable({ employees, getDepartmentName }: EmployeeTableProps) {
+export function EmployeeTable({ employees, getDepartmentName, onEdit, onDelete }: EmployeeTableProps) {
   return (
     <div className="overflow-auto rounded-md border">
       <Table>
@@ -65,13 +68,16 @@ export function EmployeeTable({ employees, getDepartmentName }: EmployeeTablePro
                 )}
               </TableCell>
               <TableCell className="text-right">
-                <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
-                  Bearbeiten
-                </Button>
-                <Button variant="ghost" size="sm" className="sm:hidden">
-                  <span className="sr-only">Bearbeiten</span>
-                  ⋯
-                </Button>
+                <div className="flex justify-end gap-2">
+                  <Button variant="ghost" size="icon" onClick={() => onEdit(employee)}>
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  {onDelete && (
+                    <Button variant="ghost" size="icon" onClick={() => onDelete(employee)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </TableCell>
             </TableRow>
           ))}
