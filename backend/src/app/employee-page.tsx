@@ -5,7 +5,7 @@ import { EmployeeTable } from "@/components/employee-table"
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { SearchBar } from "@/components/search-bar"
-import { EmployeeDialog } from "@/components/dialogs/employee-dialog"
+import { EmployeeDialog } from "@/components/employee-dialog"
 
 interface EmployeeFormData {
   first_name: string

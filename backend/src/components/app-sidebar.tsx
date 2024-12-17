@@ -1,10 +1,10 @@
 import { Sidebar } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
-import { LayoutDashboard, 
-  Calendar, 
-  Users, 
-  Settings 
+import { 
+  LayoutDashboard, 
+  Users,
+  Building2
 } from "lucide-react"
 
 export function AppSidebar() {
@@ -26,14 +26,6 @@ export function AppSidebar() {
           </li>
           <li>
             <Button variant="ghost" className="w-full justify-start" asChild>
-              <Link to="/schedule">
-                <Calendar className="mr-2 h-4 w-4" />
-                Schichten
-              </Link>
-            </Button>
-          </li>
-          <li>
-            <Button variant="ghost" className="w-full justify-start" asChild>
               <Link to="/employees">
                 <Users className="mr-2 h-4 w-4" />
                 Mitarbeiter
@@ -42,9 +34,9 @@ export function AppSidebar() {
           </li>
           <li>
             <Button variant="ghost" className="w-full justify-start" asChild>
-              <Link to="/settings">
-                <Settings className="mr-2 h-4 w-4" />
-                Einstellungen
+              <Link to="/departments">
+                <Building2 className="mr-2 h-4 w-4" />
+                Abteilungen
               </Link>
             </Button>
           </li>
