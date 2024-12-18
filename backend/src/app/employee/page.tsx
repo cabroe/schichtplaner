@@ -16,6 +16,8 @@ interface EmployeeFormData {
   color: string
   password?: string
   is_admin: boolean
+  created_at?: string
+  updated_at?: string
 }
 
 export default function EmployeePage() {
@@ -40,7 +42,7 @@ export default function EmployeePage() {
       const employeesResult = await employeesResponse.json()
       const departmentsResult = await departmentsResponse.json()
 
-      setEmployees(Array.isArray(employeesResult.data) ? employeesResult.data : [employeesResult.data])
+      setEmployees(employeesResult.data)
       setDepartments(departmentsResult.data)
     } catch (error) {
       console.error('Fehler beim Laden der Daten:', error)
@@ -87,6 +89,8 @@ export default function EmployeePage() {
       })
       if (response.ok) {
         fetchData()
+        setShowDialog(false)
+        setSelectedEmployee(undefined)
       }
     } catch (error) {
       console.error('Fehler beim Löschen:', error)
@@ -150,6 +154,7 @@ export default function EmployeePage() {
           setSelectedEmployee(undefined)
         }}
         onSubmit={handleSubmit}
+        onDelete={handleDeleteEmployee}
         initialData={selectedEmployee}
         departments={departments}
       />
