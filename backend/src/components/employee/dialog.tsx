@@ -20,7 +20,7 @@ interface EmployeeFormData {
   first_name: string
   last_name: string
   email: string
-  department_id: number
+  department_id: number | null
   color: string
   password?: string
   is_admin: boolean
@@ -35,7 +35,7 @@ interface EmployeeDialogProps {
 }
 
 export function EmployeeDialog({ isOpen, onClose, onSubmit, initialData, departments }: EmployeeDialogProps) {
-  const { register, handleSubmit, setValue, watch, reset } = useForm<EmployeeFormData>({
+  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<EmployeeFormData>({
     defaultValues: {
       first_name: '',
       last_name: '',
@@ -67,7 +67,14 @@ export function EmployeeDialog({ isOpen, onClose, onSubmit, initialData, departm
   }
 
   const handleFormSubmit = (data: EmployeeFormData) => {
-    onSubmit(data)
+    const submitData = {
+      ...data,
+      first_name: data.first_name.trim(),
+      last_name: data.last_name.trim(),
+      email: data.email.trim().toLowerCase(),
+      department_id: data.department_id || null
+    }
+    onSubmit(submitData)
     reset()
   }
 
@@ -86,17 +93,48 @@ export function EmployeeDialog({ isOpen, onClose, onSubmit, initialData, departm
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="first_name">Vorname</Label>
-              <Input id="first_name" {...register('first_name')} required />
+              <Input 
+                id="first_name" 
+                {...register('first_name', { 
+                  required: 'Vorname ist erforderlich',
+                  minLength: { value: 2, message: 'Vorname muss mindestens 2 Zeichen lang sein' }
+                })} 
+              />
+              {errors.first_name && (
+                <span className="text-sm text-red-500">{errors.first_name.message}</span>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="last_name">Nachname</Label>
-              <Input id="last_name" {...register('last_name')} required />
+              <Input 
+                id="last_name" 
+                {...register('last_name', { 
+                  required: 'Nachname ist erforderlich',
+                  minLength: { value: 2, message: 'Nachname muss mindestens 2 Zeichen lang sein' }
+                })} 
+              />
+              {errors.last_name && (
+                <span className="text-sm text-red-500">{errors.last_name.message}</span>
+              )}
             </div>
           </div>
           
           <div className="space-y-2">
             <Label htmlFor="email">E-Mail</Label>
-            <Input id="email" type="email" {...register('email')} required />
+            <Input 
+              id="email" 
+              type="email" 
+              {...register('email', { 
+                required: 'E-Mail ist erforderlich',
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: 'Ungültige E-Mail-Adresse'
+                }
+              })} 
+            />
+            {errors.email && (
+              <span className="text-sm text-red-500">{errors.email.message}</span>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -116,6 +154,9 @@ export function EmployeeDialog({ isOpen, onClose, onSubmit, initialData, departm
                 ))}
               </SelectContent>
             </Select>
+            {errors.department_id && (
+              <span className="text-sm text-red-500">{errors.department_id.message}</span>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -123,9 +164,14 @@ export function EmployeeDialog({ isOpen, onClose, onSubmit, initialData, departm
             <Input 
               id="password" 
               type="password" 
-              {...register('password')}
-              required={!initialData} 
+              {...register('password', {
+                required: !initialData ? 'Passwort ist erforderlich' : false,
+                minLength: { value: 6, message: 'Passwort muss mindestens 6 Zeichen lang sein' }
+              })}
             />
+            {errors.password && (
+              <span className="text-sm text-red-500">{errors.password.message}</span>
+            )}
           </div>          
 
           <div className="flex items-center space-x-2">
@@ -143,6 +189,9 @@ export function EmployeeDialog({ isOpen, onClose, onSubmit, initialData, departm
               value={initialData?.color || watch('color') || '#000000'}
               onChange={(color) => setValue('color', color)}
             />
+            {!watch('color') && (
+              <span className="text-sm text-red-500">Farbe ist erforderlich</span>
+            )}
           </div>
 
           <div className="flex justify-end gap-2">

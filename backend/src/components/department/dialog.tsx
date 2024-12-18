@@ -14,6 +14,7 @@ const getRandomColor = () => {
 }
 
 interface DepartmentFormData {
+  id?: number
   name: string
   color: string
   description: string
@@ -27,7 +28,7 @@ interface DepartmentDialogProps {
 }
 
 export function DepartmentDialog({ isOpen, onClose, onSubmit, initialData }: DepartmentDialogProps) {
-  const { register, handleSubmit, setValue, watch, reset } = useForm<DepartmentFormData>({
+  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<DepartmentFormData>({
     defaultValues: {
       name: '',
       color: getRandomColor(),
@@ -53,7 +54,13 @@ export function DepartmentDialog({ isOpen, onClose, onSubmit, initialData }: Dep
   }
 
   const handleFormSubmit = (data: DepartmentFormData) => {
-    onSubmit(data)
+    const submitData = {
+      ...data,
+      name: data.name.trim(),
+      color: data.color,
+      description: data.description || ''
+    }
+    onSubmit(submitData)
     reset()
   }
 
@@ -71,7 +78,17 @@ export function DepartmentDialog({ isOpen, onClose, onSubmit, initialData }: Dep
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
-            <Input id="name" {...register('name')} required />
+            <Input 
+              id="name" 
+              {...register('name', { 
+                required: 'Name ist erforderlich',
+                minLength: { value: 2, message: 'Name muss mindestens 2 Zeichen lang sein' },
+                maxLength: { value: 50, message: 'Name darf maximal 50 Zeichen lang sein' }
+              })} 
+            />
+            {errors.name && (
+              <span className="text-sm text-red-500">{errors.name.message}</span>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -85,6 +102,9 @@ export function DepartmentDialog({ isOpen, onClose, onSubmit, initialData }: Dep
               value={initialData?.color || watch('color') || '#000000'}
               onChange={(color) => setValue('color', color)}
             />
+            {!watch('color') && (
+              <span className="text-sm text-red-500">Farbe ist erforderlich</span>
+            )}
           </div>
 
           <div className="flex justify-end gap-2">
