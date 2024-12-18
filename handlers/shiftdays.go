@@ -22,11 +22,11 @@ func HandleAllShiftDays(c *fiber.Ctx) error {
 	var shiftDays []models.ShiftDay
 	result := database.GetDB().
 		Preload("ShiftWeek", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, start_date, end_date, department_id, status").
-				Order("start_date DESC")
+			return db.Select("id, calendar_week, year, department_id, status").
+				Order("year DESC, calendar_week DESC")
 		}).
 		Preload("ShiftType", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, name, description, duration, color").
+			return db.Select("id, name, description, color").
 				Order("name")
 		}).
 		Preload("Employee", func(db *gorm.DB) *gorm.DB {
@@ -213,43 +213,8 @@ func HandleGetShiftDaysByWeek(c *fiber.Ctx) error {
 	return c.JSON(responses.SuccessResponse(responses.MsgSuccessGet, shiftDays))
 }
 
-// @Summary Schichtkonflikte prüfen
-// @Description Prüft auf Überschneidungen bei Schichten
-// @Tags shiftdays
-// @Accept json
-// @Produce json
-// @Success 200 {object} responses.APIResponse{data=[]map[string]interface{}}
-// @Failure 500 {object} responses.APIResponse
-// @Router /api/v1/shiftdays/conflicts [get]
-func HandleCheckShiftConflicts(c *fiber.Ctx) error {
-	var shiftDays []models.ShiftDay
-	var conflicts []map[string]interface{}
-
-	result := database.GetDB().
-		Preload("Employee").
-		Find(&shiftDays)
-
-	if result.Error != nil {
-		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
-	}
-
-	for i, shift1 := range shiftDays {
-		for j, shift2 := range shiftDays {
-			if i != j && shift1.EmployeeID == shift2.EmployeeID && shift1.Date.Equal(shift2.Date) {
-				conflicts = append(conflicts, map[string]interface{}{
-					"employee": shift1.Employee,
-					"date":     shift1.Date,
-					"shifts":   []models.ShiftDay{shift1, shift2},
-				})
-			}
-		}
-	}
-
-	return c.JSON(responses.SuccessResponse("Konflikte erfolgreich geprüft", conflicts))
-}
-
-// @Summary Mitarbeiter-Schichten abrufen
-// @Description Ruft alle Schichten eines bestimmten Mitarbeiters ab
+// @Summary Schichttage eines Mitarbeiters abrufen
+// @Description Ruft alle Schichttage eines bestimmten Mitarbeiters ab
 // @Tags shiftdays
 // @Accept json
 // @Produce json
@@ -263,20 +228,20 @@ func HandleGetEmployeeShiftDays(c *fiber.Ctx) error {
 
 	result := database.GetDB().
 		Where("employee_id = ?", employeeID).
-		Preload("ShiftType").
 		Preload("ShiftWeek").
+		Preload("ShiftType").
 		Order("date DESC").
 		Find(&shiftDays)
 
 	if result.Error != nil {
-		return c.Status(404).JSON(responses.ErrorResponse("Keine Schichten für diesen Mitarbeiter gefunden"))
+		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
 	}
 
 	return c.JSON(responses.SuccessResponse(responses.MsgSuccessGet, shiftDays))
 }
 
-// @Summary Abteilungs-Schichten abrufen
-// @Description Ruft alle Schichten einer bestimmten Abteilung ab
+// @Summary Schichttage einer Abteilung abrufen
+// @Description Ruft alle Schichttage einer bestimmten Abteilung ab
 // @Tags shiftdays
 // @Accept json
 // @Produce json
@@ -291,14 +256,14 @@ func HandleGetDepartmentShiftDays(c *fiber.Ctx) error {
 	result := database.GetDB().
 		Joins("JOIN shift_weeks ON shift_days.shift_week_id = shift_weeks.id").
 		Where("shift_weeks.department_id = ?", departmentID).
+		Preload("ShiftWeek").
 		Preload("ShiftType").
 		Preload("Employee").
-		Preload("ShiftWeek").
 		Order("date DESC").
 		Find(&shiftDays)
 
 	if result.Error != nil {
-		return c.Status(404).JSON(responses.ErrorResponse("Keine Schichten in dieser Abteilung gefunden"))
+		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
 	}
 
 	return c.JSON(responses.SuccessResponse(responses.MsgSuccessGet, shiftDays))
@@ -322,14 +287,15 @@ func validateShiftDay(shiftDay *models.ShiftDay) error {
 		return fmt.Errorf("schichtwoche nicht gefunden")
 	}
 
+	year, week := shiftDay.Date.ISOWeek()
+	if year != shiftWeek.Year || week != shiftWeek.CalendarWeek {
+		return fmt.Errorf("datum liegt außerhalb der schichtwoche")
+	}
+
 	if shiftDay.EmployeeID != nil {
 		var employee models.Employee
 		if err := database.GetDB().First(&employee, shiftDay.EmployeeID).Error; err != nil {
 			return fmt.Errorf("mitarbeiter nicht gefunden")
-		}
-
-		if !shiftDay.IsValidForWeek(&shiftWeek) {
-			return fmt.Errorf("datum liegt außerhalb der schichtwoche")
 		}
 
 		if !shiftDay.ValidateEmployeeDepartment(&employee, &shiftWeek) {

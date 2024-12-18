@@ -857,54 +857,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/shiftdays/conflicts": {
-            "get": {
-                "description": "Prüft auf Überschneidungen bei Schichten",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "shiftdays"
-                ],
-                "summary": "Schichtkonflikte prüfen",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/responses.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "additionalProperties": true
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/shiftdays/department/{id}": {
             "get": {
-                "description": "Ruft alle Schichten einer bestimmten Abteilung ab",
+                "description": "Ruft alle Schichttage einer bestimmten Abteilung ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -914,7 +869,7 @@ const docTemplate = `{
                 "tags": [
                     "shiftdays"
                 ],
-                "summary": "Abteilungs-Schichten abrufen",
+                "summary": "Schichttage einer Abteilung abrufen",
                 "parameters": [
                     {
                         "type": "integer",
@@ -957,7 +912,7 @@ const docTemplate = `{
         },
         "/api/v1/shiftdays/employee/{id}": {
             "get": {
-                "description": "Ruft alle Schichten eines bestimmten Mitarbeiters ab",
+                "description": "Ruft alle Schichttage eines bestimmten Mitarbeiters ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -967,7 +922,7 @@ const docTemplate = `{
                 "tags": [
                     "shiftdays"
                 ],
-                "summary": "Mitarbeiter-Schichten abrufen",
+                "summary": "Schichttage eines Mitarbeiters abrufen",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1521,7 +1476,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Erstellt eine neue Schichtwoche mit Validierungen",
+                "description": "Erstellt eine neue Schichtwoche",
                 "consumes": [
                     "application/json"
                 ],
@@ -1571,65 +1526,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/shiftweeks/copy/{id}": {
-            "post": {
-                "description": "Erstellt eine Kopie einer bestehenden Schichtwoche",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "shiftweeks"
-                ],
-                "summary": "Schichtwoche kopieren",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Quell-Schichtwoche-ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/responses.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/models.ShiftWeek"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/shiftweeks/department/{id}": {
             "get": {
-                "description": "Ruft alle Schichtwochen einer spezifischen Abteilung ab",
+                "description": "Ruft alle Schichtwochen einer bestimmten Abteilung ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -1837,7 +1736,7 @@ const docTemplate = `{
         },
         "/api/v1/shiftweeks/{id}/stats": {
             "get": {
-                "description": "Ruft statistische Daten einer Schichtwoche ab",
+                "description": "Ruft statistische Daten zu einer Schichtwoche ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -1861,20 +1760,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/responses.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "object",
-                                            "additionalProperties": true
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/responses.APIResponse"
                         }
                     },
                     "404": {
@@ -1908,12 +1794,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Status-Update",
+                        "description": "Neuer Status",
                         "name": "status",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object"
+                            "type": "string"
                         }
                     }
                 ],
@@ -2033,7 +1919,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "employee_id": {
-                    "description": "Pointer für NULL-Werte",
                     "type": "integer"
                 },
                 "id": {
@@ -2046,7 +1931,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "shift_week_id": {
-                    "description": "Pointer für NULL-Werte",
                     "type": "integer"
                 },
                 "status": {
@@ -2083,15 +1967,14 @@ const docTemplate = `{
         "models.ShiftWeek": {
             "type": "object",
             "properties": {
+                "calendar_week": {
+                    "type": "integer"
+                },
                 "created_at": {
                     "type": "string"
                 },
                 "department_id": {
-                    "description": "Pointer für NULL-Werte",
                     "type": "integer"
-                },
-                "end_date": {
-                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -2099,14 +1982,14 @@ const docTemplate = `{
                 "notes": {
                     "type": "string"
                 },
-                "start_date": {
-                    "type": "string"
-                },
                 "status": {
                     "type": "string"
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "year": {
+                    "type": "integer"
                 }
             }
         },

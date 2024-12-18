@@ -12,9 +12,9 @@ const (
 
 type ShiftWeek struct {
 	ID           uint       `gorm:"primarykey" json:"id"`
-	StartDate    time.Time  `json:"start_date" gorm:"not null;index"`
-	EndDate      time.Time  `json:"end_date" gorm:"not null;index"`
-	DepartmentID *uint      `json:"department_id"` // Pointer für NULL-Werte
+	CalendarWeek int        `json:"calendar_week" gorm:"not null;index"`
+	Year         int        `json:"year" gorm:"not null;index"`
+	DepartmentID *uint      `json:"department_id"`
 	Department   Department `json:"-"`
 	ShiftDays    []ShiftDay `json:"shift_days,omitempty" swaggerignore:"true"`
 	Status       string     `json:"status" gorm:"type:varchar(20);default:'draft'"`

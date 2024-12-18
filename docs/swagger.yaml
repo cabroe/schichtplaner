@@ -53,7 +53,6 @@ definitions:
       date:
         type: string
       employee_id:
-        description: Pointer für NULL-Werte
         type: integer
       id:
         type: integer
@@ -62,7 +61,6 @@ definitions:
       shift_type_id:
         type: integer
       shift_week_id:
-        description: Pointer für NULL-Werte
         type: integer
       status:
         type: string
@@ -86,23 +84,22 @@ definitions:
     type: object
   models.ShiftWeek:
     properties:
+      calendar_week:
+        type: integer
       created_at:
         type: string
       department_id:
-        description: Pointer für NULL-Werte
         type: integer
-      end_date:
-        type: string
       id:
         type: integer
       notes:
-        type: string
-      start_date:
         type: string
       status:
         type: string
       updated_at:
         type: string
+      year:
+        type: integer
     type: object
   responses.APIResponse:
     properties:
@@ -740,38 +737,11 @@ paths:
       summary: Schichttag aktualisieren
       tags:
       - shiftdays
-  /api/v1/shiftdays/conflicts:
-    get:
-      consumes:
-      - application/json
-      description: Prüft auf Überschneidungen bei Schichten
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/responses.APIResponse'
-            - properties:
-                data:
-                  items:
-                    additionalProperties: true
-                    type: object
-                  type: array
-              type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-      summary: Schichtkonflikte prüfen
-      tags:
-      - shiftdays
   /api/v1/shiftdays/department/{id}:
     get:
       consumes:
       - application/json
-      description: Ruft alle Schichten einer bestimmten Abteilung ab
+      description: Ruft alle Schichttage einer bestimmten Abteilung ab
       parameters:
       - description: Abteilungs-ID
         in: path
@@ -796,14 +766,14 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Abteilungs-Schichten abrufen
+      summary: Schichttage einer Abteilung abrufen
       tags:
       - shiftdays
   /api/v1/shiftdays/employee/{id}:
     get:
       consumes:
       - application/json
-      description: Ruft alle Schichten eines bestimmten Mitarbeiters ab
+      description: Ruft alle Schichttage eines bestimmten Mitarbeiters ab
       parameters:
       - description: Mitarbeiter-ID
         in: path
@@ -828,7 +798,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Mitarbeiter-Schichten abrufen
+      summary: Schichttage eines Mitarbeiters abrufen
       tags:
       - shiftdays
   /api/v1/shiftdays/week/{id}:
@@ -1053,7 +1023,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Erstellt eine neue Schichtwoche mit Validierungen
+      description: Erstellt eine neue Schichtwoche
       parameters:
       - description: Schichtwoche-Daten
         in: body
@@ -1181,7 +1151,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Ruft statistische Daten einer Schichtwoche ab
+      description: Ruft statistische Daten zu einer Schichtwoche ab
       parameters:
       - description: Schichtwoche-ID
         in: path
@@ -1194,13 +1164,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/responses.APIResponse'
-            - properties:
-                data:
-                  additionalProperties: true
-                  type: object
-              type: object
+            $ref: '#/definitions/responses.APIResponse'
         "404":
           description: Not Found
           schema:
@@ -1219,12 +1183,12 @@ paths:
         name: id
         required: true
         type: integer
-      - description: Status-Update
+      - description: Neuer Status
         in: body
         name: status
         required: true
         schema:
-          type: object
+          type: string
       produces:
       - application/json
       responses:
@@ -1248,45 +1212,11 @@ paths:
       summary: Status einer Schichtwoche aktualisieren
       tags:
       - shiftweeks
-  /api/v1/shiftweeks/copy/{id}:
-    post:
-      consumes:
-      - application/json
-      description: Erstellt eine Kopie einer bestehenden Schichtwoche
-      parameters:
-      - description: Quell-Schichtwoche-ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            allOf:
-            - $ref: '#/definitions/responses.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/models.ShiftWeek'
-              type: object
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-      summary: Schichtwoche kopieren
-      tags:
-      - shiftweeks
   /api/v1/shiftweeks/department/{id}:
     get:
       consumes:
       - application/json
-      description: Ruft alle Schichtwochen einer spezifischen Abteilung ab
+      description: Ruft alle Schichtwochen einer bestimmten Abteilung ab
       parameters:
       - description: Abteilungs-ID
         in: path
