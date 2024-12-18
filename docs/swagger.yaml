@@ -77,12 +77,8 @@ definitions:
         type: string
       description:
         type: string
-      duration:
-        type: string
       id:
         type: integer
-      is_active:
-        type: boolean
       name:
         type: string
       updated_at:
@@ -871,7 +867,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Ruft alle Schichttypen mit ihren Beziehungen ab
+      description: Ruft alle Schichttypen ab
       produces:
       - application/json
       responses:
@@ -896,7 +892,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Erstellt einen neuen Schichttyp mit Validierungen
+      description: Erstellt einen neuen Schichttyp
       parameters:
       - description: Schichttyp-Daten
         in: body
@@ -918,6 +914,10 @@ paths:
               type: object
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.APIResponse'
       summary: Schichttyp erstellen
@@ -955,7 +955,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Ruft einen spezifischen Schichttyp mit Details ab
+      description: Ruft einen spezifischen Schichttyp anhand seiner ID ab
       parameters:
       - description: Schichttyp-ID
         in: path
@@ -1017,39 +1017,11 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Schichttyp aktualisieren
-      tags:
-      - shifttypes
-  /api/v1/shifttypes/department/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Ruft alle Schichttypen einer spezifischen Abteilung ab
-      parameters:
-      - description: Abteilungs-ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/responses.APIResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/models.ShiftType'
-                  type: array
-              type: object
-        "404":
-          description: Not Found
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.APIResponse'
-      summary: Schichttypen einer Abteilung abrufen
+      summary: Schichttyp aktualisieren
       tags:
       - shifttypes
   /api/v1/shiftweeks:

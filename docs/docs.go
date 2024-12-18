@@ -1218,7 +1218,7 @@ const docTemplate = `{
         },
         "/api/v1/shifttypes": {
             "get": {
-                "description": "Ruft alle Schichttypen mit ihren Beziehungen ab",
+                "description": "Ruft alle Schichttypen ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -1260,7 +1260,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Erstellt einen neuen Schichttyp mit Validierungen",
+                "description": "Erstellt einen neuen Schichttyp",
                 "consumes": [
                     "application/json"
                 ],
@@ -1306,56 +1306,9 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/responses.APIResponse"
                         }
-                    }
-                }
-            }
-        },
-        "/api/v1/shifttypes/department/{id}": {
-            "get": {
-                "description": "Ruft alle Schichttypen einer spezifischen Abteilung ab",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "shifttypes"
-                ],
-                "summary": "Schichttypen einer Abteilung abrufen",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Abteilungs-ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/responses.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/models.ShiftType"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/responses.APIResponse"
                         }
@@ -1365,7 +1318,7 @@ const docTemplate = `{
         },
         "/api/v1/shifttypes/{id}": {
             "get": {
-                "description": "Ruft einen spezifischen Schichttyp mit Details ab",
+                "description": "Ruft einen spezifischen Schichttyp anhand seiner ID ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -1469,6 +1422,12 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/responses.APIResponse"
                         }
@@ -2110,14 +2069,8 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
-                "duration": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
-                },
-                "is_active": {
-                    "type": "boolean"
                 },
                 "name": {
                     "type": "string"

@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"time"
 
 	"github.com/ptmmeiningen/schichtplaner/database"
 	"github.com/ptmmeiningen/schichtplaner/models"
@@ -76,71 +75,15 @@ func main() {
 
 	// Test-Schichttypen erstellen
 	shiftTypes := []models.ShiftType{
-		{Name: "Frühschicht", Description: "06:00-14:00", Duration: "8h", Color: "#FFD700"},
-		{Name: "Spätschicht", Description: "14:00-22:00", Duration: "8h", Color: "#4B0082"},
-		{Name: "Nachtschicht", Description: "22:00-06:00", Duration: "8h", Color: "#800080"},
-		{Name: "Bereitschaft", Description: "24h", Duration: "24h", Color: "#32CD32"},
-		{Name: "Rufbereitschaft", Description: "Abruf", Duration: "12h", Color: "#FF69B4"},
+		{Name: "Frühschicht", Description: "Frühe Tagesschicht", Color: "#FFD700"},
+		{Name: "Spätschicht", Description: "Späte Tagesschicht", Color: "#4B0082"},
+		{Name: "Nachtschicht", Description: "Nachtdienst", Color: "#800080"},
+		{Name: "Bereitschaft", Description: "24-Stunden Bereitschaft", Color: "#32CD32"},
+		{Name: "Rufbereitschaft", Description: "Abrufbare Bereitschaft", Color: "#FF69B4"},
 	}
 
 	for _, st := range shiftTypes {
 		database.GetDB().Create(&st)
-	}
-
-	// Test-Schichtwochen erstellen
-	startDate := time.Now().AddDate(0, 0, -7)
-	shiftWeeks := []models.ShiftWeek{
-		{
-			StartDate:    startDate,
-			EndDate:      startDate.AddDate(0, 0, 7),
-			DepartmentID: &deptID1,
-			Status:       models.StatusPublished,
-			Notes:        "Aktuelle Woche",
-		},
-		{
-			StartDate:    startDate.AddDate(0, 0, 7),
-			EndDate:      startDate.AddDate(0, 0, 14),
-			DepartmentID: &deptID1,
-			Status:       models.StatusDraft,
-			Notes:        "Nächste Woche in Planung",
-		},
-		{
-			StartDate:    startDate.AddDate(0, 0, 14),
-			EndDate:      startDate.AddDate(0, 0, 21),
-			DepartmentID: &deptID1,
-			Status:       models.StatusDraft,
-			Notes:        "Übernächste Woche",
-		},
-		{
-			StartDate:    startDate,
-			EndDate:      startDate.AddDate(0, 0, 7),
-			DepartmentID: &deptID2,
-			Status:       models.StatusArchived,
-			Notes:        "Archivierte Woche",
-		},
-		{
-			StartDate:    startDate.AddDate(0, 0, 7),
-			EndDate:      startDate.AddDate(0, 0, 14),
-			DepartmentID: &deptID2,
-			Status:       models.StatusPublished,
-			Notes:        "Aktuelle Woche HR",
-		},
-	}
-
-	for _, week := range shiftWeeks {
-		database.GetDB().Create(&week)
-
-		for i := 0; i < 7; i++ {
-			employeeID := uint(i%3 + 1)
-			shiftDay := models.ShiftDay{
-				Date:        week.StartDate.AddDate(0, 0, i),
-				ShiftWeekID: &week.ID,
-				ShiftTypeID: uint(i%3 + 1),
-				EmployeeID:  &employeeID,
-				Status:      "planned",
-			}
-			database.GetDB().Create(&shiftDay)
-		}
 	}
 
 	log.Println("✨ Testdaten erfolgreich erstellt!")

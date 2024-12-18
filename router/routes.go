@@ -51,7 +51,6 @@ func SetupRoutes(app *fiber.App) {
 	shiftTypes.Get("/:id", handlers.HandleGetOneShiftType)
 	shiftTypes.Put("/:id", handlers.HandleUpdateShiftType)
 	shiftTypes.Delete("/:id", handlers.HandleDeleteShiftType)
-	shiftTypes.Get("/department/:id", handlers.HandleGetDepartmentShiftTypes)
 
 	// ShiftWeek routes
 	shiftWeeks := v1.Group("/shiftweeks")

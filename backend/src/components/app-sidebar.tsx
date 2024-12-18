@@ -4,7 +4,8 @@ import { Link } from "react-router-dom"
 import { 
   LayoutDashboard, 
   Users,
-  Building2
+  Building2,
+  Clock
 } from "lucide-react"
 
 export function AppSidebar() {
@@ -43,6 +44,14 @@ export function AppSidebar() {
               <Link to="/departments" onClick={handleLinkClick}>
                 <Building2 className="mr-2 h-4 w-4" />
                 Abteilungen
+              </Link>
+            </Button>
+          </li>
+          <li>
+            <Button variant="ghost" className="w-full justify-start" asChild>
+              <Link to="/shifttype" onClick={handleLinkClick}>
+                <Clock className="mr-2 h-4 w-4" />
+                Schichttypen
               </Link>
             </Button>
           </li>

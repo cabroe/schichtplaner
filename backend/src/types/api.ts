@@ -61,7 +61,8 @@ export interface ShiftDay {
 export interface ShiftType {
   id: number
   name: string
-  start_time: string
-  end_time: string
+  description: string
   color: string
+  created_at: string
+  updated_at: string
 }

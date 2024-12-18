@@ -20,6 +20,10 @@ export const API_ROUTES = {
   // ShiftDays
   SHIFT_DAYS: `${API_BASE_URL}/shift-days`,
   SHIFT_DAY: (id: number) => `${API_BASE_URL}/shift-days/${id}`,
+
+  // ShiftTypes
+  SHIFTTYPES: `${API_BASE_URL}/shifttypes`,
+  SHIFTTYPE: (id: number) => `${API_BASE_URL}/shifttypes/${id}`,
 }
 
 export const API_CONFIG = {

@@ -1,17 +1,14 @@
 package handlers
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/ptmmeiningen/schichtplaner/database"
 	"github.com/ptmmeiningen/schichtplaner/models"
 	"github.com/ptmmeiningen/schichtplaner/pkg/responses"
-	"gorm.io/gorm"
 )
 
 // @Summary Alle Schichttypen abrufen
-// @Description Ruft alle Schichttypen mit ihren Beziehungen ab
+// @Description Ruft alle Schichttypen ab
 // @Tags shifttypes
 // @Accept json
 // @Produce json
@@ -20,17 +17,7 @@ import (
 // @Router /api/v1/shifttypes [get]
 func HandleAllShiftTypes(c *fiber.Ctx) error {
 	var shiftTypes []models.ShiftType
-	result := database.GetDB().
-		Preload("ShiftDays", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, date, shift_type_id, employee_id, shift_week_id").
-				Order("date DESC")
-		}).
-		Preload("ShiftDays.Employee", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, first_name, last_name, email, color, department_id").
-				Order("last_name, first_name")
-		}).
-		Order("name").
-		Find(&shiftTypes)
+	result := database.GetDB().Order("name").Find(&shiftTypes)
 
 	if result.Error != nil {
 		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
@@ -39,22 +26,19 @@ func HandleAllShiftTypes(c *fiber.Ctx) error {
 }
 
 // @Summary Schichttyp erstellen
-// @Description Erstellt einen neuen Schichttyp mit Validierungen
+// @Description Erstellt einen neuen Schichttyp
 // @Tags shifttypes
 // @Accept json
 // @Produce json
 // @Param shifttype body models.ShiftType true "Schichttyp-Daten"
 // @Success 201 {object} responses.APIResponse{data=models.ShiftType}
 // @Failure 400 {object} responses.APIResponse
+// @Failure 500 {object} responses.APIResponse
 // @Router /api/v1/shifttypes [post]
 func HandleCreateShiftType(c *fiber.Ctx) error {
 	shiftType := new(models.ShiftType)
 	if err := c.BodyParser(shiftType); err != nil {
 		return c.Status(400).JSON(responses.ErrorResponse(responses.ErrInvalidInput))
-	}
-
-	if err := validateShiftType(shiftType); err != nil {
-		return c.Status(400).JSON(responses.ErrorResponse(err.Error()))
 	}
 
 	result := database.GetDB().Create(&shiftType)
@@ -66,7 +50,7 @@ func HandleCreateShiftType(c *fiber.Ctx) error {
 }
 
 // @Summary Einzelnen Schichttyp abrufen
-// @Description Ruft einen spezifischen Schichttyp mit Details ab
+// @Description Ruft einen spezifischen Schichttyp anhand seiner ID ab
 // @Tags shifttypes
 // @Accept json
 // @Produce json
@@ -78,11 +62,7 @@ func HandleGetOneShiftType(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var shiftType models.ShiftType
 
-	result := database.GetDB().
-		Preload("ShiftDays.Employee").
-		First(&shiftType, id)
-
-	if result.Error != nil {
+	if err := database.GetDB().First(&shiftType, id).Error; err != nil {
 		return c.Status(404).JSON(responses.ErrorResponse(responses.ErrNotFound))
 	}
 
@@ -97,21 +77,13 @@ func HandleGetOneShiftType(c *fiber.Ctx) error {
 // @Param id path int true "Schichttyp-ID"
 // @Param shifttype body models.ShiftType true "Aktualisierte Schichttyp-Daten"
 // @Success 200 {object} responses.APIResponse{data=models.ShiftType}
-// @Failure 400,404 {object} responses.APIResponse
+// @Failure 400 {object} responses.APIResponse
+// @Failure 404 {object} responses.APIResponse
+// @Failure 500 {object} responses.APIResponse
 // @Router /api/v1/shifttypes/{id} [put]
 func HandleUpdateShiftType(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var shiftType models.ShiftType
-	var existingShiftType models.ShiftType
-
-	if err := c.BodyParser(&existingShiftType); err != nil {
-		return c.Status(400).JSON(responses.ErrorResponse(responses.ErrInvalidInput))
-	}
-
-	result := database.GetDB().Where("name = ? AND id != ?", existingShiftType.Name, id).First(&models.ShiftType{})
-	if result.RowsAffected > 0 {
-		return c.Status(400).JSON(responses.ErrorResponse(responses.ErrConflict))
-	}
 
 	if err := database.GetDB().First(&shiftType, id).Error; err != nil {
 		return c.Status(404).JSON(responses.ErrorResponse(responses.ErrNotFound))
@@ -119,10 +91,6 @@ func HandleUpdateShiftType(c *fiber.Ctx) error {
 
 	if err := c.BodyParser(&shiftType); err != nil {
 		return c.Status(400).JSON(responses.ErrorResponse(responses.ErrInvalidInput))
-	}
-
-	if err := validateShiftType(&shiftType); err != nil {
-		return c.Status(400).JSON(responses.ErrorResponse(err.Error()))
 	}
 
 	if err := database.GetDB().Save(&shiftType).Error; err != nil {
@@ -139,7 +107,8 @@ func HandleUpdateShiftType(c *fiber.Ctx) error {
 // @Produce json
 // @Param id path int true "Schichttyp-ID"
 // @Success 200 {object} responses.APIResponse
-// @Failure 404,500 {object} responses.APIResponse
+// @Failure 404 {object} responses.APIResponse
+// @Failure 500 {object} responses.APIResponse
 // @Router /api/v1/shifttypes/{id} [delete]
 func HandleDeleteShiftType(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -149,58 +118,9 @@ func HandleDeleteShiftType(c *fiber.Ctx) error {
 		return c.Status(404).JSON(responses.ErrorResponse(responses.ErrNotFound))
 	}
 
-	var shiftDayCount int64
-	database.GetDB().Model(&models.ShiftDay{}).Where("shift_type_id = ?", id).Count(&shiftDayCount)
-	if shiftDayCount > 0 {
-		return c.Status(400).JSON(responses.ErrorResponse("Schichttyp kann nicht gelöscht werden, da noch Schichttage zugeordnet sind"))
-	}
-
 	if err := database.GetDB().Delete(&shiftType).Error; err != nil {
 		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
 
 	return c.JSON(responses.SuccessResponse(responses.MsgSuccessDelete, nil))
-}
-
-// @Summary Schichttypen einer Abteilung abrufen
-// @Description Ruft alle Schichttypen einer spezifischen Abteilung ab
-// @Tags shifttypes
-// @Accept json
-// @Produce json
-// @Param id path int true "Abteilungs-ID"
-// @Success 200 {object} responses.APIResponse{data=[]models.ShiftType}
-// @Failure 404 {object} responses.APIResponse
-// @Router /api/v1/shifttypes/department/{id} [get]
-func HandleGetDepartmentShiftTypes(c *fiber.Ctx) error {
-	departmentID := c.Params("id")
-	var shiftTypes []models.ShiftType
-
-	result := database.GetDB().
-		Joins("JOIN shift_days ON shift_types.id = shift_days.shift_type_id").
-		Joins("JOIN shift_weeks ON shift_days.shift_week_id = shift_weeks.id").
-		Where("shift_weeks.department_id = ?", departmentID).
-		Distinct().
-		Find(&shiftTypes)
-
-	if result.Error != nil {
-		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
-	}
-
-	return c.JSON(responses.SuccessResponse(responses.MsgSuccessGet, shiftTypes))
-}
-
-func validateShiftType(shiftType *models.ShiftType) error {
-	if shiftType.Name == "" {
-		return fmt.Errorf("name ist erforderlich")
-	}
-	if shiftType.Description == "" {
-		return fmt.Errorf("beschreibung ist erforderlich")
-	}
-	if shiftType.Duration == "" {
-		return fmt.Errorf("dauer ist erforderlich")
-	}
-	if shiftType.Color == "" {
-		return fmt.Errorf("farbe ist erforderlich")
-	}
-	return nil
 }
