@@ -102,11 +102,6 @@ export default function EmployeePage() {
     setSelectedEmployee(undefined)
   }
 
-  const getDepartmentName = (departmentId: number) => {
-    const department = departments.find(d => d.id === departmentId)
-    return department ? department.name : `Abteilung ${departmentId}`
-  }
-
   const filteredEmployees = employees.filter(employee => 
     employee.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     employee.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
