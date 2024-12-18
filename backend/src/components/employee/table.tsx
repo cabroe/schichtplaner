@@ -46,14 +46,18 @@ export function EmployeeTable({ employees, getDepartmentName, getDepartmentColor
               </TableCell>
               <TableCell className="hidden md:table-cell">{employee.email}</TableCell>
               <TableCell>
-                <div className="flex items-center">
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" style={{ 
-                    backgroundColor: `${getDepartmentColor(employee.department_id)}20`, 
-                    color: getDepartmentColor(employee.department_id)
-                  }}>
-                    {getDepartmentName(employee.department_id)}
-                  </span>
-                </div>
+                {employee.department_id ? (
+                  <div className="flex items-center">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" style={{ 
+                      backgroundColor: `${getDepartmentColor(employee.department_id)}20`, 
+                      color: getDepartmentColor(employee.department_id)
+                    }}>
+                      {getDepartmentName(employee.department_id)}
+                    </span>
+                  </div>
+                ) : (
+                  <span></span>
+                )}
               </TableCell>
               <TableCell className="hidden sm:table-cell">
                 {employee.is_admin ? (

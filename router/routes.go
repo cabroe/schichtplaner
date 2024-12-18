@@ -41,6 +41,8 @@ func SetupRoutes(app *fiber.App) {
 	shiftDays.Delete("/:id", handlers.HandleDeleteShiftDay)
 	shiftDays.Get("/week/:id", handlers.HandleGetShiftDaysByWeek)
 	shiftDays.Get("/conflicts", handlers.HandleCheckShiftConflicts)
+	shiftDays.Get("/employee/:id", handlers.HandleGetEmployeeShiftDays)
+	shiftDays.Get("/department/:id", handlers.HandleGetDepartmentShiftDays)
 
 	// ShiftType routes
 	shiftTypes := v1.Group("/shifttypes")

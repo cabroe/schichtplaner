@@ -526,59 +526,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/employees/shifts/{id}": {
-            "get": {
-                "description": "Ruft alle Schichten eines bestimmten Mitarbeiters ab",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "employees"
-                ],
-                "summary": "Schichten eines Mitarbeiters abrufen",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Mitarbeiter-ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/responses.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/models.ShiftDay"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/responses.APIResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/employees/{id}": {
             "get": {
                 "description": "Ruft einen spezifischen Mitarbeiter mit Details ab",
@@ -692,7 +639,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Löscht einen Mitarbeiter",
+                "description": "Löscht einen Mitarbeiter und seine Beziehungen",
                 "consumes": [
                     "application/json"
                 ],
@@ -727,6 +674,59 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/employees/{id}/shifts": {
+            "get": {
+                "description": "Ruft alle Schichten eines bestimmten Mitarbeiters ab",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "employees"
+                ],
+                "summary": "Schichten eines Mitarbeiters abrufen",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Mitarbeiter-ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.ShiftDay"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/responses.APIResponse"
                         }
@@ -895,6 +895,112 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/shiftdays/department/{id}": {
+            "get": {
+                "description": "Ruft alle Schichten einer bestimmten Abteilung ab",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shiftdays"
+                ],
+                "summary": "Abteilungs-Schichten abrufen",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Abteilungs-ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.ShiftDay"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/shiftdays/employee/{id}": {
+            "get": {
+                "description": "Ruft alle Schichten eines bestimmten Mitarbeiters ab",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "shiftdays"
+                ],
+                "summary": "Mitarbeiter-Schichten abrufen",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Mitarbeiter-ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.ShiftDay"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/responses.APIResponse"
                         }
@@ -1552,6 +1658,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/responses.APIResponse"
                         }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.APIResponse"
+                        }
                     }
                 }
             }
@@ -1962,6 +2074,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "employee_id": {
+                    "description": "Pointer für NULL-Werte",
                     "type": "integer"
                 },
                 "id": {
@@ -1974,6 +2087,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "shift_week_id": {
+                    "description": "Pointer für NULL-Werte",
                     "type": "integer"
                 },
                 "status": {
@@ -2020,6 +2134,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "department_id": {
+                    "description": "Pointer für NULL-Werte",
                     "type": "integer"
                 },
                 "end_date": {

@@ -53,6 +53,7 @@ definitions:
       date:
         type: string
       employee_id:
+        description: Pointer für NULL-Werte
         type: integer
       id:
         type: integer
@@ -61,6 +62,7 @@ definitions:
       shift_type_id:
         type: integer
       shift_week_id:
+        description: Pointer für NULL-Werte
         type: integer
       status:
         type: string
@@ -91,6 +93,7 @@ definitions:
       created_at:
         type: string
       department_id:
+        description: Pointer für NULL-Werte
         type: integer
       end_date:
         type: string
@@ -407,7 +410,7 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Löscht einen Mitarbeiter
+      description: Löscht einen Mitarbeiter und seine Beziehungen
       parameters:
       - description: Mitarbeiter-ID
         in: path
@@ -500,6 +503,38 @@ paths:
       summary: Mitarbeiter aktualisieren
       tags:
       - employees
+  /api/v1/employees/{id}/shifts:
+    get:
+      consumes:
+      - application/json
+      description: Ruft alle Schichten eines bestimmten Mitarbeiters ab
+      parameters:
+      - description: Mitarbeiter-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.ShiftDay'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Schichten eines Mitarbeiters abrufen
+      tags:
+      - employees
   /api/v1/employees/available/{date}:
     get:
       consumes:
@@ -535,38 +570,6 @@ paths:
           schema:
             $ref: '#/definitions/responses.APIResponse'
       summary: Verfügbare Mitarbeiter abrufen
-      tags:
-      - employees
-  /api/v1/employees/shifts/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Ruft alle Schichten eines bestimmten Mitarbeiters ab
-      parameters:
-      - description: Mitarbeiter-ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/responses.APIResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/models.ShiftDay'
-                  type: array
-              type: object
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-      summary: Schichten eines Mitarbeiters abrufen
       tags:
       - employees
   /api/v1/health:
@@ -766,6 +769,70 @@ paths:
           schema:
             $ref: '#/definitions/responses.APIResponse'
       summary: Schichtkonflikte prüfen
+      tags:
+      - shiftdays
+  /api/v1/shiftdays/department/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Ruft alle Schichten einer bestimmten Abteilung ab
+      parameters:
+      - description: Abteilungs-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.ShiftDay'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Abteilungs-Schichten abrufen
+      tags:
+      - shiftdays
+  /api/v1/shiftdays/employee/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Ruft alle Schichten eines bestimmten Mitarbeiters ab
+      parameters:
+      - description: Mitarbeiter-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.ShiftDay'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Mitarbeiter-Schichten abrufen
       tags:
       - shiftdays
   /api/v1/shiftdays/week/{id}:
@@ -1234,6 +1301,10 @@ paths:
               type: object
         "404":
           description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.APIResponse'
       summary: Schichtwoche kopieren

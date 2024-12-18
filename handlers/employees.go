@@ -32,7 +32,7 @@ func HandleAllEmployees(c *fiber.Ctx) error {
 				Order("date DESC")
 		}).
 		Preload("ShiftDays.ShiftType").
-		Order("first_name, last_name").
+		Order("last_name, first_name").
 		Find(&employees)
 
 	if result.Error != nil {
@@ -151,7 +151,7 @@ func HandleUpdateEmployee(c *fiber.Ctx) error {
 }
 
 // @Summary Mitarbeiter löschen
-// @Description Löscht einen Mitarbeiter
+// @Description Löscht einen Mitarbeiter und seine Beziehungen
 // @Tags employees
 // @Accept json
 // @Produce json
@@ -167,15 +167,19 @@ func HandleDeleteEmployee(c *fiber.Ctx) error {
 		return c.Status(404).JSON(responses.ErrorResponse(responses.ErrNotFound))
 	}
 
-	var shiftDayCount int64
-	database.GetDB().Model(&models.ShiftDay{}).Where("employee_id = ?", id).Count(&shiftDayCount)
-	if shiftDayCount > 0 {
-		return c.Status(400).JSON(responses.ErrorResponse("Mitarbeiter kann nicht gelöscht werden, da noch Schichttage zugeordnet sind"))
-	}
+	tx := database.GetDB().Begin()
 
-	if err := database.GetDB().Delete(&employee).Error; err != nil {
+	if err := tx.Model(&models.ShiftDay{}).Where("employee_id = ?", id).Update("employee_id", nil).Error; err != nil {
+		tx.Rollback()
 		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
+
+	if err := tx.Delete(&employee).Error; err != nil {
+		tx.Rollback()
+		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
+	}
+
+	tx.Commit()
 
 	return c.JSON(responses.SuccessResponse(responses.MsgSuccessDelete, nil))
 }
@@ -218,15 +222,15 @@ func HandleGetAvailableEmployees(c *fiber.Ctx) error {
 // @Param id path int true "Mitarbeiter-ID"
 // @Success 200 {object} responses.APIResponse{data=[]models.ShiftDay}
 // @Failure 404 {object} responses.APIResponse
-// @Router /api/v1/employees/shifts/{id} [get]
+// @Router /api/v1/employees/{id}/shifts [get]
 func HandleEmployeeShifts(c *fiber.Ctx) error {
-	employeeID := c.Params("id")
+	id := c.Params("id")
 	var employee models.Employee
 
 	result := database.GetDB().
 		Preload("ShiftDays.ShiftType").
 		Preload("ShiftDays.ShiftWeek").
-		First(&employee, employeeID)
+		First(&employee, id)
 
 	if result.Error != nil {
 		return c.Status(404).JSON(responses.ErrorResponse(responses.ErrNotFound))
@@ -245,9 +249,6 @@ func validateEmployee(employee *models.Employee) error {
 	if employee.Email == "" {
 		return fmt.Errorf("e-mail ist erforderlich")
 	}
-	if employee.DepartmentID == 0 {
-		return fmt.Errorf("abteilung ist erforderlich")
-	}
 	if employee.Color == "" {
 		return fmt.Errorf("farbe ist erforderlich")
 	}
@@ -255,11 +256,6 @@ func validateEmployee(employee *models.Employee) error {
 	var existingEmployee models.Employee
 	if err := database.GetDB().Where("email = ? AND id != ?", employee.Email, employee.ID).First(&existingEmployee).Error; err == nil {
 		return fmt.Errorf("e-mail wird bereits verwendet")
-	}
-
-	var department models.Department
-	if err := database.GetDB().First(&department, employee.DepartmentID).Error; err != nil {
-		return fmt.Errorf("abteilung nicht gefunden")
 	}
 
 	return nil

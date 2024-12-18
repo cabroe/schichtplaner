@@ -146,19 +146,37 @@ func HandleDeleteDepartment(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var department models.Department
 
-	if err := database.GetDB().First(&department, id).Error; err != nil {
+	// Abteilung mit allen Beziehungen laden
+	if err := database.GetDB().
+		Preload("Employees").
+		Preload("ShiftWeeks").
+		First(&department, id).Error; err != nil {
 		return c.Status(404).JSON(responses.ErrorResponse(responses.ErrNotFound))
 	}
 
-	var employeeCount int64
-	database.GetDB().Model(&models.Employee{}).Where("department_id = ?", id).Count(&employeeCount)
-	if employeeCount > 0 {
-		return c.Status(400).JSON(responses.ErrorResponse("Abteilung kann nicht gelöscht werden, da noch Mitarbeiter zugeordnet sind"))
-	}
+	// Transaktion starten
+	tx := database.GetDB().Begin()
 
-	if err := database.GetDB().Delete(&department).Error; err != nil {
+	// Mitarbeiter-Referenzen aktualisieren
+	if err := tx.Model(&models.Employee{}).Where("department_id = ?", id).Update("department_id", nil).Error; err != nil {
+		tx.Rollback()
 		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
+
+	// ShiftWeeks löschen
+	if err := tx.Where("department_id = ?", id).Delete(&models.ShiftWeek{}).Error; err != nil {
+		tx.Rollback()
+		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
+	}
+
+	// Abteilung löschen
+	if err := tx.Delete(&department).Error; err != nil {
+		tx.Rollback()
+		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
+	}
+
+	// Transaktion bestätigen
+	tx.Commit()
 
 	return c.JSON(responses.SuccessResponse(responses.MsgSuccessDelete, nil))
 }

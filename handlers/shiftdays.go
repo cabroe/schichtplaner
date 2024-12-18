@@ -203,6 +203,7 @@ func HandleGetShiftDaysByWeek(c *fiber.Ctx) error {
 		Where("shift_week_id = ?", weekID).
 		Preload("ShiftType").
 		Preload("Employee").
+		Order("date").
 		Find(&shiftDays)
 
 	if result.Error != nil {
@@ -247,12 +248,68 @@ func HandleCheckShiftConflicts(c *fiber.Ctx) error {
 	return c.JSON(responses.SuccessResponse("Konflikte erfolgreich geprüft", conflicts))
 }
 
+// @Summary Mitarbeiter-Schichten abrufen
+// @Description Ruft alle Schichten eines bestimmten Mitarbeiters ab
+// @Tags shiftdays
+// @Accept json
+// @Produce json
+// @Param id path int true "Mitarbeiter-ID"
+// @Success 200 {object} responses.APIResponse{data=[]models.ShiftDay}
+// @Failure 404 {object} responses.APIResponse
+// @Router /api/v1/shiftdays/employee/{id} [get]
+func HandleGetEmployeeShiftDays(c *fiber.Ctx) error {
+	employeeID := c.Params("id")
+	var shiftDays []models.ShiftDay
+
+	result := database.GetDB().
+		Where("employee_id = ?", employeeID).
+		Preload("ShiftType").
+		Preload("ShiftWeek").
+		Order("date DESC").
+		Find(&shiftDays)
+
+	if result.Error != nil {
+		return c.Status(404).JSON(responses.ErrorResponse("Keine Schichten für diesen Mitarbeiter gefunden"))
+	}
+
+	return c.JSON(responses.SuccessResponse(responses.MsgSuccessGet, shiftDays))
+}
+
+// @Summary Abteilungs-Schichten abrufen
+// @Description Ruft alle Schichten einer bestimmten Abteilung ab
+// @Tags shiftdays
+// @Accept json
+// @Produce json
+// @Param id path int true "Abteilungs-ID"
+// @Success 200 {object} responses.APIResponse{data=[]models.ShiftDay}
+// @Failure 404 {object} responses.APIResponse
+// @Router /api/v1/shiftdays/department/{id} [get]
+func HandleGetDepartmentShiftDays(c *fiber.Ctx) error {
+	departmentID := c.Params("id")
+	var shiftDays []models.ShiftDay
+
+	result := database.GetDB().
+		Joins("JOIN shift_weeks ON shift_days.shift_week_id = shift_weeks.id").
+		Where("shift_weeks.department_id = ?", departmentID).
+		Preload("ShiftType").
+		Preload("Employee").
+		Preload("ShiftWeek").
+		Order("date DESC").
+		Find(&shiftDays)
+
+	if result.Error != nil {
+		return c.Status(404).JSON(responses.ErrorResponse("Keine Schichten in dieser Abteilung gefunden"))
+	}
+
+	return c.JSON(responses.SuccessResponse(responses.MsgSuccessGet, shiftDays))
+}
+
 func validateShiftDay(shiftDay *models.ShiftDay) error {
 	if shiftDay.Date.IsZero() {
 		return fmt.Errorf("datum ist erforderlich")
 	}
 
-	if shiftDay.ShiftWeekID == 0 {
+	if shiftDay.ShiftWeekID == nil {
 		return fmt.Errorf("schichtwoche ist erforderlich")
 	}
 
@@ -260,30 +317,28 @@ func validateShiftDay(shiftDay *models.ShiftDay) error {
 		return fmt.Errorf("schichttyp ist erforderlich")
 	}
 
-	if shiftDay.EmployeeID == 0 {
-		return fmt.Errorf("mitarbeiter ist erforderlich")
-	}
-
 	var shiftWeek models.ShiftWeek
 	if err := database.GetDB().First(&shiftWeek, shiftDay.ShiftWeekID).Error; err != nil {
 		return fmt.Errorf("schichtwoche nicht gefunden")
 	}
 
-	var employee models.Employee
-	if err := database.GetDB().First(&employee, shiftDay.EmployeeID).Error; err != nil {
-		return fmt.Errorf("mitarbeiter nicht gefunden")
-	}
+	if shiftDay.EmployeeID != nil {
+		var employee models.Employee
+		if err := database.GetDB().First(&employee, shiftDay.EmployeeID).Error; err != nil {
+			return fmt.Errorf("mitarbeiter nicht gefunden")
+		}
 
-	if !shiftDay.IsValidForWeek(&shiftWeek) {
-		return fmt.Errorf("datum liegt außerhalb der schichtwoche")
-	}
+		if !shiftDay.IsValidForWeek(&shiftWeek) {
+			return fmt.Errorf("datum liegt außerhalb der schichtwoche")
+		}
 
-	if !shiftDay.ValidateEmployeeDepartment(&employee, &shiftWeek) {
-		return fmt.Errorf("mitarbeiter muss zur gleichen abteilung wie die schichtwoche gehören")
-	}
+		if !shiftDay.ValidateEmployeeDepartment(&employee, &shiftWeek) {
+			return fmt.Errorf("mitarbeiter muss zur gleichen abteilung wie die schichtwoche gehören")
+		}
 
-	if shiftDay.HasConflict(database.GetDB()) {
-		return fmt.Errorf("mitarbeiter hat bereits eine schicht an diesem tag")
+		if shiftDay.HasConflict(database.GetDB()) {
+			return fmt.Errorf("mitarbeiter hat bereits eine schicht an diesem tag")
+		}
 	}
 
 	return nil

@@ -90,6 +90,9 @@ func HandleGetOneShiftWeek(c *fiber.Ctx) error {
 
 	result := database.GetDB().
 		Preload("Department").
+		Preload("ShiftDays", func(db *gorm.DB) *gorm.DB {
+			return db.Order("date")
+		}).
 		Preload("ShiftDays.ShiftType").
 		Preload("ShiftDays.Employee").
 		First(&shiftWeek, id)
@@ -137,6 +140,8 @@ func HandleUpdateShiftWeek(c *fiber.Ctx) error {
 
 	database.GetDB().
 		Preload("Department").
+		Preload("ShiftDays.ShiftType").
+		Preload("ShiftDays.Employee").
 		First(&shiftWeek, id)
 
 	return c.JSON(responses.SuccessResponse(responses.MsgSuccessUpdate, shiftWeek))
@@ -163,43 +168,21 @@ func HandleDeleteShiftWeek(c *fiber.Ctx) error {
 		return c.Status(400).JSON(responses.ErrorResponse(responses.ErrDraftOnly))
 	}
 
-	var shiftDayCount int64
-	database.GetDB().Model(&models.ShiftDay{}).Where("shift_week_id = ?", id).Count(&shiftDayCount)
-	if shiftDayCount > 0 {
-		return c.Status(400).JSON(responses.ErrorResponse("Schichtwoche kann nicht gelöscht werden, da noch Schichttage zugeordnet sind"))
-	}
+	tx := database.GetDB().Begin()
 
-	if err := database.GetDB().Delete(&shiftWeek).Error; err != nil {
+	if err := tx.Where("shift_week_id = ?", id).Delete(&models.ShiftDay{}).Error; err != nil {
+		tx.Rollback()
 		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
 
-	return c.JSON(responses.SuccessResponse(responses.MsgSuccessDelete, nil))
-}
-
-// @Summary Schichtwochen einer Abteilung abrufen
-// @Description Ruft alle Schichtwochen einer spezifischen Abteilung ab
-// @Tags shiftweeks
-// @Accept json
-// @Produce json
-// @Param id path int true "Abteilungs-ID"
-// @Success 200 {object} responses.APIResponse{data=[]models.ShiftWeek}
-// @Failure 404 {object} responses.APIResponse
-// @Router /api/v1/shiftweeks/department/{id} [get]
-func HandleGetDepartmentShiftWeeks(c *fiber.Ctx) error {
-	departmentID := c.Params("id")
-	var shiftWeeks []models.ShiftWeek
-
-	result := database.GetDB().
-		Where("department_id = ?", departmentID).
-		Preload("ShiftDays.ShiftType").
-		Preload("ShiftDays.Employee").
-		Find(&shiftWeeks)
-
-	if result.Error != nil {
-		return c.Status(404).JSON(responses.ErrorResponse("Keine Schichtwochen in dieser Abteilung gefunden"))
+	if err := tx.Delete(&shiftWeek).Error; err != nil {
+		tx.Rollback()
+		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
 
-	return c.JSON(responses.SuccessResponse(responses.MsgSuccessGet, shiftWeeks))
+	tx.Commit()
+
+	return c.JSON(responses.SuccessResponse(responses.MsgSuccessDelete, nil))
 }
 
 // @Summary Status einer Schichtwoche aktualisieren
@@ -228,16 +211,6 @@ func HandleUpdateShiftWeekStatus(c *fiber.Ctx) error {
 		return c.Status(400).JSON(responses.ErrorResponse(responses.ErrInvalidInput))
 	}
 
-	validStatuses := []string{"draft", "published", "archived"}
-	isValidStatus := func(status string) bool {
-		for _, s := range validStatuses {
-			if s == status {
-				return true
-			}
-		}
-		return false
-	}
-
 	if !isValidStatus(update.Status) {
 		return c.Status(400).JSON(responses.ErrorResponse("Ungültiger Status"))
 	}
@@ -248,6 +221,64 @@ func HandleUpdateShiftWeekStatus(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(responses.SuccessResponse("Status erfolgreich aktualisiert", shiftWeek))
+}
+
+// @Summary Schichtwoche kopieren
+// @Description Erstellt eine Kopie einer bestehenden Schichtwoche
+// @Tags shiftweeks
+// @Accept json
+// @Produce json
+// @Param id path int true "Quell-Schichtwoche-ID"
+// @Success 201 {object} responses.APIResponse{data=models.ShiftWeek}
+// @Failure 404,500 {object} responses.APIResponse
+// @Router /api/v1/shiftweeks/copy/{id} [post]
+func HandleCopyShiftWeek(c *fiber.Ctx) error {
+	sourceID := c.Params("id")
+	var sourceWeek models.ShiftWeek
+
+	if err := database.GetDB().
+		Preload("ShiftDays").
+		First(&sourceWeek, sourceID).Error; err != nil {
+		return c.Status(404).JSON(responses.ErrorResponse(responses.ErrNotFound))
+	}
+
+	newWeek := models.ShiftWeek{
+		StartDate:    sourceWeek.StartDate.AddDate(0, 0, 7),
+		EndDate:      sourceWeek.EndDate.AddDate(0, 0, 7),
+		DepartmentID: sourceWeek.DepartmentID,
+		Status:       models.StatusDraft,
+		Notes:        "Kopie von: " + sourceWeek.Notes,
+	}
+
+	tx := database.GetDB().Begin()
+
+	if err := tx.Create(&newWeek).Error; err != nil {
+		tx.Rollback()
+		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
+	}
+
+	for _, sourceDay := range sourceWeek.ShiftDays {
+		newDay := models.ShiftDay{
+			Date:        sourceDay.Date.AddDate(0, 0, 7),
+			ShiftWeekID: &newWeek.ID,
+			ShiftTypeID: sourceDay.ShiftTypeID,
+			EmployeeID:  nil, // Mitarbeiter werden nicht mitkopiert
+			Status:      models.StatusDraft,
+		}
+		if err := tx.Create(&newDay).Error; err != nil {
+			tx.Rollback()
+			return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
+		}
+	}
+
+	tx.Commit()
+
+	database.GetDB().
+		Preload("Department").
+		Preload("ShiftDays.ShiftType").
+		First(&newWeek, newWeek.ID)
+
+	return c.Status(201).JSON(responses.SuccessResponse("Schichtwoche erfolgreich kopiert", newWeek))
 }
 
 // @Summary Statistiken einer Schichtwoche abrufen
@@ -272,101 +303,102 @@ func HandleShiftWeekStats(c *fiber.Ctx) error {
 		return c.Status(404).JSON(responses.ErrorResponse(responses.ErrNotFound))
 	}
 
-	stats := map[string]interface{}{
-		"totalShifts":    len(shiftWeek.ShiftDays),
-		"employeeCount":  countUniqueEmployees(shiftWeek.ShiftDays),
-		"shiftsByType":   countShiftsByType(shiftWeek.ShiftDays),
-		"shiftsByStatus": countShiftsByStatus(shiftWeek.ShiftDays),
-	}
-
+	stats := calculateShiftWeekStats(&shiftWeek)
 	return c.JSON(responses.SuccessResponse("Statistiken erfolgreich abgerufen", stats))
 }
 
-// @Summary Schichtwoche kopieren
-// @Description Erstellt eine Kopie einer bestehenden Schichtwoche
+// @Summary Schichtwochen einer Abteilung abrufen
+// @Description Ruft alle Schichtwochen einer spezifischen Abteilung ab
 // @Tags shiftweeks
 // @Accept json
 // @Produce json
-// @Param id path int true "Quell-Schichtwoche-ID"
-// @Success 201 {object} responses.APIResponse{data=models.ShiftWeek}
+// @Param id path int true "Abteilungs-ID"
+// @Success 200 {object} responses.APIResponse{data=[]models.ShiftWeek}
 // @Failure 404 {object} responses.APIResponse
-// @Router /api/v1/shiftweeks/copy/{id} [post]
-func HandleCopyShiftWeek(c *fiber.Ctx) error {
-	sourceID := c.Params("id")
-	var sourceWeek models.ShiftWeek
+// @Router /api/v1/shiftweeks/department/{id} [get]
+func HandleGetDepartmentShiftWeeks(c *fiber.Ctx) error {
+	departmentID := c.Params("id")
+	var shiftWeeks []models.ShiftWeek
 
-	if err := database.GetDB().
-		Preload("ShiftDays").
-		First(&sourceWeek, sourceID).Error; err != nil {
-		return c.Status(404).JSON(responses.ErrorResponse(responses.ErrNotFound))
+	result := database.GetDB().
+		Where("department_id = ?", departmentID).
+		Preload("ShiftDays.ShiftType").
+		Preload("ShiftDays.Employee").
+		Order("start_date DESC").
+		Find(&shiftWeeks)
+
+	if result.Error != nil {
+		return c.Status(404).JSON(responses.ErrorResponse("Keine Schichtwochen in dieser Abteilung gefunden"))
 	}
 
-	newWeek := models.ShiftWeek{
-		StartDate:    sourceWeek.StartDate.AddDate(0, 0, 7),
-		EndDate:      sourceWeek.EndDate.AddDate(0, 0, 7),
-		DepartmentID: sourceWeek.DepartmentID,
-		Status:       models.StatusDraft,
-	}
+	return c.JSON(responses.SuccessResponse(responses.MsgSuccessGet, shiftWeeks))
+}
 
-	if err := database.GetDB().Create(&newWeek).Error; err != nil {
-		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
-	}
+func calculateShiftWeekStats(week *models.ShiftWeek) map[string]interface{} {
+	employeeMap := make(map[uint]bool)
+	shiftTypeMap := make(map[uint]int)
+	unassignedShifts := 0
 
-	for _, sourceDay := range sourceWeek.ShiftDays {
-		newDay := models.ShiftDay{
-			Date:        sourceDay.Date.AddDate(0, 0, 7),
-			ShiftWeekID: newWeek.ID,
-			ShiftTypeID: sourceDay.ShiftTypeID,
-			EmployeeID:  sourceDay.EmployeeID,
-			Status:      models.StatusDraft,
-		}
-		if err := database.GetDB().Create(&newDay).Error; err != nil {
-			return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
+	for _, day := range week.ShiftDays {
+		if day.EmployeeID != nil {
+			employeeMap[*day.EmployeeID] = true
+			shiftTypeMap[day.ShiftTypeID]++
+		} else {
+			unassignedShifts++
 		}
 	}
 
-	return c.Status(201).JSON(responses.SuccessResponse("Schichtwoche erfolgreich kopiert", newWeek))
+	return map[string]interface{}{
+		"totalShifts":           len(week.ShiftDays),
+		"assignedShifts":        len(week.ShiftDays) - unassignedShifts,
+		"unassignedShifts":      unassignedShifts,
+		"uniqueEmployees":       len(employeeMap),
+		"shiftTypeDistribution": shiftTypeMap,
+	}
 }
 
 func validateShiftWeek(shiftWeek *models.ShiftWeek) error {
 	if shiftWeek.StartDate.IsZero() || shiftWeek.EndDate.IsZero() {
 		return fmt.Errorf("start- und enddatum sind erforderlich")
 	}
+
 	if shiftWeek.EndDate.Before(shiftWeek.StartDate) {
 		return fmt.Errorf("enddatum muss nach dem startdatum liegen")
 	}
-	if shiftWeek.DepartmentID == 0 {
+
+	if shiftWeek.DepartmentID == nil {
 		return fmt.Errorf("abteilung ist erforderlich")
 	}
 
+	// Prüfe ob die Abteilung existiert
 	var department models.Department
 	if err := database.GetDB().First(&department, shiftWeek.DepartmentID).Error; err != nil {
 		return fmt.Errorf("abteilung nicht gefunden")
 	}
 
+	// Prüfe auf Überschneidungen mit anderen Schichtwochen
+	var existingWeek models.ShiftWeek
+	if err := database.GetDB().
+		Where("department_id = ? AND id != ? AND ((start_date BETWEEN ? AND ?) OR (end_date BETWEEN ? AND ?))",
+			shiftWeek.DepartmentID,
+			shiftWeek.ID,
+			shiftWeek.StartDate,
+			shiftWeek.EndDate,
+			shiftWeek.StartDate,
+			shiftWeek.EndDate).
+		First(&existingWeek).Error; err == nil {
+		return fmt.Errorf("es existiert bereits eine überlappende schichtwoche in dieser abteilung")
+	}
+
 	return nil
 }
 
-func countUniqueEmployees(shiftDays []models.ShiftDay) int {
-	employeeMap := make(map[uint]bool)
-	for _, day := range shiftDays {
-		employeeMap[day.EmployeeID] = true
+func isValidStatus(status string) bool {
+	validStatuses := []string{models.StatusDraft, models.StatusPublished, models.StatusArchived}
+	for _, s := range validStatuses {
+		if s == status {
+			return true
+		}
 	}
-	return len(employeeMap)
-}
-
-func countShiftsByType(shiftDays []models.ShiftDay) map[string]int {
-	typeCount := make(map[string]int)
-	for _, day := range shiftDays {
-		typeCount[day.ShiftType.Name]++
-	}
-	return typeCount
-}
-
-func countShiftsByStatus(shiftDays []models.ShiftDay) map[string]int {
-	statusCount := make(map[string]int)
-	for _, day := range shiftDays {
-		statusCount[day.Status]++
-	}
-	return statusCount
+	return false
 }
