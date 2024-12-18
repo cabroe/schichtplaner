@@ -240,6 +240,35 @@ func HandleEmployeeShifts(c *fiber.Ctx) error {
 	return c.JSON(responses.SuccessResponse("Schichten erfolgreich abgerufen", employee.ShiftDays))
 }
 
+// @Summary Mitarbeiter einer Abteilung abrufen
+// @Description Ruft alle Mitarbeiter einer bestimmten Abteilung ab
+// @Tags employees
+// @Accept json
+// @Produce json
+// @Param id path int true "Abteilungs-ID"
+// @Success 200 {object} responses.APIResponse{data=[]models.Employee}
+// @Failure 404 {object} responses.APIResponse
+// @Router /api/v1/employees/department/{id} [get]
+func HandleGetDepartmentEmployees(c *fiber.Ctx) error {
+	departmentID := c.Params("id")
+	var employees []models.Employee
+
+	result := database.GetDB().
+		Where("department_id = ?", departmentID).
+		Preload("ShiftDays", func(db *gorm.DB) *gorm.DB {
+			return db.Order("date DESC")
+		}).
+		Preload("ShiftDays.ShiftType").
+		Order("last_name, first_name").
+		Find(&employees)
+
+	if result.Error != nil {
+		return c.Status(500).JSON(responses.ErrorResponse(result.Error.Error()))
+	}
+
+	return c.JSON(responses.SuccessResponse(responses.MsgSuccessGet, employees))
+}
+
 func validateEmployee(employee *models.Employee) error {
 	if employee.FirstName == "" {
 		return fmt.Errorf("vorname ist erforderlich")

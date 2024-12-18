@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/ptmmeiningen/schichtplaner/database"
 	"github.com/ptmmeiningen/schichtplaner/models"
@@ -84,6 +85,39 @@ func main() {
 
 	for _, st := range shiftTypes {
 		database.GetDB().Create(&st)
+	}
+
+	// Test-Schichtwochen erstellen
+	now := time.Now()
+	_, week := now.ISOWeek()
+	currentYear := now.Year()
+
+	shiftWeeks := []models.ShiftWeek{
+		{
+			CalendarWeek: week,
+			Year:         currentYear,
+			DepartmentID: &deptID1,
+			Status:       models.StatusPublished,
+			Notes:        "Aktuelle Woche",
+		},
+		{
+			CalendarWeek: week + 1,
+			Year:         currentYear,
+			DepartmentID: &deptID1,
+			Status:       models.StatusDraft,
+			Notes:        "Nächste Woche in Planung",
+		},
+		{
+			CalendarWeek: week + 2,
+			Year:         currentYear,
+			DepartmentID: &deptID1,
+			Status:       models.StatusDraft,
+			Notes:        "Übernächste Woche",
+		},
+	}
+
+	for _, week := range shiftWeeks {
+		database.GetDB().Create(&week)
 	}
 
 	log.Println("✨ Testdaten erfolgreich erstellt!")

@@ -280,38 +280,6 @@ paths:
       summary: Abteilung aktualisieren
       tags:
       - departments
-  /api/v1/departments/{id}/employees:
-    get:
-      consumes:
-      - application/json
-      description: Ruft alle Mitarbeiter einer spezifischen Abteilung ab
-      parameters:
-      - description: Abteilungs-ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/responses.APIResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/models.Employee'
-                  type: array
-              type: object
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/responses.APIResponse'
-      summary: Mitarbeiter einer Abteilung abrufen
-      tags:
-      - departments
   /api/v1/departments/{id}/stats:
     get:
       consumes:
@@ -563,6 +531,38 @@ paths:
           schema:
             $ref: '#/definitions/responses.APIResponse'
       summary: Verfügbare Mitarbeiter abrufen
+      tags:
+      - employees
+  /api/v1/employees/department/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Ruft alle Mitarbeiter einer bestimmten Abteilung ab
+      parameters:
+      - description: Abteilungs-ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.APIResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Employee'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.APIResponse'
+      summary: Mitarbeiter einer Abteilung abrufen
       tags:
       - employees
   /api/v1/health:

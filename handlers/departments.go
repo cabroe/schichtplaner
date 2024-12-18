@@ -26,8 +26,8 @@ func HandleAllDepartments(c *fiber.Ctx) error {
 				Order("last_name, first_name")
 		}).
 		Preload("ShiftWeeks", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, start_date, end_date, department_id, status").
-				Order("start_date DESC")
+			return db.Select("id, calendar_week, year, department_id, status").
+				Order("year DESC, calendar_week DESC")
 		}).
 		Order("name").
 		Find(&departments)
@@ -146,7 +146,6 @@ func HandleDeleteDepartment(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var department models.Department
 
-	// Abteilung mit allen Beziehungen laden
 	if err := database.GetDB().
 		Preload("Employees").
 		Preload("ShiftWeeks").
@@ -154,28 +153,23 @@ func HandleDeleteDepartment(c *fiber.Ctx) error {
 		return c.Status(404).JSON(responses.ErrorResponse(responses.ErrNotFound))
 	}
 
-	// Transaktion starten
 	tx := database.GetDB().Begin()
 
-	// Mitarbeiter-Referenzen aktualisieren
 	if err := tx.Model(&models.Employee{}).Where("department_id = ?", id).Update("department_id", nil).Error; err != nil {
 		tx.Rollback()
 		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
 
-	// ShiftWeeks löschen
 	if err := tx.Where("department_id = ?", id).Delete(&models.ShiftWeek{}).Error; err != nil {
 		tx.Rollback()
 		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
 
-	// Abteilung löschen
 	if err := tx.Delete(&department).Error; err != nil {
 		tx.Rollback()
 		return c.Status(500).JSON(responses.ErrorResponse(err.Error()))
 	}
 
-	// Transaktion bestätigen
 	tx.Commit()
 
 	return c.JSON(responses.SuccessResponse(responses.MsgSuccessDelete, nil))
@@ -212,35 +206,6 @@ func HandleDepartmentStats(c *fiber.Ctx) error {
 	return c.JSON(responses.SuccessResponse("Statistiken erfolgreich abgerufen", stats))
 }
 
-// @Summary Mitarbeiter einer Abteilung abrufen
-// @Description Ruft alle Mitarbeiter einer spezifischen Abteilung ab
-// @Tags departments
-// @Accept json
-// @Produce json
-// @Param id path int true "Abteilungs-ID"
-// @Success 200 {object} responses.APIResponse{data=[]models.Employee}
-// @Failure 404 {object} responses.APIResponse
-// @Router /api/v1/departments/{id}/employees [get]
-func HandleGetDepartmentEmployees(c *fiber.Ctx) error {
-	id := c.Params("id")
-	var employees []models.Employee
-
-	result := database.GetDB().
-		Where("department_id = ?", id).
-		Select("id, first_name, last_name, email, color, department_id, is_admin").
-		Find(&employees)
-
-	if result.Error != nil {
-		return c.Status(404).JSON(responses.ErrorResponse("Keine Mitarbeiter in dieser Abteilung gefunden"))
-	}
-
-	if len(employees) == 0 {
-		return c.Status(404).JSON(responses.ErrorResponse("Keine Mitarbeiter in dieser Abteilung gefunden"))
-	}
-
-	return c.JSON(responses.SuccessResponse(responses.MsgSuccessGet, employees))
-}
-
 func validateDepartment(department *models.Department) error {
 	if department.Name == "" {
 		return fmt.Errorf("name ist erforderlich")
@@ -260,7 +225,7 @@ func validateDepartment(department *models.Department) error {
 func countActiveShiftWeeks(weeks []models.ShiftWeek) int {
 	count := 0
 	for _, week := range weeks {
-		if week.Status == "published" {
+		if week.Status == models.StatusPublished {
 			count++
 		}
 	}
