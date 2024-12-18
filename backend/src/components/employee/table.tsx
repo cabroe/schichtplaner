@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Employee } from "@/types/api"
 import { Edit, Trash2 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 
 interface EmployeeTableProps {
   employees: Employee[]
@@ -47,45 +48,29 @@ export function EmployeeTable({ employees, getDepartmentName, getDepartmentColor
               <TableCell className="hidden md:table-cell">{employee.email}</TableCell>
               <TableCell>
                 {employee.department_id ? (
-                  <div className="flex items-center">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" style={{ 
-                      backgroundColor: `${getDepartmentColor(employee.department_id)}20`, 
-                      color: getDepartmentColor(employee.department_id)
-                    }}>
-                      {getDepartmentName(employee.department_id)}
-                    </span>
-                  </div>
+                  <Badge 
+                    label={getDepartmentName(employee.department_id)}
+                    color={getDepartmentColor(employee.department_id)}
+                  />
                 ) : (
                   <span></span>
                 )}
               </TableCell>
               <TableCell className="hidden sm:table-cell">
                 {employee.is_admin ? (
-                  <div className="flex items-center">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      Mitarbeiter
-                    </span>
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">                      
-                      Admin
-                    </span>
+                  <div className="flex items-center gap-2">
+                    <Badge label="Mitarbeiter" color="#16a34a" />
+                    <Badge label="Admin" color="#2563eb" />
                   </div>
                 ) : (
-                  <div className="flex items-center">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      Mitarbeiter
-                    </span>
-                  </div>
+                  <Badge label="Mitarbeiter" color="#16a34a" />
                 )}
               </TableCell>
               <TableCell className="hidden lg:table-cell">
-                <div className="flex items-center">
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" style={{ 
-                    backgroundColor: `${employee.color}20`, 
-                    color: employee.color 
-                  }}>
-                    {getColorLabel(employee.color)}
-                  </span>
-                </div>
+                <Badge 
+                  label={getColorLabel(employee.color)}
+                  color={employee.color}
+                />
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">

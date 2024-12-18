@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Department } from "@/types/api"
 import { Edit, Trash2 } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -73,14 +74,10 @@ export function DepartmentTable({ departments, onEdit, onDelete }: DepartmentTab
                   {department.employees?.length || 0} Mitarbeiter
                 </TableCell>
                 <TableCell className="hidden lg:table-cell">
-                  <div className="flex items-center">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium" style={{ 
-                      backgroundColor: `${department.color}20`, 
-                      color: department.color 
-                    }}>
-                      {getColorLabel(department.color)}
-                    </span>
-                  </div>
+                  <Badge 
+                    label={getColorLabel(department.color)}
+                    color={department.color}
+                  />
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
