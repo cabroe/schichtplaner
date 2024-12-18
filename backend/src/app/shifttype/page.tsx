@@ -5,22 +5,11 @@ import { PlusCircle } from "lucide-react"
 import { SearchBar } from "@/components/search-bar"
 import { ShiftTypeDialog } from "@/components/shifttype/dialog"
 import { ShiftTypeTable } from "@/components/shifttype/table"
-
-interface ShiftType {
-  id: number
-  name: string
-  description: string
-  duration: string
-  color: string
-  is_active: boolean
-  created_at: string
-  updated_at: string
-}
+import { ShiftType } from "@/types/api"
 
 interface ShiftTypeFormData {
   name: string
   description: string
-  duration: string
   color: string
   is_active: boolean
 }
