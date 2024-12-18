@@ -9,6 +9,7 @@ import { ColorPicker } from "@/components/ui/color-picker"
 import { Switch } from "@/components/ui/switch"
 import { Department } from "@/types/api"
 import { PREDEFINED_COLORS } from '@/lib/colors'
+import { Employee } from "@/types/api"
 
 const getRandomColor = () => {
   const randomIndex = Math.floor(Math.random() * PREDEFINED_COLORS.length)
@@ -30,7 +31,8 @@ interface EmployeeDialogProps {
   isOpen: boolean
   onClose: () => void
   onSubmit: (data: EmployeeFormData) => void
-  initialData?: EmployeeFormData
+  onDelete?: (employee: Employee) => Promise<void>
+  initialData?: Employee
   departments: Department[]
 }
 
