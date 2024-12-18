@@ -23,8 +23,9 @@ export function DepartmentTable({ departments, onEdit, onDelete }: DepartmentTab
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
-            <TableHead className="hidden lg:table-cell">Farbe</TableHead>
+            <TableHead className="hidden sm:table-cell">Beschreibung</TableHead>
             <TableHead className="hidden md:table-cell">Mitarbeiter</TableHead>
+            <TableHead className="hidden lg:table-cell">Farbe</TableHead>
             <TableHead className="text-right">Aktionen</TableHead>
           </TableRow>
         </TableHeader>
@@ -33,6 +34,12 @@ export function DepartmentTable({ departments, onEdit, onDelete }: DepartmentTab
             <TableRow key={`department-${department.id}`}>
               <TableCell className="font-medium">
                 {department.name}
+              </TableCell>
+              <TableCell className="hidden sm:table-cell">
+                {department.description || "-"}
+              </TableCell>
+              <TableCell className="hidden md:table-cell">
+                {department.employees?.length || 0} Mitarbeiter
               </TableCell>
               <TableCell className="hidden lg:table-cell">
                 <div className="flex items-center">
@@ -43,9 +50,6 @@ export function DepartmentTable({ departments, onEdit, onDelete }: DepartmentTab
                     {department.color}
                   </span>
                 </div>
-              </TableCell>
-              <TableCell className="hidden md:table-cell">
-                {department.employees?.length || 0} Mitarbeiter
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-2">

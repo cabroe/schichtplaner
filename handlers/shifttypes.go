@@ -188,16 +188,16 @@ func HandleGetDepartmentShiftTypes(c *fiber.Ctx) error {
 
 func validateShiftType(shiftType *models.ShiftType) error {
 	if shiftType.Name == "" {
-		return fmt.Errorf("Name ist erforderlich")
+		return fmt.Errorf("name ist erforderlich")
 	}
 	if shiftType.Description == "" {
-		return fmt.Errorf("Beschreibung ist erforderlich")
+		return fmt.Errorf("beschreibung ist erforderlich")
 	}
 	if shiftType.Duration == "" {
-		return fmt.Errorf("Dauer ist erforderlich")
+		return fmt.Errorf("dauer ist erforderlich")
 	}
 	if shiftType.Color == "" {
-		return fmt.Errorf("Farbe ist erforderlich")
+		return fmt.Errorf("farbe ist erforderlich")
 	}
 	return nil
 }

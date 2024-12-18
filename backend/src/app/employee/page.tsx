@@ -138,7 +138,8 @@ export default function EmployeePage() {
 
       <EmployeeTable 
         employees={filteredEmployees}
-        getDepartmentName={getDepartmentName}
+        getDepartmentName={(id) => departments.find(d => d.id === id)?.name || ''}
+        getDepartmentColor={(id) => departments.find(d => d.id === id)?.color || '#000000'}
         onEdit={(employee) => {
           setSelectedEmployee(employee)
           setShowDialog(true)

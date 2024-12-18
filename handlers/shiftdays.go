@@ -245,41 +245,41 @@ func HandleCheckShiftConflicts(c *fiber.Ctx) error {
 
 func validateShiftDay(shiftDay *models.ShiftDay) error {
 	if shiftDay.Date.IsZero() {
-		return fmt.Errorf("Datum ist erforderlich")
+		return fmt.Errorf("datum ist erforderlich")
 	}
 
 	if shiftDay.ShiftWeekID == 0 {
-		return fmt.Errorf("Schichtwoche ist erforderlich")
+		return fmt.Errorf("schichtwoche ist erforderlich")
 	}
 
 	if shiftDay.ShiftTypeID == 0 {
-		return fmt.Errorf("Schichttyp ist erforderlich")
+		return fmt.Errorf("schichttyp ist erforderlich")
 	}
 
 	if shiftDay.EmployeeID == 0 {
-		return fmt.Errorf("Mitarbeiter ist erforderlich")
+		return fmt.Errorf("mitarbeiter ist erforderlich")
 	}
 
 	var shiftWeek models.ShiftWeek
 	if err := database.GetDB().First(&shiftWeek, shiftDay.ShiftWeekID).Error; err != nil {
-		return fmt.Errorf("Schichtwoche nicht gefunden")
+		return fmt.Errorf("schichtwoche nicht gefunden")
 	}
 
 	var employee models.Employee
 	if err := database.GetDB().First(&employee, shiftDay.EmployeeID).Error; err != nil {
-		return fmt.Errorf("Mitarbeiter nicht gefunden")
+		return fmt.Errorf("mitarbeiter nicht gefunden")
 	}
 
 	if !shiftDay.IsValidForWeek(&shiftWeek) {
-		return fmt.Errorf("Datum liegt außerhalb der Schichtwoche")
+		return fmt.Errorf("datum liegt außerhalb der schichtwoche")
 	}
 
 	if !shiftDay.ValidateEmployeeDepartment(&employee, &shiftWeek) {
-		return fmt.Errorf("Mitarbeiter muss zur gleichen Abteilung wie die Schichtwoche gehören")
+		return fmt.Errorf("mitarbeiter muss zur gleichen abteilung wie die schichtwoche gehören")
 	}
 
 	if shiftDay.HasConflict(database.GetDB()) {
-		return fmt.Errorf("Mitarbeiter hat bereits eine Schicht an diesem Tag")
+		return fmt.Errorf("mitarbeiter hat bereits eine schicht an diesem tag")
 	}
 
 	return nil

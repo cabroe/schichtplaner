@@ -22,7 +22,7 @@ const docTemplate = `{
     "paths": {
         "/api/v1/departments": {
             "get": {
-                "description": "Ruft alle Abteilungen mit zugehörigen Mitarbeitern und Schichtwochen ab",
+                "description": "Ruft alle Abteilungen mit zugehörigen Mitarbeitern, Beschreibungen und Schichtwochen ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -64,7 +64,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Erstellt eine neue Abteilung mit den angegebenen Daten",
+                "description": "Erstellt eine neue Abteilung mit Name, Farbe, Beschreibung und weiteren Daten",
                 "consumes": [
                     "application/json"
                 ],
@@ -77,7 +77,7 @@ const docTemplate = `{
                 "summary": "Abteilung erstellen",
                 "parameters": [
                     {
-                        "description": "Abteilungsdaten",
+                        "description": "Abteilungsdaten inkl. Beschreibung",
                         "name": "department",
                         "in": "body",
                         "required": true,
@@ -116,7 +116,7 @@ const docTemplate = `{
         },
         "/api/v1/departments/{id}": {
             "get": {
-                "description": "Ruft eine spezifische Abteilung mit allen Details ab",
+                "description": "Ruft eine spezifische Abteilung mit allen Details inkl. Beschreibung ab",
                 "consumes": [
                     "application/json"
                 ],
@@ -164,7 +164,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Aktualisiert eine bestehende Abteilung",
+                "description": "Aktualisiert eine bestehende Abteilung inkl. Name, Farbe und Beschreibung",
                 "consumes": [
                     "application/json"
                 ],
@@ -184,7 +184,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Aktualisierte Abteilungsdaten",
+                        "description": "Aktualisierte Abteilungsdaten inkl. Beschreibung",
                         "name": "department",
                         "in": "body",
                         "required": true,
@@ -1889,6 +1889,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_at": {
+                    "type": "string"
+                },
+                "description": {
                     "type": "string"
                 },
                 "employees": {

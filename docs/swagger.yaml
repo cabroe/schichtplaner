@@ -6,6 +6,8 @@ definitions:
         type: string
       created_at:
         type: string
+      description:
+        type: string
       employees:
         items:
           $ref: '#/definitions/models.Employee'
@@ -130,8 +132,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Ruft alle Abteilungen mit zugehörigen Mitarbeitern und Schichtwochen
-        ab
+      description: Ruft alle Abteilungen mit zugehörigen Mitarbeitern, Beschreibungen
+        und Schichtwochen ab
       produces:
       - application/json
       responses:
@@ -156,9 +158,10 @@ paths:
     post:
       consumes:
       - application/json
-      description: Erstellt eine neue Abteilung mit den angegebenen Daten
+      description: Erstellt eine neue Abteilung mit Name, Farbe, Beschreibung und
+        weiteren Daten
       parameters:
-      - description: Abteilungsdaten
+      - description: Abteilungsdaten inkl. Beschreibung
         in: body
         name: department
         required: true
@@ -215,7 +218,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Ruft eine spezifische Abteilung mit allen Details ab
+      description: Ruft eine spezifische Abteilung mit allen Details inkl. Beschreibung
+        ab
       parameters:
       - description: Abteilungs-ID
         in: path
@@ -244,14 +248,14 @@ paths:
     put:
       consumes:
       - application/json
-      description: Aktualisiert eine bestehende Abteilung
+      description: Aktualisiert eine bestehende Abteilung inkl. Name, Farbe und Beschreibung
       parameters:
       - description: Abteilungs-ID
         in: path
         name: id
         required: true
         type: integer
-      - description: Aktualisierte Abteilungsdaten
+      - description: Aktualisierte Abteilungsdaten inkl. Beschreibung
         in: body
         name: department
         required: true

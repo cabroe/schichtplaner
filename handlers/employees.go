@@ -234,29 +234,29 @@ func HandleEmployeeShifts(c *fiber.Ctx) error {
 
 func validateEmployee(employee *models.Employee) error {
 	if employee.FirstName == "" {
-		return fmt.Errorf("Vorname ist erforderlich")
+		return fmt.Errorf("vorname ist erforderlich")
 	}
 	if employee.LastName == "" {
-		return fmt.Errorf("Nachname ist erforderlich")
+		return fmt.Errorf("nachname ist erforderlich")
 	}
 	if employee.Email == "" {
-		return fmt.Errorf("E-Mail ist erforderlich")
+		return fmt.Errorf("e-mail ist erforderlich")
 	}
 	if employee.DepartmentID == 0 {
-		return fmt.Errorf("Abteilung ist erforderlich")
+		return fmt.Errorf("abteilung ist erforderlich")
 	}
 	if employee.Color == "" {
-		return fmt.Errorf("Farbe ist erforderlich")
+		return fmt.Errorf("farbe ist erforderlich")
 	}
 
 	var existingEmployee models.Employee
 	if err := database.GetDB().Where("email = ? AND id != ?", employee.Email, employee.ID).First(&existingEmployee).Error; err == nil {
-		return fmt.Errorf("E-Mail wird bereits verwendet")
+		return fmt.Errorf("e-mail wird bereits verwendet")
 	}
 
 	var department models.Department
 	if err := database.GetDB().First(&department, employee.DepartmentID).Error; err != nil {
-		return fmt.Errorf("Abteilung nicht gefunden")
+		return fmt.Errorf("abteilung nicht gefunden")
 	}
 
 	return nil

@@ -11,7 +11,7 @@ import (
 )
 
 // @Summary Alle Abteilungen abrufen
-// @Description Ruft alle Abteilungen mit zugehörigen Mitarbeitern und Schichtwochen ab
+// @Description Ruft alle Abteilungen mit zugehörigen Mitarbeitern, Beschreibungen und Schichtwochen ab
 // @Tags departments
 // @Accept json
 // @Produce json
@@ -36,11 +36,11 @@ func HandleAllDepartments(c *fiber.Ctx) error {
 }
 
 // @Summary Abteilung erstellen
-// @Description Erstellt eine neue Abteilung mit den angegebenen Daten
+// @Description Erstellt eine neue Abteilung mit Name, Farbe, Beschreibung und weiteren Daten
 // @Tags departments
 // @Accept json
 // @Produce json
-// @Param department body models.Department true "Abteilungsdaten"
+// @Param department body models.Department true "Abteilungsdaten inkl. Beschreibung"
 // @Success 201 {object} responses.APIResponse{data=models.Department}
 // @Failure 400 {object} responses.APIResponse
 // @Router /api/v1/departments [post]
@@ -68,7 +68,7 @@ func HandleCreateDepartment(c *fiber.Ctx) error {
 }
 
 // @Summary Einzelne Abteilung abrufen
-// @Description Ruft eine spezifische Abteilung mit allen Details ab
+// @Description Ruft eine spezifische Abteilung mit allen Details inkl. Beschreibung ab
 // @Tags departments
 // @Accept json
 // @Produce json
@@ -93,12 +93,12 @@ func HandleGetOneDepartment(c *fiber.Ctx) error {
 }
 
 // @Summary Abteilung aktualisieren
-// @Description Aktualisiert eine bestehende Abteilung
+// @Description Aktualisiert eine bestehende Abteilung inkl. Name, Farbe und Beschreibung
 // @Tags departments
 // @Accept json
 // @Produce json
 // @Param id path int true "Abteilungs-ID"
-// @Param department body models.Department true "Aktualisierte Abteilungsdaten"
+// @Param department body models.Department true "Aktualisierte Abteilungsdaten inkl. Beschreibung"
 // @Success 200 {object} responses.APIResponse{data=models.Department}
 // @Failure 400,404 {object} responses.APIResponse
 // @Router /api/v1/departments/{id} [put]
@@ -222,10 +222,16 @@ func HandleGetDepartmentEmployees(c *fiber.Ctx) error {
 
 func validateDepartment(department *models.Department) error {
 	if department.Name == "" {
-		return fmt.Errorf("Name ist erforderlich")
+		return fmt.Errorf("name ist erforderlich")
 	}
 	if department.Color == "" {
-		return fmt.Errorf("Farbe ist erforderlich")
+		return fmt.Errorf("farbe ist erforderlich")
+	}
+	if len(department.Name) < 2 {
+		return fmt.Errorf("name muss mindestens 2 Zeichen lang sein")
+	}
+	if len(department.Name) > 50 {
+		return fmt.Errorf("name darf maximal 50 Zeichen lang sein")
 	}
 	return nil
 }

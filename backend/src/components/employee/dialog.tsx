@@ -6,7 +6,17 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ColorPicker } from "@/components/ui/color-picker"
+import { Switch } from "@/components/ui/switch"
 import { Department } from "@/types/api"
+
+const getRandomColor = () => {
+  const letters = '0123456789ABCDEF'
+  let color = '#'
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)]
+  }
+  return color
+}
 
 interface EmployeeFormData {
   id?: number
@@ -34,7 +44,7 @@ export function EmployeeDialog({ isOpen, onClose, onSubmit, initialData, departm
       last_name: '',
       email: '',
       department_id: 0,
-      color: '#000000',
+      color: getRandomColor(),
       is_admin: false
     }
   })
@@ -48,11 +58,16 @@ export function EmployeeDialog({ isOpen, onClose, onSubmit, initialData, departm
         last_name: '',
         email: '',
         department_id: 0,
-        color: '#000000',
+        color: getRandomColor(),
         is_admin: false
       })
     }
   }, [initialData, reset])
+
+  const handleClose = () => {
+    reset()
+    onClose()
+  }
 
   const handleFormSubmit = (data: EmployeeFormData) => {
     onSubmit(data)
@@ -60,7 +75,7 @@ export function EmployeeDialog({ isOpen, onClose, onSubmit, initialData, departm
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{initialData ? 'Mitarbeiter bearbeiten' : 'Neuer Mitarbeiter'}</DialogTitle>
@@ -102,14 +117,6 @@ export function EmployeeDialog({ isOpen, onClose, onSubmit, initialData, departm
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="color">Farbe</Label>
-            <ColorPicker 
-              value={watch('color')}
-              onChange={(color) => setValue('color', color)}
-            />
-          </div>
-
-          <div className="space-y-2">
             <Label htmlFor="password">Passwort</Label>
             <Input 
               id="password" 
@@ -117,10 +124,27 @@ export function EmployeeDialog({ isOpen, onClose, onSubmit, initialData, departm
               {...register('password')}
               required={!initialData} 
             />
+          </div>          
+
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="is_admin"
+              checked={watch('is_admin')}
+              onCheckedChange={(checked) => setValue('is_admin', checked)}
+            />
+            <Label htmlFor="is_admin">Administrator</Label>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="color">Farbe</Label>
+            <ColorPicker 
+              value={initialData?.color || watch('color') || '#000000'}
+              onChange={(color) => setValue('color', color)}
+            />
           </div>
 
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={handleClose}>
               Abbrechen
             </Button>
             <Button type="submit">

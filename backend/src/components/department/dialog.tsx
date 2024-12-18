@@ -7,9 +7,19 @@ import { Label } from "@/components/ui/label"
 import { ColorPicker } from "@/components/ui/color-picker"
 import { Department } from "@/types/api"
 
+const getRandomColor = () => {
+  const letters = '0123456789ABCDEF'
+  let color = '#'
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)]
+  }
+  return color
+}
+
 interface DepartmentFormData {
   name: string
   color: string
+  description: string
 }
 
 interface DepartmentDialogProps {
@@ -23,7 +33,8 @@ export function DepartmentDialog({ isOpen, onClose, onSubmit, initialData }: Dep
   const { register, handleSubmit, setValue, watch, reset } = useForm<DepartmentFormData>({
     defaultValues: {
       name: '',
-      color: '#000000'
+      color: getRandomColor(),
+      description: ''
     }
   })
 
@@ -33,10 +44,16 @@ export function DepartmentDialog({ isOpen, onClose, onSubmit, initialData }: Dep
     } else {
       reset({
         name: '',
-        color: '#000000'
+        color: getRandomColor(),
+        description: ''
       })
     }
   }, [initialData, reset])
+
+  const handleClose = () => {
+    reset()
+    onClose()
+  }
 
   const handleFormSubmit = (data: DepartmentFormData) => {
     onSubmit(data)
@@ -44,7 +61,7 @@ export function DepartmentDialog({ isOpen, onClose, onSubmit, initialData }: Dep
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{initialData ? 'Abteilung bearbeiten' : 'Neue Abteilung'}</DialogTitle>
@@ -56,15 +73,20 @@ export function DepartmentDialog({ isOpen, onClose, onSubmit, initialData }: Dep
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="description">Beschreibung</Label>
+            <Input id="description" {...register('description')} />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="color">Farbe</Label>
             <ColorPicker 
-              value={watch('color')}
+              value={initialData?.color || watch('color') || '#000000'}
               onChange={(color) => setValue('color', color)}
             />
           </div>
 
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={handleClose}>
               Abbrechen
             </Button>
             <Button type="submit">

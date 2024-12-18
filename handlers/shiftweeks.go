@@ -322,18 +322,18 @@ func HandleCopyShiftWeek(c *fiber.Ctx) error {
 
 func validateShiftWeek(shiftWeek *models.ShiftWeek) error {
 	if shiftWeek.StartDate.IsZero() || shiftWeek.EndDate.IsZero() {
-		return fmt.Errorf("Start- und Enddatum sind erforderlich")
+		return fmt.Errorf("start- und enddatum sind erforderlich")
 	}
 	if shiftWeek.EndDate.Before(shiftWeek.StartDate) {
-		return fmt.Errorf("Enddatum muss nach dem Startdatum liegen")
+		return fmt.Errorf("enddatum muss nach dem startdatum liegen")
 	}
 	if shiftWeek.DepartmentID == 0 {
-		return fmt.Errorf("Abteilung ist erforderlich")
+		return fmt.Errorf("abteilung ist erforderlich")
 	}
 
 	var department models.Department
 	if err := database.GetDB().First(&department, shiftWeek.DepartmentID).Error; err != nil {
-		return fmt.Errorf("Abteilung nicht gefunden")
+		return fmt.Errorf("abteilung nicht gefunden")
 	}
 
 	return nil
