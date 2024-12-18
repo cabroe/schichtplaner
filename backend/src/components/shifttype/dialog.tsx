@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
 import { ColorPicker } from "@/components/ui/color-picker"
 import { PREDEFINED_COLORS } from '@/lib/colors'
 import { ShiftType } from "@/types/api"
@@ -29,7 +28,7 @@ interface ShiftTypeDialogProps {
   initialData?: ShiftType
 }
 
-export function ShiftTypeDialog({ isOpen, onClose, onSubmit, onDelete, initialData }: ShiftTypeDialogProps) {
+export function ShiftTypeDialog({ isOpen, onClose, onSubmit, initialData }: ShiftTypeDialogProps) {
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<ShiftTypeFormData>({
     defaultValues: {
       name: '',
