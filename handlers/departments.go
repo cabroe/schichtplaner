@@ -22,11 +22,14 @@ func HandleAllDepartments(c *fiber.Ctx) error {
 	var departments []models.Department
 	result := database.GetDB().
 		Preload("Employees", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, first_name, last_name, email, color, department_id, is_admin")
+			return db.Select("id, first_name, last_name, email, color, department_id, is_admin").
+				Order("last_name, first_name")
 		}).
 		Preload("ShiftWeeks", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, start_date, end_date, department_id, status")
+			return db.Select("id, start_date, end_date, department_id, status").
+				Order("start_date DESC")
 		}).
+		Order("name").
 		Find(&departments)
 
 	if result.Error != nil {

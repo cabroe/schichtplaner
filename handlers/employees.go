@@ -24,12 +24,15 @@ func HandleAllEmployees(c *fiber.Ctx) error {
 	var employees []models.Employee
 	result := database.GetDB().
 		Preload("Department", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, name, color")
+			return db.Select("id, name, color").
+				Order("name")
 		}).
 		Preload("ShiftDays", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, date, shift_type_id, employee_id, shift_week_id")
+			return db.Select("id, date, shift_type_id, employee_id, shift_week_id").
+				Order("date DESC")
 		}).
 		Preload("ShiftDays.ShiftType").
+		Order("first_name, last_name").
 		Find(&employees)
 
 	if result.Error != nil {

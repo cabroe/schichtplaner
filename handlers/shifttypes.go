@@ -22,11 +22,14 @@ func HandleAllShiftTypes(c *fiber.Ctx) error {
 	var shiftTypes []models.ShiftType
 	result := database.GetDB().
 		Preload("ShiftDays", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, date, shift_type_id, employee_id, shift_week_id")
+			return db.Select("id, date, shift_type_id, employee_id, shift_week_id").
+				Order("date DESC")
 		}).
 		Preload("ShiftDays.Employee", func(db *gorm.DB) *gorm.DB {
-			return db.Select("id, first_name, last_name, email, color, department_id")
+			return db.Select("id, first_name, last_name, email, color, department_id").
+				Order("last_name, first_name")
 		}).
+		Order("name").
 		Find(&shiftTypes)
 
 	if result.Error != nil {
