@@ -8,12 +8,13 @@ import { SearchBar } from "@/components/search-bar"
 import { EmployeeDialog } from "@/components/employee/dialog"
 
 interface EmployeeFormData {
+  id?: number
   first_name: string
   last_name: string
   email: string
-  password?: string
+  department_id: number | null
   color: string
-  department_id: number
+  password?: string
   is_admin: boolean
 }
 
