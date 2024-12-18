@@ -1,3 +1,4 @@
+import { PREDEFINED_COLORS } from '@/lib/colors'
 import {
   Table,
   TableBody,
@@ -19,6 +20,11 @@ interface EmployeeTableProps {
 }
 
 export function EmployeeTable({ employees, getDepartmentName, getDepartmentColor, onEdit, onDelete }: EmployeeTableProps) {
+  const getColorLabel = (colorValue: string) => {
+    const color = PREDEFINED_COLORS.find(c => c.value === colorValue)
+    return color?.label || colorValue
+  }
+
   return (
     <div className="overflow-auto rounded-md border">
       <Table>
@@ -73,7 +79,7 @@ export function EmployeeTable({ employees, getDepartmentName, getDepartmentColor
                     backgroundColor: `${employee.color}20`, 
                     color: employee.color 
                   }}>
-                    {employee.color}
+                    {getColorLabel(employee.color)}
                   </span>
                 </div>
               </TableCell>

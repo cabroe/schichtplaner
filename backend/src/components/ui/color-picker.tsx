@@ -1,36 +1,46 @@
-import { useState } from 'react'
-import { Button } from './button'
-import { Popover, PopoverContent, PopoverTrigger } from './popover'
-import { HexColorPicker } from 'react-colorful'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select'
+import { useState, useEffect } from 'react'
+import { PREDEFINED_COLORS } from '@/lib/colors'
 
 interface ColorPickerProps {
   value?: string
   onChange?: (color: string) => void
 }
 
-export function ColorPicker({ value = '#000000', onChange }: ColorPickerProps) {
-  const [color, setColor] = useState(value)
+export function ColorPicker({ value = '#FF0000', onChange }: ColorPickerProps) {
+  const [selectedColor, setSelectedColor] = useState(value)
 
-  const handleChange = (newColor: string) => {
-    setColor(newColor)
+  useEffect(() => {
+    setSelectedColor(value)
+  }, [value])
+
+  const handleColorChange = (newColor: string) => {
+    setSelectedColor(newColor)
     onChange?.(newColor)
   }
 
+  const currentColor = PREDEFINED_COLORS.find(c => c.value === selectedColor)
+
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button 
-          variant="outline"
-          className="w-full justify-start"
-          style={{ backgroundColor: color }}
-        >
-          <div className="w-4 h-4 rounded mr-2" style={{ backgroundColor: color }} />
-          {color}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-3">
-        <HexColorPicker color={color} onChange={handleChange} />
-      </PopoverContent>
-    </Popover>
+    <Select value={selectedColor} onValueChange={handleColorChange}>
+      <SelectTrigger className="w-full">
+        <SelectValue>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded" style={{ backgroundColor: selectedColor }} />
+            {currentColor?.label || selectedColor}
+          </div>
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        {PREDEFINED_COLORS.map((color) => (
+          <SelectItem key={color.value} value={color.value}>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded" style={{ backgroundColor: color.value }} />
+              {color.label}
+            </div>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   )
 }
