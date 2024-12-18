@@ -98,7 +98,7 @@ export function EmployeeDialog({ isOpen, onClose, onSubmit, initialData, departm
             <Label htmlFor="department">Abteilung</Label>
             <Select 
               onValueChange={(value) => setValue('department_id', parseInt(value))}
-              value={watch('department_id').toString()}
+              value={watch('department_id')?.toString() || ""}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Abteilung wählen" />
