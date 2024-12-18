@@ -32,7 +32,8 @@ func HandleAllEmployees(c *fiber.Ctx) error {
 				Order("date DESC")
 		}).
 		Preload("ShiftDays.ShiftType").
-		Order("last_name, first_name").
+		// Nach Vornamen sortieren
+		Order("first_name").
 		Find(&employees)
 
 	if result.Error != nil {

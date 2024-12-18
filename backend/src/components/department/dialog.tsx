@@ -57,7 +57,6 @@ export function DepartmentDialog({ isOpen, onClose, onSubmit, initialData }: Dep
     const submitData = {
       ...data,
       name: data.name.trim(),
-      color: data.color,
       description: data.description || ''
     }
     onSubmit(submitData)
