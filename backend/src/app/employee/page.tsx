@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
 import { SearchBar } from "@/components/search-bar"
 import { EmployeeDialog } from "@/components/employee/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface EmployeeFormData {
   id?: number
@@ -25,6 +26,7 @@ export default function EmployeePage() {
   const [departments, setDepartments] = useState<Department[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const [selectedDepartment, setSelectedDepartment] = useState<string>("all")
   const [showDialog, setShowDialog] = useState(false)
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | undefined>()
 
@@ -107,11 +109,18 @@ export default function EmployeePage() {
     setSelectedEmployee(undefined)
   }
 
-  const filteredEmployees = employees.filter(employee => 
-    employee.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    employee.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    employee.email.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredEmployees = employees.filter(employee => {
+    const matchesSearch = (
+      employee.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      employee.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      employee.email.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    
+    const matchesDepartment = selectedDepartment === "all" || 
+      employee.department_id === Number(selectedDepartment)
+
+    return matchesSearch && matchesDepartment
+  })
 
   if (loading) {
     return <div className="p-6">Lade Mitarbeiterdaten...</div>
@@ -128,12 +137,29 @@ export default function EmployeePage() {
         </Button>
       </div>
 
-      <div className="mb-4">
+      <div className="flex flex-col md:flex-row gap-4 mb-4">
         <SearchBar 
           value={searchQuery}
           onChange={setSearchQuery}
           placeholder="Mitarbeiter suchen..."
+          className="md:max-w-xs"
         />
+        <Select 
+          value={selectedDepartment}
+          onValueChange={setSelectedDepartment}
+        >
+          <SelectTrigger className="md:w-[200px]">
+            <SelectValue placeholder="Abteilung wählen" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Alle Abteilungen</SelectItem>
+            {departments.map(dept => (
+              <SelectItem key={dept.id} value={dept.id.toString()}>
+                {dept.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <EmployeeTable 
