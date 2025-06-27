@@ -1,5 +1,5 @@
 
-.PHONY: build dev install test test-go test-frontend coverage coverage-go coverage-frontend lint clean docker-build docker-run docker-push help all
+.PHONY: build dev install test test-go test-frontend test-frontend-watch coverage coverage-go coverage-frontend lint clean docker-build docker-run docker-push help all
 
 # Standardziel, wenn nur 'make' aufgerufen wird
 all: help
@@ -23,7 +23,10 @@ lint: ## Linting durchführen
 
 test: test-frontend test-go ## Alle Tests ausführen (Frontend und Go)
 
-test-frontend: ## Nur Frontend-Tests ausführen
+test-frontend: ## Nur Frontend-Tests ausführen (CI-Modus)
+	cd frontend && yarn test:run
+
+test-frontend-watch: ## Frontend-Tests im Watch-Modus ausführen
 	cd frontend && yarn test
 
 test-go: ## Nur Go-Tests ausführen
