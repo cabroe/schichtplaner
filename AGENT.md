@@ -18,7 +18,8 @@
 - **Dev Mode**: Vite dev server (:5173) proxied through Go server (:3000)
 - **API**: RESTful endpoints under `/api/*` prefix
 - **Static Assets**: Embedded in Go binary using `//go:embed`
-- **Environment**: .env files for configuration (.env.dev, .env.prod, .env.test - frontend/.env.dev: VITE_API_BASE_URL, .env.dev: SERVER_PORT, ENV)
+- **Environment**: .env files for configuration (.env.dev, .env.prod, .env.test - frontend/.env.dev: VITE_API_BASE_URL, VITE_APP_TITLE, .env.dev: SERVER_PORT, ENV)
+- **Docker**: Docker Compose for development and production environments
 
 ## Code Style
 - **Go**: Standard Go conventions, Echo framework patterns
@@ -35,4 +36,4 @@
 - **Frontend**: Vitest with jsdom environment, React Testing Library for component testing
 - **Test Files**: `*.test.ts` or `*.test.tsx` files in `src/` directory
 - **Setup**: Global test setup in `src/test/setup.ts` with jest-dom matchers
-- **Coverage**: Built-in Vitest coverage reporting
+- **Coverage**: Built-in Vitest coverage reporting, Go coverage reports in `/coverage` directory
