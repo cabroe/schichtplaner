@@ -16,7 +16,7 @@
 - **Dev Mode**: Vite dev server (:5173) proxied through Go server (:3000)
 - **API**: RESTful endpoints under `/api/*` prefix
 - **Static Assets**: Embedded in Go binary using `//go:embed`
-- **Environment**: .env files for configuration (frontend: VITE_API_BASE_URL, backend: SERVER_PORT)
+- **Environment**: .env files for configuration (.env.dev, .env.prod, .env.test - frontend/.env.dev: VITE_API_BASE_URL, .env.dev: SERVER_PORT, ENV)
 
 ## Code Style
 - **Go**: Standard Go conventions, Echo framework patterns

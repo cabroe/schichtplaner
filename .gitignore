@@ -3,4 +3,11 @@
 /bin
 /dist
 
-/.env
+# Environment files (actual config)
+.env
+.env.local
+
+# Keep template files versioned
+!.env.dev
+!.env.prod
+!.env.test
