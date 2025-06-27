@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // @ts-ignore
+  // @ts-expect-error Vitest test config not recognized by Vite types
   test: {
     globals: true,
     environment: 'jsdom',
