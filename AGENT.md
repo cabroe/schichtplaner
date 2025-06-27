@@ -3,11 +3,13 @@
 ## Commands
 - Build: `make build` (builds frontend + Go binary)
 - Dev: `make dev` (runs frontend on :5173, Go on :3000 with hot reload)
+- Docker Dev: `make docker-dev` (Docker development environment), `make docker-dev-down` (stop)
 - Test: `make test` (all tests), `make test-go` (Go only), `make test-frontend` (frontend only)
 - Single Go test: `go test -v ./path/to/package -run TestName`
 - Frontend Tests: `cd frontend && yarn test` (interactive), `yarn test:run` (CI), `yarn test:ui` (UI mode)
 - Lint: `make lint` (ESLint + go vet)
 - Coverage: `make coverage` (both), `make coverage-go` (Go only)
+- Docker: `make docker-build`, `make docker-run` (production)
 
 ## Architecture
 - **Go Backend**: Echo web server with embedded frontend assets, CORS enabled

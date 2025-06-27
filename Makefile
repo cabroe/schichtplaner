@@ -1,5 +1,5 @@
 
-.PHONY: build dev install test test-go test-frontend test-frontend-watch coverage coverage-go coverage-frontend lint clean docker-build docker-run docker-push help all
+.PHONY: build dev install test test-go test-frontend test-frontend-watch coverage coverage-go coverage-frontend lint clean docker-build docker-run docker-push docker-dev docker-dev-down help all
 
 # Standardziel, wenn nur 'make' aufgerufen wird
 all: help
@@ -49,6 +49,12 @@ docker-run: ## Docker-Container starten
 
 docker-push: ## Docker-Image zu einer Registry pushen (erfordert vorherige Anmeldung)
 	docker push schichtplaner:latest
+
+docker-dev: ## Docker Development Environment starten
+	docker-compose -f docker-compose.dev.yml up --build
+
+docker-dev-down: ## Docker Development Environment stoppen
+	docker-compose -f docker-compose.dev.yml down
 
 clean: ## Aufräumen (node_modules, build-Verzeichnis und binaries entfernen)
 	cd frontend && rm -rf node_modules dist yarn.lock
