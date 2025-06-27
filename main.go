@@ -15,6 +15,7 @@ func main() {
 
 	// Add standard middleware
 	e.Use(middleware.Logger())
+	e.Use(middleware.CORS())
 
 	// Setup the frontend handlers to service vite static assets
 	frontend.RegisterHandlers(e)
