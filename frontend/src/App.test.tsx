@@ -8,9 +8,20 @@ describe('App', () => {
     expect(screen.getByText('Golang + Vite + React')).toBeInTheDocument()
   })
 
-  it('renders Vite and React logos', () => {
+  it('renders Schichtplaner title', () => {
     render(<App />)
-    expect(screen.getByAltText('Vite logo')).toBeInTheDocument()
-    expect(screen.getByAltText('React logo')).toBeInTheDocument()
+    expect(screen.getByText('Schichtplaner')).toBeInTheDocument()
+  })
+
+  it('renders Vite and React buttons', () => {
+    render(<App />)
+    expect(screen.getByRole('link', { name: /vite/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /react/i })).toBeInTheDocument()
+  })
+
+  it('renders Font Awesome SVG icons', () => {
+    render(<App />)
+    const svgElements = document.querySelectorAll('svg[data-icon]')
+    expect(svgElements.length).toBeGreaterThan(0)
   })
 })
