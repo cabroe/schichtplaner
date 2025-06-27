@@ -10,12 +10,13 @@
 - Coverage: `make coverage` (both), `make coverage-go` (Go only)
 
 ## Architecture
-- **Go Backend**: Echo web server with embedded frontend assets
-- **Frontend**: React + TypeScript + Vite + Tabler.io UI framework (SPA served by Go in production)
+- **Go Backend**: Echo web server with embedded frontend assets, CORS enabled
+- **Frontend**: React + TypeScript + Vite + Font Awesome icons (SPA served by Go in production)
 - **Testing**: Vitest + React Testing Library + jsdom for frontend unit/integration tests
 - **Dev Mode**: Vite dev server (:5173) proxied through Go server (:3000)
 - **API**: RESTful endpoints under `/api/*` prefix
 - **Static Assets**: Embedded in Go binary using `//go:embed`
+- **Environment**: .env files for configuration (frontend: VITE_API_BASE_URL, backend: SERVER_PORT)
 
 ## Code Style
 - **Go**: Standard Go conventions, Echo framework patterns
@@ -25,7 +26,7 @@
 - **Naming**: camelCase (TS), snake_case (Go structs), PascalCase (Go types)
 - **Language**: German comments allowed, English code preferred
 - **Database**: SQLite (github.com/glebarez/sqlite) with GORM (production can use PostgreSQL)
-- **Models**: GORM models, Echo handlers, CORS enabled
+- **Models**: GORM models, Echo handlers
 - **Error Handling**: Go: explicit error returns; TS: proper error boundaries
 
 ## Testing Setup
