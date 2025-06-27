@@ -14,7 +14,7 @@
 ## Architecture
 - **Go Backend**: Echo web server with embedded frontend assets, CORS enabled
 - **Frontend**: React + TypeScript + Vite + Font Awesome icons (SPA served by Go in production)
-- **Testing**: Vitest + React Testing Library + jsdom for frontend unit/integration tests
+- **Testing**: Vitest + React Testing Library + jsdom for frontend, Go testing package + testify for backend unit/integration tests
 - **Dev Mode**: Vite dev server (:5173) proxied through Go server (:3000)
 - **API**: RESTful endpoints under `/api/*` prefix
 - **Static Assets**: Embedded in Go binary using `//go:embed`
@@ -24,7 +24,7 @@
 ## Code Style
 - **Go**: Standard Go conventions, Echo framework patterns
 - **Frontend**: TypeScript strict mode, ESLint rules, functional components
-- **Testing**: Vitest for frontend tests, Go testing package for backend
+- **Testing**: Vitest for frontend tests, Go testing package + testify for backend (unit + integration tests)
 - **Imports**: Go std lib first, then external, then internal packages
 - **Naming**: camelCase (TS), snake_case (Go structs), PascalCase (Go types)
 - **Language**: German comments allowed, English code preferred
@@ -36,4 +36,6 @@
 - **Frontend**: Vitest with jsdom environment, React Testing Library for component testing
 - **Test Files**: `*.test.ts` or `*.test.tsx` files in `src/` directory
 - **Setup**: Global test setup in `src/test/setup.ts` with jest-dom matchers
+- **Backend**: Go testing package with testify for assertions
+- **Test Files**: `*_test.go` files in respective packages (`api/api_test.go`, `main_test.go`)
 - **Coverage**: Built-in Vitest coverage reporting, Go coverage reports in `/coverage` directory
