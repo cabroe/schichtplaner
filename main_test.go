@@ -8,13 +8,30 @@ import (
 	"testing"
 
 	"github.com/danhawkins/go-vite-react-example/api"
+	"github.com/danhawkins/go-vite-react-example/db"
 	"github.com/danhawkins/go-vite-react-example/frontend"
+	"github.com/danhawkins/go-vite-react-example/models"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/stretchr/testify/assert"
 )
 
 func setupTestServer() *echo.Echo {
+	// Setup test database
+	testDB, err := db.GetTestDB()
+	if err != nil {
+		panic(err)
+	}
+	
+	// Set global DB for testing
+	db.DB = testDB
+
+	// Seed test data
+	message := models.Message{Content: "Hello, from the golang World!"}
+	if err := testDB.Create(&message).Error; err != nil {
+		panic(err)
+	}
+
 	// Create a new echo server for testing
 	e := echo.New()
 

@@ -15,6 +15,10 @@
 # Coverage files
 /coverage
 
+# Database files
+/data
+*.db
+
 # macOS
 .DS_Store
 .AppleDouble

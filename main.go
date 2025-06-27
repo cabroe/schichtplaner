@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/danhawkins/go-vite-react-example/api"
+	"github.com/danhawkins/go-vite-react-example/db"
 	"github.com/danhawkins/go-vite-react-example/frontend"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -17,6 +19,12 @@ func main() {
 	if err != nil {
 		fmt.Println("Error loading .env file, using defaults")
 	}
+
+	// Initialize database
+	if err := db.InitDatabase(); err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
+	}
+	defer db.CloseDatabase()
 
 	// Get port from environment variable or use default
 	port := os.Getenv("SERVER_PORT")

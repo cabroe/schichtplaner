@@ -6,18 +6,34 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/danhawkins/go-vite-react-example/db"
+	"github.com/danhawkins/go-vite-react-example/models"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestRegisterHandlers(t *testing.T) {
+	// Setup test database
+	testDB, err := db.GetTestDB()
+	assert.NoError(t, err)
+	
+	// Set global DB for testing
+	originalDB := db.DB
+	db.DB = testDB
+	defer func() { db.DB = originalDB }()
+
+	// Seed test data
+	message := models.Message{Content: "Test message from database"}
+	err = testDB.Create(&message).Error
+	assert.NoError(t, err)
+
 	// Setup Echo instance
 	e := echo.New()
 	
 	// Register API handlers
 	RegisterHandlers(e)
 
-	t.Run("GET /api/message returns success", func(t *testing.T) {
+	t.Run("GET /api/message returns success from database", func(t *testing.T) {
 		// Create request
 		req := httptest.NewRequest(http.MethodGet, "/api/message", nil)
 		rec := httptest.NewRecorder()
@@ -33,7 +49,27 @@ func TestRegisterHandlers(t *testing.T) {
 		var response map[string]string
 		err := json.Unmarshal(rec.Body.Bytes(), &response)
 		assert.NoError(t, err)
-		assert.Equal(t, "Hello, from the golang World!", response["message"])
+		assert.Equal(t, "Test message from database", response["message"])
+	})
+
+	t.Run("GET /api/messages returns all messages", func(t *testing.T) {
+		// Create request
+		req := httptest.NewRequest(http.MethodGet, "/api/messages", nil)
+		rec := httptest.NewRecorder()
+
+		// Perform request
+		e.ServeHTTP(rec, req)
+
+		// Assertions
+		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.Equal(t, "application/json; charset=UTF-8", rec.Header().Get("Content-Type"))
+
+		// Parse response body
+		var response map[string]interface{}
+		err := json.Unmarshal(rec.Body.Bytes(), &response)
+		assert.NoError(t, err)
+		assert.NotNil(t, response["messages"])
+		assert.Equal(t, float64(1), response["count"]) // JSON unmarshals numbers as float64
 	})
 
 	t.Run("GET /api/nonexistent returns 404", func(t *testing.T) {
@@ -61,49 +97,35 @@ func TestRegisterHandlers(t *testing.T) {
 	})
 }
 
-func TestMessageEndpoint(t *testing.T) {
-	// Setup Echo instance with just the message handler
+func TestMessageEndpointWithEmptyDatabase(t *testing.T) {
+	// Setup test database (empty)
+	testDB, err := db.GetTestDB()
+	assert.NoError(t, err)
+	
+	// Set global DB for testing
+	originalDB := db.DB
+	db.DB = testDB
+	defer func() { db.DB = originalDB }()
+
+	// Setup Echo instance
 	e := echo.New()
-	e.GET("/api/message", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]string{"message": "Hello, from the golang World!"})
+	e.GET("/api/message", getLatestMessage)
+
+	t.Run("GET /api/message returns 404 when no messages exist", func(t *testing.T) {
+		// Create request
+		req := httptest.NewRequest(http.MethodGet, "/api/message", nil)
+		rec := httptest.NewRecorder()
+
+		// Perform request
+		e.ServeHTTP(rec, req)
+
+		// Should return 404 when no messages exist
+		assert.Equal(t, http.StatusNotFound, rec.Code)
+
+		// Parse response
+		var response map[string]string
+		err := json.Unmarshal(rec.Body.Bytes(), &response)
+		assert.NoError(t, err)
+		assert.Equal(t, "No message found", response["error"])
 	})
-
-	// Test cases
-	tests := []struct {
-		name           string
-		method         string
-		expectedCode   int
-		expectedBody   map[string]string
-		expectError    bool
-	}{
-		{
-			name:         "Valid GET request",
-			method:       http.MethodGet,
-			expectedCode: http.StatusOK,
-			expectedBody: map[string]string{"message": "Hello, from the golang World!"},
-			expectError:  false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// Create request
-			req := httptest.NewRequest(tt.method, "/api/message", nil)
-			rec := httptest.NewRecorder()
-
-			// Perform request
-			e.ServeHTTP(rec, req)
-
-			// Check status code
-			assert.Equal(t, tt.expectedCode, rec.Code)
-
-			if !tt.expectError && tt.expectedBody != nil {
-				// Parse and check response body
-				var response map[string]string
-				err := json.Unmarshal(rec.Body.Bytes(), &response)
-				assert.NoError(t, err)
-				assert.Equal(t, tt.expectedBody, response)
-			}
-		})
-	}
 }
