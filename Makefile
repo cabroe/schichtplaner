@@ -38,8 +38,9 @@ coverage-frontend: ## Nur Frontend-Test-Coverage generieren
 	cd frontend && yarn coverage
 
 coverage-go: ## Nur Go-Test-Coverage generieren
-	go test -coverprofile=coverage.out ./...
-	go tool cover -html=coverage.out -o coverage.html
+	mkdir -p coverage
+	go test -coverprofile=coverage/coverage.out ./...
+	go tool cover -html=coverage/coverage.out -o coverage/coverage.html
 
 docker-build: ## Docker-Image bauen
 	docker build -t schichtplaner:latest .
@@ -58,5 +59,4 @@ docker-dev-down: ## Docker Development Environment stoppen
 
 clean: ## Aufräumen (node_modules, build-Verzeichnis und binaries entfernen)
 	cd frontend && rm -rf node_modules dist yarn.lock
-	rm -rf bin
-	rm -f coverage.out coverage.html
+	rm -rf bin coverage
