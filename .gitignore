@@ -11,3 +11,7 @@
 !.env.dev
 !.env.prod
 !.env.test
+
+# Coverage files
+coverage.out
+coverage.html
