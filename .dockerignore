@@ -1,1 +1,27 @@
+# Development files
+.git
+.gitignore
+.DS_Store
+.env*
+tmp/
+.air.toml
+
+# Build artifacts
 frontend/dist
+frontend/node_modules
+node_modules
+bin/
+coverage/
+
+# Test and development data
+data/
+*.test
+
+# Documentation
+README.md
+AGENT.md
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
