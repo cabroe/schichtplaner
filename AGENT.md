@@ -31,6 +31,7 @@
 - **Database**: SQLite (github.com/glebarez/sqlite) with GORM (production can use PostgreSQL)
 - **Models**: GORM models, Echo handlers
 - **Error Handling**: Go: explicit error returns; TS: proper error boundaries
+- **File Size**: Keep files under 200-300 lines; split large files into smaller, focused modules
 
 ## Testing Setup
 - **Frontend**: Vitest with jsdom environment, React Testing Library for component testing
