@@ -13,28 +13,26 @@ export interface NavigationItem {
 export const defaultNavigationItems: NavigationItem[] = [
   {
     id: "dashboard",
-    href: "/dashboard/",
+    href: "/dashboard",
     title: "Dashboard",
     icon: <span>📊</span>,
     isActive: false,
     isDropdown: false
   },
   {
-    id: "nav-dropdown-times",
-    href: "#",
+    id: "zeiterfassung",
+    href: "/zeiterfassung",
     title: "Zeiterfassung",
     icon: <span>🕐</span>,
-    isActive: true,
-    isDropdown: true,
-    ariaExpanded: false
+    isActive: false,
+    isDropdown: false
   },
   {
-    id: "nav-dropdown-admin",
-    href: "#",
+    id: "administration",
+    href: "/administration",
     title: "Administration",
     icon: <span>⚙️</span>,
     isActive: false,
-    isDropdown: true,
-    ariaExpanded: false
+    isDropdown: false
   }
 ];
