@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { PageHeader } from './PageHeader';
 
 interface PageWrapperProps {
   children?: ReactNode;
@@ -9,11 +10,11 @@ export function PageWrapper({ children, headerContent }: PageWrapperProps) {
   return (
     <div className="page-wrapper">
       <div className="container-fluid">
-        <div className="page-header d-print-none">
-          <div className="align-items-center row">
+        {headerContent && (
+          <PageHeader>
             {headerContent}
-          </div>
-        </div>
+          </PageHeader>
+        )}
       </div>
       <div className="page-body">
         <div className="container-fluid">
