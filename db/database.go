@@ -57,17 +57,20 @@ func InitDatabase() error {
 func AutoMigrate() error {
 	return DB.AutoMigrate(
 		&models.Message{},
+		&models.User{},
+		&models.Team{},
+		&models.TeamMember{},
+		&models.ShiftType{},
 	)
 }
 
 // SeedData inserts initial data into the database
 func SeedData() error {
-	// Check if any messages exist
-	var count int64
-	DB.Model(&models.Message{}).Count(&count)
+	// Seed messages
+	var messageCount int64
+	DB.Model(&models.Message{}).Count(&messageCount)
 	
-	if count == 0 {
-		// Insert default message
+	if messageCount == 0 {
 		message := models.Message{
 			Content: "Hello, from the golang World!",
 		}
@@ -75,6 +78,108 @@ func SeedData() error {
 			return err
 		}
 		log.Println("Seeded initial message data")
+	}
+
+	// Seed users
+	var userCount int64
+	DB.Model(&models.User{}).Count(&userCount)
+	
+	if userCount == 0 {
+		users := []models.User{
+			{
+				Username: "admin",
+				Name:     "Administrator",
+				Email:    "admin@schichtplaner.local",
+				Color:    "#DC2626",
+				Role:     "Administrator",
+				IsActive: true,
+				IsAdmin:  true,
+			},
+			{
+				Username: "demo_user",
+				Name:     "Demo Benutzer",
+				Email:    "demo@schichtplaner.local",
+				Color:    "#3B82F6",
+				Role:     "Mitarbeiter",
+				IsActive: true,
+				IsAdmin:  false,
+			},
+		}
+		
+		for _, user := range users {
+			if err := DB.Create(&user).Error; err != nil {
+				return err
+			}
+		}
+		log.Println("Seeded initial user data")
+	}
+
+	// Seed teams
+	var teamCount int64
+	DB.Model(&models.Team{}).Count(&teamCount)
+	
+	if teamCount == 0 {
+		teams := []models.Team{
+			{
+				Name:        "Hauptteam",
+				Description: "Das Hauptteam für die Schichtplanung",
+				Color:       "#10B981",
+				IsActive:    true,
+			},
+			{
+				Name:        "Nachtschicht",
+				Description: "Team für die Nachtschichten",
+				Color:       "#6366F1",
+				IsActive:    true,
+			},
+		}
+		
+		for _, team := range teams {
+			if err := DB.Create(&team).Error; err != nil {
+				return err
+			}
+		}
+		log.Println("Seeded initial team data")
+	}
+
+	// Seed shift types
+	var shiftTypeCount int64
+	DB.Model(&models.ShiftType{}).Count(&shiftTypeCount)
+	
+	if shiftTypeCount == 0 {
+		shiftTypes := []models.ShiftType{
+			{
+				Name:        "Frühschicht",
+				Description: "Frühe Schicht von 06:00 bis 14:00",
+				Color:       "#F59E0B",
+				Duration:    480, // 8 Stunden
+				BreakTime:   30,  // 30 Minuten
+				IsActive:    true,
+			},
+			{
+				Name:        "Spätschicht",
+				Description: "Späte Schicht von 14:00 bis 22:00",
+				Color:       "#EF4444",
+				Duration:    480, // 8 Stunden
+				BreakTime:   30,  // 30 Minuten
+				IsActive:    true,
+			},
+			{
+				Name:        "Nachtschicht",
+				Description: "Nachtschicht von 22:00 bis 06:00",
+				Color:       "#8B5CF6",
+				Duration:    480, // 8 Stunden
+				BreakTime:   45,  // 45 Minuten
+				IsActive:    true,
+			},
+		}
+		
+		for _, shiftType := range shiftTypes {
+			if err := DB.Create(&shiftType).Error; err != nil {
+				return err
+			}
+		}
+		log.Println("Seeded initial shift type data")
 	}
 	
 	return nil
@@ -103,7 +208,13 @@ func GetTestDB() (*gorm.DB, error) {
 	}
 
 	// Auto-migrate for test database
-	if err := testDB.AutoMigrate(&models.Message{}); err != nil {
+	if err := testDB.AutoMigrate(
+		&models.Message{},
+		&models.User{},
+		&models.Team{},
+		&models.TeamMember{},
+		&models.ShiftType{},
+	); err != nil {
 		return nil, err
 	}
 

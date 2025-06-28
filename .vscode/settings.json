@@ -1,0 +1,6 @@
+{
+    "go.goroot": "/usr/local/Cellar/go/1.24.4/libexec",
+    "go.toolsGopath": "~/go",
+    "go.lintOnSave": "package",
+    "go.formatTool": "goimports"
+}
