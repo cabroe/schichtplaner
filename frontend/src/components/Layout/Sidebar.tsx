@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTachometerAlt, faClock, faCog } from '@fortawesome/free-solid-svg-icons';
 import { NavigationItem, defaultNavigationItems } from '../../config/navigation';
+import { config } from '../../config/environment';
 
 interface SidebarProps {
   brandName?: string;
@@ -9,29 +9,9 @@ interface SidebarProps {
   navigationItems?: NavigationItem[];
 }
 
-const iconMap = {
-  dashboard: faTachometerAlt,
-  zeiterfassung: faClock,
-  administration: faCog
-};
-
-const dropdownMenus = {
-  zeiterfassung: [
-    { href: "/zeiterfassung/meine-zeiten", title: "Meine Zeiten", active: true },
-    { href: "/zeiterfassung/kalender", title: "Kalender", active: false },
-    { href: "/zeiterfassung/export", title: "Export", active: false },
-    { href: "/zeiterfassung/alle-zeiten", title: "Alle Zeiten", active: false }
-  ],
-  administration: [
-    { href: "/administration/kunden", title: "Kunden", active: false },
-    { href: "/administration/projekte", title: "Projekte", active: false },
-    { href: "/administration/taetigkeiten", title: "Tätigkeiten", active: false }
-  ]
-};
-
 export function Sidebar({ 
-  brandName = "Kastner IT", 
-  brandHref = "/dashboard",
+  brandName = config.brandName, 
+  brandHref = config.brandHref,
   navigationItems = defaultNavigationItems
 }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -86,13 +66,14 @@ export function Sidebar({
                       }}
                     >
                       <span className="nav-link-icon d-md-none d-lg-inline-block text-center">
-                        <FontAwesomeIcon icon={iconMap[item.id as keyof typeof iconMap]} />
+                        {item.faIcon && <FontAwesomeIcon icon={item.faIcon} />}
+                        {!item.faIcon && item.icon}
                       </span>
                       <span className="nav-link-title">{item.title}</span>
                     </a>
-                    {activeDropdown === item.id && dropdownMenus[item.id as keyof typeof dropdownMenus] && (
+                    {activeDropdown === item.id && item.dropdownItems && (
                       <div className="dropdown-menu show">
-                        {dropdownMenus[item.id as keyof typeof dropdownMenus].map((subItem, index) => (
+                        {item.dropdownItems.map((subItem, index) => (
                           <a
                             key={index}
                             className={`dropdown-item ${subItem.active ? 'active' : ''}`}
@@ -111,7 +92,8 @@ export function Sidebar({
                     className="nav-link"
                   >
                     <span className="nav-link-icon d-md-none d-lg-inline-block text-center">
-                      <FontAwesomeIcon icon={iconMap[item.id as keyof typeof iconMap]} />
+                      {item.faIcon && <FontAwesomeIcon icon={item.faIcon} />}
+                      {!item.faIcon && item.icon}
                     </span>
                     <span className="nav-link-title">{item.title}</span>
                   </a>
