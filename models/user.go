@@ -18,8 +18,8 @@ type User struct {
 	IsAdmin   bool           `json:"isAdmin" gorm:"default:false"`
 	LastLogin *time.Time     `json:"lastLogin,omitempty"`
 	TeamCount int            `json:"teamCount" gorm:"-"` // Computed field, not stored
-	CreatedAt time.Time      `json:"createdAt"`
-	UpdatedAt time.Time      `json:"updatedAt"`
+	CreatedAt time.Time      `json:"createdAt" gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `json:"updatedAt" gorm:"autoUpdateTime"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 
 	// Relationships

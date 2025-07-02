@@ -14,8 +14,8 @@ type Team struct {
 	Color       string         `json:"color" gorm:"size:7;default:#10B981"` // Hex color code
 	IsActive    bool           `json:"isActive" gorm:"default:true"`
 	UserCount   int            `json:"userCount" gorm:"-"` // Computed field, not stored
-	CreatedAt   time.Time      `json:"createdAt"`
-	UpdatedAt   time.Time      `json:"updatedAt"`
+	CreatedAt   time.Time      `json:"createdAt" gorm:"autoCreateTime"`
+	UpdatedAt   time.Time      `json:"updatedAt" gorm:"autoUpdateTime"`
 	DeletedAt   gorm.DeletedAt `json:"-" gorm:"index"`
 
 	// Relationships

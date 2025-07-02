@@ -13,8 +13,8 @@ type TeamMember struct {
 	UserID    uint           `json:"userId" gorm:"not null;index"`
 	Role      string         `json:"role" gorm:"size:50;default:Mitglied"` // z.B. "Mitglied", "Leiter"
 	JoinedAt  time.Time      `json:"joinedAt" gorm:"default:CURRENT_TIMESTAMP"`
-	CreatedAt time.Time      `json:"createdAt"`
-	UpdatedAt time.Time      `json:"updatedAt"`
+	CreatedAt time.Time      `json:"createdAt" gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `json:"updatedAt" gorm:"autoUpdateTime"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 
 	// Relationships
