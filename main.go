@@ -6,7 +6,9 @@ import (
 	"schichtplaner/frontend"
 	"schichtplaner/handlers"
 
+	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/echoprometheus"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"golang.org/x/time/rate"
@@ -21,6 +23,7 @@ func main() {
 	e.Use(middleware.Gzip())
 	e.Use(middleware.CORS())
 	e.Use(middleware.Secure())
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret-key-change-in-production"))))
 	e.Use(echoprometheus.NewMiddleware("schichtplaner"))
 
 	// Setup the frontend handlers to service vite static assets
