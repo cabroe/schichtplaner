@@ -22,9 +22,10 @@
 - **Data Layer**: In-memory Storage mit vollständigen CRUD Operationen
 - **Models**: Employee, Shift, Report mit Validierungs-Tags
 - **Validation**: go-playground/validator für Request-Validierung
-- **Middleware**: Logger, Gzip, CORS, Rate Limiter (API only), Prometheus
+- **Middleware**: Logger, Gzip, CORS, Secure, Session, Rate Limiter (API only), Prometheus
 - **Monitoring**: Prometheus metrics via `/metrics` endpoint
-- **Security**: Rate limiting (20 req/sec per IP für API), CORS protection
+- **Security**: Rate limiting (20 req/sec per IP für API), CORS protection, Security headers (XSS, Clickjacking)
+- **Sessions**: Cookie-based HTTP session management via Gorilla Sessions
 - **Development**: Vite Dev Server über Go Backend geproxied
 - **Production**: Frontend eingebettet in Go Binary via `embed.FS`
 - **Hot reload**: Air für Go Backend, Vite für Frontend
