@@ -1,14 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import App from './App'
 
-// Mock fetch
-global.fetch = vi.fn()
-
 describe('App', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     // Mock successful API response for all tests
-    ;(global.fetch as jest.MockedFunction<typeof fetch>).mockResolvedValue({
+    ;(globalThis.fetch as any).mockResolvedValue({
       ok: true,
       json: async () => ({ status: 'ok' }),
     } as Response)

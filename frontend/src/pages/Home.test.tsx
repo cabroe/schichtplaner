@@ -1,9 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import Home from './Home'
 
-// Mock fetch
-global.fetch = vi.fn()
-
 describe('Home', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -12,7 +9,7 @@ describe('Home', () => {
   it('renders dashboard title', () => {
     // Mock successful API response
     const mockResponse = { status: 'ok' }
-    ;(global.fetch as jest.MockedFunction<typeof fetch>).mockResolvedValue({
+    ;(globalThis.fetch as any).mockResolvedValue({
       ok: true,
       json: async () => mockResponse,
     } as Response)
@@ -24,7 +21,7 @@ describe('Home', () => {
   it('fetches and displays server status', async () => {
     const mockStatus = 'ok'
     const mockResponse = { status: mockStatus }
-    ;(global.fetch as jest.MockedFunction<typeof fetch>).mockResolvedValue({
+    ;(globalThis.fetch as any).mockResolvedValue({
       ok: true,
       json: async () => mockResponse,
     } as Response)
@@ -40,7 +37,7 @@ describe('Home', () => {
 
   it('handles fetch error gracefully', async () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    ;(global.fetch as jest.MockedFunction<typeof fetch>).mockRejectedValue(new Error('Network error'))
+    ;(globalThis.fetch as any).mockRejectedValue(new Error('Network error'))
 
     render(<Home />)
     
