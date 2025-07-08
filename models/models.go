@@ -67,3 +67,19 @@ type EmployeeUpdateRequest struct {
 	Email    string `json:"email" validate:"omitempty,email"`
 	Position string `json:"position"`
 }
+
+// PaginationRequest repräsentiert Parameter für paginierte Anfragen
+type PaginationRequest struct {
+	Limit  int `json:"limit" validate:"min=1,max=100"`
+	Offset int `json:"offset" validate:"min=0"`
+}
+
+// PaginatedResponse repräsentiert eine paginierte Antwort
+type PaginatedResponse struct {
+	Data       interface{} `json:"data"`
+	Total      int         `json:"total"`
+	Limit      int         `json:"limit"`
+	Offset     int         `json:"offset"`
+	HasMore    bool        `json:"has_more"`
+	TotalPages int         `json:"total_pages"`
+}

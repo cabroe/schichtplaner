@@ -19,6 +19,28 @@ func RegisterShiftRoutes(api *echo.Group) {
 }
 
 func getShifts(c echo.Context) error {
+	// Parse pagination parameters
+	limit, err := strconv.Atoi(c.QueryParam("limit"))
+	if err != nil || limit == 0 {
+		limit = 10 // Default limit
+	}
+	
+	offset, err := strconv.Atoi(c.QueryParam("offset"))
+	if err != nil || offset < 0 {
+		offset = 0 // Default offset
+	}
+	
+	// Check if pagination is requested
+	if c.QueryParam("limit") != "" || c.QueryParam("offset") != "" {
+		// Return paginated response
+		result, err := models.GetShiftsPaginated(limit, offset)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		}
+		return c.JSON(http.StatusOK, result)
+	}
+	
+	// Return all shifts (backwards compatibility)
 	shifts := models.GetAllShifts()
 	return c.JSON(http.StatusOK, shifts)
 }

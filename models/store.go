@@ -47,6 +47,66 @@ func GetAllEmployees() []*Employee {
 	return result
 }
 
+// GetEmployeesPaginated gibt eine paginierte Liste von Mitarbeitern zurück
+func GetEmployeesPaginated(limit, offset int) (*PaginatedResponse, error) {
+	mu.RLock()
+	defer mu.RUnlock()
+	
+	// Alle Mitarbeiter in einen Slice konvertieren
+	allEmployees := make([]*Employee, 0, len(employees))
+	for _, employee := range employees {
+		allEmployees = append(allEmployees, employee)
+	}
+	
+	total := len(allEmployees)
+	
+	// Validierung der Parameter
+	if limit <= 0 {
+		limit = 10 // Standard-Limit
+	}
+	if limit > 100 {
+		limit = 100 // Maximum-Limit
+	}
+	if offset < 0 {
+		offset = 0
+	}
+	
+	// Berechne Seitenzahl
+	totalPages := (total + limit - 1) / limit
+	
+	// Pagination anwenden
+	start := offset
+	end := offset + limit
+	
+	if start >= total {
+		// Offset ist außerhalb des Bereichs
+		return &PaginatedResponse{
+			Data:       []*Employee{},
+			Total:      total,
+			Limit:      limit,
+			Offset:     offset,
+			HasMore:    false,
+			TotalPages: totalPages,
+		}, nil
+	}
+	
+	if end > total {
+		end = total
+	}
+	
+	result := allEmployees[start:end]
+	hasMore := end < total
+	
+	return &PaginatedResponse{
+		Data:       result,
+		Total:      total,
+		Limit:      limit,
+		Offset:     offset,
+		HasMore:    hasMore,
+		TotalPages: totalPages,
+	}, nil
+}
+
 func GetEmployeeByID(id int) (*Employee, error) {
 	mu.RLock()
 	defer mu.RUnlock()
@@ -123,6 +183,66 @@ func GetAllShifts() []*Shift {
 		result = append(result, shift)
 	}
 	return result
+}
+
+// GetShiftsPaginated gibt eine paginierte Liste von Schichten zurück
+func GetShiftsPaginated(limit, offset int) (*PaginatedResponse, error) {
+	mu.RLock()
+	defer mu.RUnlock()
+	
+	// Alle Schichten in einen Slice konvertieren
+	allShifts := make([]*Shift, 0, len(shifts))
+	for _, shift := range shifts {
+		allShifts = append(allShifts, shift)
+	}
+	
+	total := len(allShifts)
+	
+	// Validierung der Parameter
+	if limit <= 0 {
+		limit = 10 // Standard-Limit
+	}
+	if limit > 100 {
+		limit = 100 // Maximum-Limit
+	}
+	if offset < 0 {
+		offset = 0
+	}
+	
+	// Berechne Seitenzahl
+	totalPages := (total + limit - 1) / limit
+	
+	// Pagination anwenden
+	start := offset
+	end := offset + limit
+	
+	if start >= total {
+		// Offset ist außerhalb des Bereichs
+		return &PaginatedResponse{
+			Data:       []*Shift{},
+			Total:      total,
+			Limit:      limit,
+			Offset:     offset,
+			HasMore:    false,
+			TotalPages: totalPages,
+		}, nil
+	}
+	
+	if end > total {
+		end = total
+	}
+	
+	result := allShifts[start:end]
+	hasMore := end < total
+	
+	return &PaginatedResponse{
+		Data:       result,
+		Total:      total,
+		Limit:      limit,
+		Offset:     offset,
+		HasMore:    hasMore,
+		TotalPages: totalPages,
+	}, nil
 }
 
 func GetShiftByID(id int) (*Shift, error) {
