@@ -30,21 +30,21 @@
 ## Project Structure
 ```
 ├── handlers/           # HTTP handlers mit CRUD Operationen
-│   ├── router.go      # Zentrale Routen-Registrierung
-│   ├── employees.go   # Employee CRUD Operationen
-│   ├── shifts.go      # Shift CRUD Operationen
-│   ├── reports.go     # Report Generierung und CSV Export
-│   └── health.go      # Health Check Endpoints
-├── models/            # Datenmodelle und Storage
-│   ├── models.go      # Struct Definitionen mit Validierung
-│   └── store.go       # In-memory Storage mit Thread-safe Operationen
-├── frontend/          # React Frontend
+│   ├── router.go       # Zentrale Routen-Registrierung
+│   ├── employees.go    # Employee CRUD Operationen
+│   ├── shifts.go       # Shift CRUD Operationen
+│   ├── reports.go      # Report Generierung und CSV Export
+│   └── health.go       # Health Check Endpoints
+├── models/             # Datenmodelle und Storage
+│   ├── models.go       # Struct Definitionen mit Validierung
+│   └── store.go        # In-memory Storage mit Thread-safe Operationen
+├── frontend/           # React Frontend
 │   ├── src/
 │   │   ├── components/ # Wiederverwendbare UI Komponenten
-│   │   ├── pages/     # Seiten Komponenten
-│   │   └── main.tsx   # App Einstiegspunkt
-│   └── dist/          # Gebaute Frontend Assets
-└── templates/         # Go HTML Templates (optional)
+│   │   ├── pages/      # Seiten Komponenten
+│   │   └── main.tsx    # App Einstiegspunkt
+│   └── dist/           # Gebaute Frontend Assets
+└── templates/          # Go HTML Templates (optional)
 ```
 
 ## API Endpoints
