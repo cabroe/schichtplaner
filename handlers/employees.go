@@ -2,6 +2,9 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
+
+	"schichtplaner/models"
 
 	"github.com/labstack/echo/v4"
 )
@@ -16,38 +19,70 @@ func RegisterEmployeeRoutes(api *echo.Group) {
 }
 
 func getEmployees(c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"employees": []string{},
-		"message": "Mitarbeiter API - Liste aller Mitarbeiter",
-	})
+	employees := models.GetAllEmployees()
+	return c.JSON(http.StatusOK, employees)
 }
 
 func createEmployee(c echo.Context) error {
-	return c.JSON(http.StatusCreated, map[string]string{
-		"message": "Mitarbeiter erstellt",
-	})
+	req := new(models.EmployeeCreateRequest)
+	if err := c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	
+	if err := c.Validate(req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	
+	employee := models.CreateEmployee(req)
+	return c.JSON(http.StatusCreated, employee)
 }
 
 func getEmployee(c echo.Context) error {
-	id := c.Param("id")
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"id": id,
-		"message": "Mitarbeiter Details",
-	})
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid employee ID")
+	}
+	
+	employee, err := models.GetEmployeeByID(id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, err.Error())
+	}
+	
+	return c.JSON(http.StatusOK, employee)
 }
 
 func updateEmployee(c echo.Context) error {
-	id := c.Param("id")
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"id": id,
-		"message": "Mitarbeiter aktualisiert",
-	})
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid employee ID")
+	}
+	
+	req := new(models.EmployeeUpdateRequest)
+	if err := c.Bind(req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	
+	if err := c.Validate(req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	
+	employee, err := models.UpdateEmployee(id, req)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, err.Error())
+	}
+	
+	return c.JSON(http.StatusOK, employee)
 }
 
 func deleteEmployee(c echo.Context) error {
-	id := c.Param("id")
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"id": id,
-		"message": "Mitarbeiter gelöscht",
-	})
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid employee ID")
+	}
+	
+	if err := models.DeleteEmployee(id); err != nil {
+		return echo.NewHTTPError(http.StatusNotFound, err.Error())
+	}
+	
+	return c.NoContent(http.StatusNoContent)
 }
