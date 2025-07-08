@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-// In-memory storage for development purposes
-// In production, this would be replaced with a database
+// In-memory Storage für Entwicklungszwecke
+// In der Produktion würde dies durch eine Datenbank ersetzt werden
 
 var (
 	employees = make(map[int]*Employee)
@@ -21,7 +21,7 @@ var (
 	mu sync.RWMutex
 )
 
-// ResetStores clears all in-memory data (for testing)
+// ResetStores löscht alle In-Memory-Daten (für Tests)
 func ResetStores() {
 	mu.Lock()
 	defer mu.Unlock()
@@ -35,7 +35,7 @@ func ResetStores() {
 	reportIDCounter = 1
 }
 
-// Employee operations
+// Employee-Operationen
 func GetAllEmployees() []*Employee {
 	mu.RLock()
 	defer mu.RUnlock()
@@ -113,7 +113,7 @@ func DeleteEmployee(id int) error {
 	return nil
 }
 
-// Shift operations
+// Shift-Operationen
 func GetAllShifts() []*Shift {
 	mu.RLock()
 	defer mu.RUnlock()
@@ -140,7 +140,7 @@ func CreateShift(req *ShiftCreateRequest) (*Shift, error) {
 	mu.Lock()
 	defer mu.Unlock()
 	
-	// Parse time strings
+	// Zeit-Strings parsen
 	startTime, err := time.Parse(time.RFC3339, req.StartTime)
 	if err != nil {
 		return nil, fmt.Errorf("invalid start_time format: %v", err)
@@ -218,7 +218,7 @@ func DeleteShift(id int) error {
 	return nil
 }
 
-// Report operations
+// Report-Operationen
 func GetAllReports() []*Report {
 	mu.RLock()
 	defer mu.RUnlock()
