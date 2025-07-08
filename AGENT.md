@@ -15,7 +15,7 @@
 - `go test ./handlers/... -v` - Führt Handler Tests mit ausführlicher Ausgabe aus
 
 ## Architecture
-- **Backend**: Go 1.21 mit Echo Framework, serviert API unter `/api/*` Routen
+- **Backend**: Go 1.24.4 mit Echo Framework, serviert API unter `/api/*` Routen
 - **Frontend**: React 18 + TypeScript + Vite, SPA serviert von `/`
 - **UI Framework**: Tabler UI (Bootstrap 5-basiert) für modernes Dashboard Design
 - **Routing**: React Router DOM für clientseitiges Navigieren
