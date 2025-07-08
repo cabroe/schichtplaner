@@ -3,6 +3,9 @@
 ## Build/Test Commands
 - `make build` - Build production binary (frontend + Go backend)
 - `make dev` - Start development servers (frontend on :5173, backend on :3000)
+- `make test` - Run all tests (frontend lint/build + backend tests)
+- `make test-frontend` - Run frontend tests (lint + build)
+- `make test-backend` - Run backend tests
 - `cd frontend && yarn build` - Build frontend only
 - `cd frontend && yarn lint` - Lint frontend TypeScript/React code
 - `cd frontend && yarn dev` - Start frontend dev server
