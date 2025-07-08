@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import { act } from '@testing-library/react'
 import App from './App'
 
 describe('App', () => {
@@ -11,18 +12,26 @@ describe('App', () => {
     } as Response)
   })
 
-  it('renders navigation', () => {
-    render(<App />)
+  it('renders navigation', async () => {
+    await act(async () => {
+      render(<App />)
+    })
     expect(screen.getByText('Schichtplaner')).toBeInTheDocument()
   })
 
-  it('renders home page by default', () => {
-    render(<App />)
-    expect(screen.getByText('Schichtplaner Dashboard')).toBeInTheDocument()
+  it('renders home page by default', async () => {
+    await act(async () => {
+      render(<App />)
+    })
+    await waitFor(() => {
+      expect(screen.getByText('Schichtplaner Dashboard')).toBeInTheDocument()
+    })
   })
 
-  it('has home and about navigation links', () => {
-    render(<App />)
+  it('has home and about navigation links', async () => {
+    await act(async () => {
+      render(<App />)
+    })
     expect(screen.getByText('Home')).toBeInTheDocument()
     expect(screen.getByText('About')).toBeInTheDocument()
   })
