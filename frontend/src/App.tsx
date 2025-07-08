@@ -1,24 +1,20 @@
-import { useEffect, useState } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './App.css'
+import Navigation from './components/Navigation'
+import Home from './pages/Home'
+import About from './pages/About'
 
 function App() {
-  const [messageFromServer, setMessageFromServer] = useState('')
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch('/api/message')
-      const data = await response.json()
-      setMessageFromServer(data.message)
-    }
-
-    fetchData().catch((e) => console.error(e))
-  }, [])
-
   return (
-    <>
-      <h1>Golang + Vite + React</h1>
-      <h2>{messageFromServer}</h2>
-    </>
+    <Router>
+      <div>
+        <Navigation />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+        </Routes>
+      </div>
+    </Router>
   )
 }
 
