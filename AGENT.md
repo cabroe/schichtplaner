@@ -1,50 +1,50 @@
 # Schichtplaner Agent Guide
 
 ## Build/Test Commands
-- `make build` - Build production binary (frontend + Go backend)
-- `make dev` - Start development servers (frontend on :5173, backend on :3000)
-- `make test` - Run all tests (frontend lint/build + backend tests)
-- `make test-frontend` - Run frontend tests (lint + build)
-- `make test-backend` - Run backend tests
-- `cd frontend && yarn build` - Build frontend only
-- `cd frontend && yarn lint` - Lint frontend TypeScript/React code
-- `cd frontend && yarn dev` - Start frontend dev server
-- `go build -o ./bin/go-vite .` - Build Go backend only
-- `air` - Hot reload Go backend during development
-- `go test ./...` - Run all Go tests
-- `go test ./handlers/... -v` - Run handler tests with verbose output
+- `make build` - Erstellt Production Binary (Frontend + Go Backend)
+- `make dev` - Startet Entwicklungsserver (Frontend auf :5173, Backend auf :3000)
+- `make test` - Führt alle Tests aus (Frontend Lint/Build + Backend Tests)
+- `make test-frontend` - Führt Frontend Tests aus (Lint + Build)
+- `make test-backend` - Führt Backend Tests aus
+- `cd frontend && yarn build` - Erstellt nur Frontend
+- `cd frontend && yarn lint` - Lintet Frontend TypeScript/React Code
+- `cd frontend && yarn dev` - Startet Frontend Entwicklungsserver
+- `go build -o ./bin/go-vite .` - Erstellt nur Go Backend
+- `air` - Hot Reload für Go Backend während Entwicklung
+- `go test ./...` - Führt alle Go Tests aus
+- `go test ./handlers/... -v` - Führt Handler Tests mit ausführlicher Ausgabe aus
 
 ## Architecture
-- **Backend**: Go 1.21 with Echo framework, serves API at `/api/*` routes
-- **Frontend**: React 18 + TypeScript + Vite, SPA served from `/`
-- **UI Framework**: Tabler UI (Bootstrap 5-based) for modern dashboard design
-- **Routing**: React Router DOM for client-side navigation
-- **Data Layer**: In-memory storage with full CRUD operations
-- **Models**: Employee, Shift, Report with validation tags
-- **Validation**: go-playground/validator for request validation
-- **Development**: Vite dev server proxied through Go backend
-- **Production**: Frontend embedded in Go binary via `embed.FS`
-- **Hot reload**: Air for Go backend, Vite for frontend
-- **Templates**: Go HTML templates for server-side rendering (optional)
+- **Backend**: Go 1.21 mit Echo Framework, serviert API unter `/api/*` Routen
+- **Frontend**: React 18 + TypeScript + Vite, SPA serviert von `/`
+- **UI Framework**: Tabler UI (Bootstrap 5-basiert) für modernes Dashboard Design
+- **Routing**: React Router DOM für clientseitiges Navigieren
+- **Data Layer**: In-memory Storage mit vollständigen CRUD Operationen
+- **Models**: Employee, Shift, Report mit Validierungs-Tags
+- **Validation**: go-playground/validator für Request-Validierung
+- **Development**: Vite Dev Server über Go Backend geproxied
+- **Production**: Frontend eingebettet in Go Binary via `embed.FS`
+- **Hot reload**: Air für Go Backend, Vite für Frontend
+- **Templates**: Go HTML Templates für Server-side Rendering (optional)
 
 ## Project Structure
 ```
-├── handlers/           # HTTP handlers with CRUD operations
-│   ├── router.go      # Central route registration
-│   ├── employees.go   # Employee CRUD operations
-│   ├── shifts.go      # Shift CRUD operations
-│   ├── reports.go     # Report generation and CSV export
-│   └── health.go      # Health check endpoints
-├── models/            # Data models and storage
-│   ├── models.go      # Struct definitions with validation
-│   └── store.go       # In-memory storage with thread-safe operations
-├── frontend/          # React frontend
+├── handlers/           # HTTP handlers mit CRUD Operationen
+│   ├── router.go      # Zentrale Routen-Registrierung
+│   ├── employees.go   # Employee CRUD Operationen
+│   ├── shifts.go      # Shift CRUD Operationen
+│   ├── reports.go     # Report Generierung und CSV Export
+│   └── health.go      # Health Check Endpoints
+├── models/            # Datenmodelle und Storage
+│   ├── models.go      # Struct Definitionen mit Validierung
+│   └── store.go       # In-memory Storage mit Thread-safe Operationen
+├── frontend/          # React Frontend
 │   ├── src/
-│   │   ├── components/ # Reusable UI components
-│   │   ├── pages/     # Page components
-│   │   └── main.tsx   # App entry point
-│   └── dist/          # Built frontend assets
-└── templates/         # Go HTML templates (optional)
+│   │   ├── components/ # Wiederverwendbare UI Komponenten
+│   │   ├── pages/     # Seiten Komponenten
+│   │   └── main.tsx   # App Einstiegspunkt
+│   └── dist/          # Gebaute Frontend Assets
+└── templates/         # Go HTML Templates (optional)
 ```
 
 ## API Endpoints
@@ -62,3 +62,4 @@
 - **Types**: Strict TypeScript, no unused locals/parameters
 - **Files**: `.tsx` for React components, `.go` for backend
 - **Testing**: Comprehensive CRUD tests with validation testing
+- **Sprache**: Code und Variablen in Englisch, Kommentare in Deutsch
