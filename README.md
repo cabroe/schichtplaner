@@ -4,11 +4,13 @@ Ein modernes Schichtplanungs-Tool entwickelt mit Go, React und TypeScript.
 
 ## 🚀 Features
 
-- **Mitarbeiterverwaltung**: CRUD-Operationen für Mitarbeiter mit Validierung
-- **Schichtplanung**: Vollständige Schichtverwaltung mit Zeiterfassung
+- **Mitarbeiterverwaltung**: CRUD-Operationen für Mitarbeiter mit Validierung und Pagination
+- **Schichtplanung**: Vollständige Schichtverwaltung mit Zeiterfassung und Pagination
 - **Berichtswesen**: Automatische Report-Generierung und CSV-Export
 - **Moderne UI**: Responsive Dashboard mit Tabler UI Framework
 - **REST API**: Vollständige RESTful API mit Echo Framework
+- **Environment-Config**: Sichere Konfiguration über Umgebungsvariablen
+- **Performance-Optimiert**: Cache-Headers für statische Assets
 - **Echtzeit-Entwicklung**: Hot Reload für Frontend und Backend
 
 ## 🛠️ Technologie-Stack
@@ -17,7 +19,8 @@ Ein modernes Schichtplanungs-Tool entwickelt mit Go, React und TypeScript.
 - **Go 1.24.4** - Moderne, performante Sprache
 - **Echo v4** - Leichtgewichtiges Web Framework
 - **go-playground/validator** - Request-Validierung
-- **In-Memory Storage** - Schnelle Datenhaltung für Entwicklung
+- **In-Memory Storage** - Schnelle Datenhaltung für Entwicklung mit Pagination
+- **Environment-Config** - Sichere Konfiguration mit .env Support
 
 ### Frontend
 - **React 18** - Moderne UI-Bibliothek
@@ -51,6 +54,15 @@ yarn install
 cd ..
 ```
 
+### Environment-Konfiguration
+```bash
+# Kopiere .env.example zu .env und passe an
+cp .env.example .env
+
+# Setze mindestens SESSION_SECRET (32+ Zeichen)
+# Siehe .env.example für alle verfügbaren Optionen
+```
+
 ### Entwicklung starten
 ```bash
 # Beide Server gleichzeitig starten
@@ -79,27 +91,32 @@ make build
 
 ```
 schichtplaner/
-├── handlers/                 # HTTP Handler
-│   ├── router.go            # Zentrale Route-Registrierung
-│   ├── employees.go         # Mitarbeiter CRUD
-│   ├── shifts.go           # Schicht CRUD
+├── config/                  # Konfiguration
+│   └── config.go           # Environment-basierte Konfiguration
+├── handlers/                # HTTP Handler
+│   ├── router.go           # Zentrale Route-Registrierung
+│   ├── employees.go        # Mitarbeiter CRUD mit Pagination
+│   ├── shifts.go           # Schicht CRUD mit Pagination
 │   ├── reports.go          # Report-Generierung
 │   ├── health.go           # Health Checks
-│   └── *_test.go           # Tests
+│   └── *_test.go           # Umfassende Tests
 ├── models/                  # Datenmodelle
-│   ├── models.go           # Struct-Definitionen
-│   └── store.go            # In-Memory Storage
-├── frontend/               # React Frontend
+│   ├── models.go           # Struct-Definitionen mit Pagination
+│   └── store.go            # In-Memory Storage mit Thread-Safety
+├── frontend/                # React Frontend
 │   ├── src/
 │   │   ├── components/     # UI Komponenten
-│   │   ├── pages/         # Seiten-Komponenten
-│   │   └── main.tsx       # App Entry Point
-│   ├── public/            # Statische Assets
-│   └── dist/              # Build Output
-├── templates/             # Go HTML Templates
-├── bin/                   # Build Output
-├── Makefile              # Build Scripts
-└── main.go               # Application Entry Point
+│   │   ├── pages/          # Seiten-Komponenten
+│   │   └── main.tsx        # App Entry Point
+│   ├── frontend.go         # Static File Serving mit Cache-Headers
+│   ├── public/             # Statische Assets
+│   └── dist/               # Build Output
+├── templates/               # Go HTML Templates
+├── bin/                     # Build Output
+├── .env.example            # Environment-Variablen Template
+├── .env                    # Development-Konfiguration
+├── Makefile                # Build Scripts
+└── main.go                 # Application Entry Point
 ```
 
 ## 🔧 Verfügbare Kommandos
@@ -138,11 +155,24 @@ GET /api/message
 
 #### Mitarbeiter
 ```http
-GET    /api/employees      # Alle Mitarbeiter abrufen
-POST   /api/employees      # Neuen Mitarbeiter erstellen
-GET    /api/employees/:id  # Mitarbeiter abrufen
-PUT    /api/employees/:id  # Mitarbeiter aktualisieren
-DELETE /api/employees/:id  # Mitarbeiter löschen
+GET    /api/employees           # Alle Mitarbeiter abrufen
+GET    /api/employees?limit=10&offset=0  # Paginierte Mitarbeiter
+POST   /api/employees           # Neuen Mitarbeiter erstellen
+GET    /api/employees/:id       # Mitarbeiter abrufen
+PUT    /api/employees/:id       # Mitarbeiter aktualisieren
+DELETE /api/employees/:id       # Mitarbeiter löschen
+```
+
+**Pagination-Response:**
+```json
+{
+  "data": [...],
+  "total": 100,
+  "limit": 10,
+  "offset": 0,
+  "has_more": true,
+  "total_pages": 10
+}
 ```
 
 **Mitarbeiter Datenstruktur:**
@@ -159,11 +189,12 @@ DELETE /api/employees/:id  # Mitarbeiter löschen
 
 #### Schichten
 ```http
-GET    /api/shifts      # Alle Schichten abrufen
-POST   /api/shifts      # Neue Schicht erstellen
-GET    /api/shifts/:id  # Schicht abrufen
-PUT    /api/shifts/:id  # Schicht aktualisieren
-DELETE /api/shifts/:id  # Schicht löschen
+GET    /api/shifts              # Alle Schichten abrufen
+GET    /api/shifts?limit=10&offset=0  # Paginierte Schichten
+POST   /api/shifts              # Neue Schicht erstellen
+GET    /api/shifts/:id          # Schicht abrufen
+PUT    /api/shifts/:id          # Schicht aktualisieren
+DELETE /api/shifts/:id          # Schicht löschen
 ```
 
 **Schicht Datenstruktur:**
@@ -206,6 +237,8 @@ go test ./handlers -run TestCRUDEmployees -v
 **Test Coverage:**
 - ✅ Employee CRUD Operations
 - ✅ Shift CRUD Operations  
+- ✅ Pagination Testing
+- ✅ Cache Headers Testing
 - ✅ Report Generation
 - ✅ CSV Export
 - ✅ Validation Testing

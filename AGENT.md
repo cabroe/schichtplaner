@@ -19,13 +19,15 @@
 - **Frontend**: React 18 + TypeScript + Vite, SPA serviert von `/`
 - **UI Framework**: Tabler UI (Bootstrap 5-basiert) für modernes Dashboard Design
 - **Routing**: React Router DOM für clientseitiges Navigieren
-- **Data Layer**: In-memory Storage mit vollständigen CRUD Operationen
+- **Data Layer**: In-memory Storage mit vollständigen CRUD Operationen + Pagination
 - **Models**: Employee, Shift, Report mit Validierungs-Tags
 - **Validation**: go-playground/validator für Request-Validierung
+- **Configuration**: Environment-basierte Konfiguration mit .env Support
 - **Middleware**: Logger, Gzip, CORS, Secure, Session, Rate Limiter (API only), Prometheus
 - **Monitoring**: Prometheus metrics via `/metrics` endpoint
-- **Security**: Rate limiting (20 req/sec per IP für API), CORS protection, Security headers (XSS, Clickjacking)
-- **Sessions**: Cookie-based HTTP session management via Gorilla Sessions
+- **Security**: Configurable rate limiting per IP für API, CORS protection, Security headers (XSS, Clickjacking)
+- **Sessions**: Cookie-based HTTP session management via Gorilla Sessions mit Environment-Secret
+- **Caching**: Intelligente Cache-Headers für statische Assets (JS/CSS: 1 Jahr, Images: 1 Monat)
 - **Development**: Vite Dev Server über Go Backend geproxied
 - **Production**: Frontend eingebettet in Go Binary via `embed.FS`
 - **Hot reload**: Air für Go Backend, Vite für Frontend
@@ -33,28 +35,34 @@
 
 ## Project Structure
 ```
+├── config/             # Konfiguration und Environment-Handling
+│   └── config.go       # Environment-basierte Konfiguration
 ├── handlers/           # HTTP handlers mit CRUD Operationen
 │   ├── router.go       # Zentrale Routen-Registrierung
-│   ├── employees.go    # Employee CRUD Operationen
-│   ├── shifts.go       # Shift CRUD Operationen
+│   ├── employees.go    # Employee CRUD Operationen mit Pagination
+│   ├── shifts.go       # Shift CRUD Operationen mit Pagination
 │   ├── reports.go      # Report Generierung und CSV Export
-│   └── health.go       # Health Check Endpoints
+│   ├── health.go       # Health Check Endpoints
+│   └── *_test.go       # Umfassende Tests für alle Handler
 ├── models/             # Datenmodelle und Storage
-│   ├── models.go       # Struct Definitionen mit Validierung
+│   ├── models.go       # Struct Definitionen mit Validierung + Pagination
 │   └── store.go        # In-memory Storage mit Thread-safe Operationen
 ├── frontend/           # React Frontend
 │   ├── src/
 │   │   ├── components/ # Wiederverwendbare UI Komponenten
 │   │   ├── pages/      # Seiten Komponenten
 │   │   └── main.tsx    # App Einstiegspunkt
+│   ├── frontend.go     # Static File Serving mit Cache-Headers
 │   └── dist/           # Gebaute Frontend Assets
+├── .env.example        # Environment-Variablen Template
+├── .env                # Development Environment-Konfiguration
 └── templates/          # Go HTML Templates (optional)
 ```
 
 ## API Endpoints
 - **Health**: `GET /api/health`, `GET /api/message`
-- **Employees**: Full CRUD at `/api/employees`
-- **Shifts**: Full CRUD at `/api/shifts`
+- **Employees**: Full CRUD at `/api/employees` (mit Pagination: `?limit=10&offset=0`)
+- **Shifts**: Full CRUD at `/api/shifts` (mit Pagination: `?limit=10&offset=0`)
 - **Reports**: `GET /api/reports/*`, `GET /api/reports/export?type=shifts|employees`
 - **Metrics**: `GET /metrics` (Prometheus monitoring)
 
