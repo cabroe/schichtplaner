@@ -1,4 +1,4 @@
-FROM node:20 AS build-frontend
+FROM node:23-alpine AS build-frontend
 WORKDIR /build
 
 COPY ./frontend/package.json ./frontend/yarn.lock ./
@@ -7,7 +7,7 @@ RUN yarn install --frozen-lockfile
 COPY ./frontend .
 RUN yarn build
 
-FROM golang:1.21 AS build
+FROM golang:1.24-alpine AS build
 
 # Set the Current Working Directory inside the container
 WORKDIR /build
@@ -27,7 +27,7 @@ COPY --from=build-frontend /build/dist ./frontend/dist
 
 RUN CGO_ENABLED=0 ENV=prod go build -buildvcs=false -o ./bin/go-vite ./main.go
 
-FROM alpine:3.14
+FROM alpine:3.25
 
 COPY --from=build /build/bin/go-vite /usr/bin/go-vite
 
