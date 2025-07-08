@@ -20,6 +20,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Gzip())
 	e.Use(middleware.CORS())
+	e.Use(middleware.Secure())
 	e.Use(echoprometheus.NewMiddleware("schichtplaner"))
 
 	// Setup the frontend handlers to service vite static assets
