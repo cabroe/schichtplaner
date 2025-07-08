@@ -2,13 +2,17 @@
 all: help
 
 help: ## Zeigt diese Hilfe an
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $1, $2}'
+
+install: ## Installiert alle Abhängigkeiten (Go Module + Frontend yarn)
+	go mod tidy
+	cd frontend && yarn install
 
 build: ## Baut das Frontend und Backend
 	cd frontend && yarn build
 	ENV=prod go build -buildvcs=false -o ./bin/go-vite ./main.go
 
-dev: ## Startet die Entwicklungsumgebung
+dev: install ## Startet die Entwicklungsumgebung
 	$(MAKE) build
 	concurrently "cd frontend && yarn dev" "air"
 
