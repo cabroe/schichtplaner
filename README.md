@@ -14,7 +14,7 @@ Ein modernes Schichtplanungs-Tool entwickelt mit Go, React und TypeScript.
 ## 🛠️ Technologie-Stack
 
 ### Backend
-- **Go 1.21** - Moderne, performante Sprache
+- **Go 1.24.4** - Moderne, performante Sprache
 - **Echo v4** - Leichtgewichtiges Web Framework
 - **go-playground/validator** - Request-Validierung
 - **In-Memory Storage** - Schnelle Datenhaltung für Entwicklung
