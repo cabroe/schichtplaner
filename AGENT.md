@@ -22,6 +22,9 @@
 - **Data Layer**: In-memory Storage mit vollständigen CRUD Operationen
 - **Models**: Employee, Shift, Report mit Validierungs-Tags
 - **Validation**: go-playground/validator für Request-Validierung
+- **Middleware**: Logger, Gzip, CORS, Rate Limiter (API only), Prometheus
+- **Monitoring**: Prometheus metrics via `/metrics` endpoint
+- **Security**: Rate limiting (20 req/sec per IP für API), CORS protection
 - **Development**: Vite Dev Server über Go Backend geproxied
 - **Production**: Frontend eingebettet in Go Binary via `embed.FS`
 - **Hot reload**: Air für Go Backend, Vite für Frontend
@@ -52,6 +55,7 @@
 - **Employees**: Full CRUD at `/api/employees`
 - **Shifts**: Full CRUD at `/api/shifts`
 - **Reports**: `GET /api/reports/*`, `GET /api/reports/export?type=shifts|employees`
+- **Metrics**: `GET /metrics` (Prometheus monitoring)
 
 ## Code Style
 - **Go**: Standard Go conventions, Echo framework patterns
