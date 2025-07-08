@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// Employee represents a worker in the system
+// Employee repräsentiert einen Mitarbeiter im System
 type Employee struct {
 	ID        int       `json:"id"`
 	Name      string    `json:"name" validate:"required"`
@@ -14,7 +14,7 @@ type Employee struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// Shift represents a work shift
+// Shift repräsentiert eine Arbeitsschicht
 type Shift struct {
 	ID         int       `json:"id"`
 	EmployeeID int       `json:"employee_id" validate:"required"`
@@ -26,7 +26,7 @@ type Shift struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 }
 
-// Report represents a generated report
+// Report repräsentiert einen generierten Bericht
 type Report struct {
 	ID          int       `json:"id"`
 	Title       string    `json:"title" validate:"required"`
@@ -36,7 +36,7 @@ type Report struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
-// ShiftCreateRequest represents the request payload for creating a shift
+// ShiftCreateRequest repräsentiert die Request-Payload für das Erstellen einer Schicht
 type ShiftCreateRequest struct {
 	EmployeeID int    `json:"employee_id" validate:"required"`
 	StartTime  string `json:"start_time" validate:"required"`
@@ -45,7 +45,7 @@ type ShiftCreateRequest struct {
 	Notes      string `json:"notes"`
 }
 
-// ShiftUpdateRequest represents the request payload for updating a shift
+// ShiftUpdateRequest repräsentiert die Request-Payload für das Aktualisieren einer Schicht
 type ShiftUpdateRequest struct {
 	EmployeeID int    `json:"employee_id"`
 	StartTime  string `json:"start_time"`
@@ -54,14 +54,14 @@ type ShiftUpdateRequest struct {
 	Notes      string `json:"notes"`
 }
 
-// EmployeeCreateRequest represents the request payload for creating an employee
+// EmployeeCreateRequest repräsentiert die Request-Payload für das Erstellen eines Mitarbeiters
 type EmployeeCreateRequest struct {
 	Name     string `json:"name" validate:"required"`
 	Email    string `json:"email" validate:"required,email"`
 	Position string `json:"position"`
 }
 
-// EmployeeUpdateRequest represents the request payload for updating an employee
+// EmployeeUpdateRequest repräsentiert die Request-Payload für das Aktualisieren eines Mitarbeiters
 type EmployeeUpdateRequest struct {
 	Name     string `json:"name"`
 	Email    string `json:"email" validate:"omitempty,email"`
