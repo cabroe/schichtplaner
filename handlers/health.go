@@ -1,0 +1,25 @@
+package handlers
+
+import (
+	"net/http"
+
+	"github.com/labstack/echo/v4"
+)
+
+func RegisterHealthRoutes(api *echo.Group) {
+	api.GET("/health", getHealth)
+	api.GET("/message", getMessage)
+}
+
+func getHealth(c echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "ok",
+		"service": "schichtplaner",
+	})
+}
+
+func getMessage(c echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "Hello, from the golang World!",
+	})
+}

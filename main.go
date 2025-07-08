@@ -22,7 +22,7 @@ func main() {
 
 	// Setup the API Group
 	api := e.Group("/api")
-	handlers.RegisterAPIRoutes(api)
+	handlers.RegisterRoutes(api)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", 3000)))
 }
