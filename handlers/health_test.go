@@ -23,38 +23,18 @@ func TestGetHealth(t *testing.T) {
 	assert.Contains(t, rec.Body.String(), "schichtplaner")
 }
 
-func TestGetMessage(t *testing.T) {
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "/message", nil)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-
-	err := getMessage(c)
-
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusOK, rec.Code)
-	assert.Contains(t, rec.Body.String(), "Hello, from the golang World!")
-}
-
 func TestRegisterHealthRoutes(t *testing.T) {
 	e := echo.New()
 	api := e.Group("/api")
-	
+
 	RegisterHealthRoutes(api)
-	
+
 	// Test health endpoint
 	req := httptest.NewRequest(http.MethodGet, "/api/health", nil)
 	rec := httptest.NewRecorder()
 	e.ServeHTTP(rec, req)
-	
+
 	assert.Equal(t, http.StatusOK, rec.Code)
 	assert.Contains(t, rec.Body.String(), "ok")
-	
-	// Test message endpoint
-	req = httptest.NewRequest(http.MethodGet, "/api/message", nil)
-	rec = httptest.NewRecorder()
-	e.ServeHTTP(rec, req)
-	
-	assert.Equal(t, http.StatusOK, rec.Code)
-	assert.Contains(t, rec.Body.String(), "Hello, from the golang World!")
+	assert.Contains(t, rec.Body.String(), "schichtplaner")
 }
