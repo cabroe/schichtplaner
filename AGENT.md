@@ -13,9 +13,12 @@
 ## Architecture
 - **Backend**: Go 1.21 with Echo framework, serves API at `/api/*` routes
 - **Frontend**: React 18 + TypeScript + Vite, SPA served from `/`
+- **UI Framework**: Tabler UI (Bootstrap 5-based) for modern dashboard design
+- **Routing**: React Router DOM for client-side navigation
 - **Development**: Vite dev server proxied through Go backend
 - **Production**: Frontend embedded in Go binary via `embed.FS`
 - **Hot reload**: Air for Go backend, Vite for frontend
+- **Templates**: Go HTML templates for server-side rendering (optional)
 
 ## Code Style
 - **Go**: Standard Go conventions, Echo framework patterns
