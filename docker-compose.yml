@@ -1,26 +1,31 @@
 services:
-  app:
-    build: .
+  schichtplaner:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    container_name: schichtplaner-app
+    restart: unless-stopped
     environment:
       - ENV=prod
-      - DATABASE_URL=postgres://schichtplaner:password@db:5432/schichtplaner?sslmode=disable
-    depends_on:
-      - db
-    restart: unless-stopped
+    # Optional: Volumes für persistente Daten
+    # volumes:
+    #   - ./data:/app/data
+    
+  # Optional: Weitere Services wie Datenbank
+  # database:
+  #   image: postgres:15-alpine
+  #   container_name: schichtplaner-db
+  #   environment:
+  #     POSTGRES_DB: schichtplaner
+  #     POSTGRES_USER: user
+  #     POSTGRES_PASSWORD: password
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
 
-  db:
-    image: postgres:15-alpine
-    environment:
-      - POSTGRES_DB=schichtplaner
-      - POSTGRES_USER=schichtplaner
-      - POSTGRES_PASSWORD=password
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    restart: unless-stopped
-
-volumes:
-  postgres_data:
+# Optional: Volumes Definition
+# volumes:
+#   postgres_data:

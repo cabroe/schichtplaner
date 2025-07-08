@@ -7,7 +7,7 @@ RUN yarn install --frozen-lockfile
 COPY ./frontend .
 RUN yarn build
 
-FROM golang:1.24.11-alpine AS build
+FROM golang:1.23-alpine AS build
 
 # Set the Current Working Directory inside the container
 WORKDIR /build
