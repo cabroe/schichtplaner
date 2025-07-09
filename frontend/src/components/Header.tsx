@@ -1,8 +1,28 @@
-interface HeaderProps {
-  pageTitle?: string;
-}
+import { useLocation } from "react-router-dom";
+import { sidebarMenuItems } from "../data/sidebarMenuItems";
 
-export function Header({ pageTitle }: HeaderProps) {
+export function Header() {
+  const location = useLocation();
+  
+  const getPageTitle = (pathname: string): string => {
+    const findTitle = (items: typeof sidebarMenuItems): string => {
+      for (const item of items) {
+        if (item.path === pathname) {
+          return item.title;
+        }
+        if (item.children) {
+          const childTitle = findTitle(item.children);
+          if (childTitle !== 'Schichtplaner') {
+            return childTitle;
+          }
+        }
+      }
+      return 'Schichtplaner';
+    };
+    
+    return findTitle(sidebarMenuItems);
+  };
+  
   return (
     <header className="navbar navbar-expand-md d-none d-lg-flex d-print-none">
       <div className="container-fluid">
@@ -14,7 +34,7 @@ export function Header({ pageTitle }: HeaderProps) {
         </div>
 
         <div className="collapse navbar-collapse" id="navbar-menu">
-          <h2 className="page-title me-2">{pageTitle}</h2>
+          <h2 className="page-title me-2">{getPageTitle(location.pathname)}</h2>
         </div>
 
       </div>
