@@ -20,7 +20,7 @@ build: ## Baut das Frontend und Backend
 	ENV=prod go build -buildvcs=false -o ./bin/$(BINARY_NAME) ./main.go
 
 dev: ## Startet die Entwicklungsumgebung
-	concurrently "cd frontend && yarn dev" "air"
+	concurrently "cd frontend && yarn dev" "ENV=dev air"
 
 test-backend: ## Führt Backend-Tests aus
 	go test -v ./...
