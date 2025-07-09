@@ -1,18 +1,33 @@
 # Schichtplaner Agent Guide
 
 ## Build/Test Commands
-- `make build` - Erstellt Production Binary (Frontend + Go Backend)
+
+### Development
 - `make dev` - Startet Entwicklungsserver (Frontend auf :5173, Backend auf :3000)
-- `make test` - Führt alle Tests aus (Frontend Lint/Build + Backend Tests)
+- `make install` - Installiert alle Abhängigkeiten (Go Module + Frontend yarn)
+- `air` - Hot Reload für Go Backend während Entwicklung
+- `cd frontend && yarn dev` - Startet Frontend Entwicklungsserver
+
+### Build
+- `make build` - Erstellt Production Binary (Frontend + Go Backend, plattformspezifisch)
+- `cd frontend && yarn build` - Erstellt nur Frontend
+- `go build -o ./bin/schichtplaner .` - Erstellt nur Go Backend
+
+### Testing
+- `make test` - Führt alle Tests aus (Frontend + Backend)
 - `make test-frontend` - Führt Frontend Tests aus (Lint + Build)
 - `make test-backend` - Führt Backend Tests aus
-- `cd frontend && yarn build` - Erstellt nur Frontend
+- `cd frontend && yarn test` - Führt Frontend Unit Tests aus (Vitest)
+- `cd frontend && yarn test:watch` - Führt Frontend Tests im Watch-Modus aus
 - `cd frontend && yarn lint` - Lintet Frontend TypeScript/React Code
-- `cd frontend && yarn dev` - Startet Frontend Entwicklungsserver
-- `go build -o ./bin/schichtplaner .` - Erstellt nur Go Backend
-- `air` - Hot Reload für Go Backend während Entwicklung
 - `go test ./...` - Führt alle Go Tests aus
 - `go test ./handlers/... -v` - Führt Handler Tests mit ausführlicher Ausgabe aus
+
+### Docker
+- `docker-compose up -d` - Startet vollständigen Stack (App + Monitoring + DB)
+- `docker-compose down` - Stoppt alle Services
+- `docker-compose logs -f` - Verfolgt alle Service-Logs
+- `make clean` - Löscht Build-Artefakte
 
 ## Architecture
 - **Backend**: Go 1.24.4 mit Echo Framework, serviert API unter `/api/*` Routen
@@ -32,6 +47,19 @@
 - **Production**: Frontend eingebettet in Go Binary via `embed.FS`
 - **Hot reload**: Air für Go Backend, Vite für Frontend
 - **Templates**: Go HTML Templates für Server-side Rendering (optional)
+
+## Docker Services
+- **schichtplaner** (Port 3000): Hauptanwendung mit Production Environment
+- **database** (Port 5432): PostgreSQL 15 (user/password, DB: schichtplaner)
+- **pgadmin** (Port 5050): Database Management UI (admin@schichtplaner.com/admin)
+- **prometheus** (Port 9090): Metrics Collection mit 15 Tage Retention
+- **grafana** (Port 3001): Monitoring Dashboard (admin/admin)
+
+## Frontend Testing
+- **Framework**: Vitest mit React Testing Library und jsdom Environment
+- **Setup**: Globale fetch Mocks, jest-dom Matchers, React Component Testing
+- **Coverage**: Header, MainLayout, Pages mit umfassenden Unit Tests
+- **Commands**: `yarn test` (einmalig), `yarn test:watch` (Watch-Modus)
 
 ## Project Structure
 ```
@@ -54,8 +82,15 @@
 │   │   └── main.tsx    # App Einstiegspunkt
 │   ├── frontend.go     # Static File Serving mit Cache-Headers
 │   └── dist/           # Gebaute Frontend Assets
+├── monitoring/         # Monitoring & Database Config
+│   ├── prometheus.yml  # Prometheus Konfiguration
+│   ├── grafana/        # Grafana Setup
+│   │   ├── dashboards/ # Vorkonfigurierte Dashboards
+│   │   └── datasources/ # Prometheus Datasource
+│   └── pgadmin/        # pgAdmin Konfiguration
 ├── .env.example        # Environment-Variablen Template
 ├── .env                # Development Environment-Konfiguration
+├── docker-compose.yml  # Docker Services
 └── templates/          # Go HTML Templates (optional)
 ```
 
@@ -76,3 +111,21 @@
 - **Files**: `.tsx` for React components, `.go` for backend
 - **Testing**: Comprehensive CRUD tests with validation testing
 - **Sprache**: Code und Variablen in Englisch, Kommentare in Deutsch
+
+## Environment
+
+Here is useful information about the environment you are running in:
+
+Today's date: 9.7.2025
+
+Working directory: /Users/cabroe/Projekte/schichtplaner
+
+Workspace paths: /Users/cabroe/Projekte/schichtplaner
+
+Operating system: darwin (15.5) on x64
+
+Repository: https://github.com/cabroe/schichtplaner
+
+Amp-Thread-Id: "T-61da8b02-a857-4c4d-8160-f7a747e5b19c"
+
+Amp-Thread-Url: "https://ampcode.com/threads/T-61da8b02-a857-4c4d-8160-f7a747e5b19c"
