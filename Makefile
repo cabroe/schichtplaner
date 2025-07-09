@@ -10,7 +10,7 @@ install: ## Installiert alle Abhängigkeiten (Go Module + Frontend yarn)
 
 build: ## Baut das Frontend und Backend
 	cd frontend && yarn build
-	ENV=prod go build -buildvcs=false -o ./bin/go-vite ./main.go
+	ENV=prod go build -buildvcs=false -o ./bin/go-vite.exe ./main.go
 
 dev: install ## Startet die Entwicklungsumgebung
 	$(MAKE) build
