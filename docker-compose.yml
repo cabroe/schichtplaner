@@ -9,11 +9,15 @@ services:
     restart: unless-stopped
     environment:
       - ENV=prod
+      - DATABASE_URL=postgres://user:password@database:5432/schichtplaner?sslmode=disable
+      - REDIS_URL=redis://redis:6379
     networks:
       - monitoring
-    # Optional: Volumes für persistente Daten
-    # volumes:
-    #   - ./data:/app/data
+    depends_on:
+      - database
+      - redis
+    volumes:
+      - ./data:/app/data
 
   prometheus:
     image: prom/prometheus:latest
@@ -90,6 +94,17 @@ services:
     depends_on:
       - database
 
+  redis:
+    image: redis:7-alpine
+    container_name: schichtplaner-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - monitoring
+
 networks:
   monitoring:
     driver: bridge
@@ -99,3 +114,4 @@ volumes:
   grafana_data:
   postgres_data:
   pgadmin_data:
+  redis_data:
