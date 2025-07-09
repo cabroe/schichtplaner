@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-function Home() {
+function Dashboard() {
   const [healthStatus, setHealthStatus] = useState('')
 
   useEffect(() => {
@@ -27,4 +27,4 @@ function Home() {
   )
 }
 
-export default Home
+export default Dashboard

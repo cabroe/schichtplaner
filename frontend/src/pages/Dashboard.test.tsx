@@ -1,7 +1,7 @@
 import { render, screen, waitFor, act } from '@testing-library/react'
-import Home from './Home'
+import Dashboard from './Dashboard'
 
-describe('Home', () => {
+describe('Dashboard', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -15,9 +15,9 @@ describe('Home', () => {
     } as Response)
 
     await act(async () => {
-      render(<Home />)
+      render(<Dashboard />)
     })
-    expect(screen.getByText('Schichtplaner Dashboard')).toBeInTheDocument()
+    expect(screen.getByText('Server Status')).toBeInTheDocument()
   })
 
   it('fetches and displays server status', async () => {
@@ -29,7 +29,7 @@ describe('Home', () => {
     } as Response)
 
     await act(async () => {
-      render(<Home />)
+      render(<Dashboard />)
     })
     
     await waitFor(() => {
@@ -44,7 +44,7 @@ describe('Home', () => {
     ;(globalThis.fetch as any).mockRejectedValue(new Error('Network error'))
 
     await act(async () => {
-      render(<Home />)
+      render(<Dashboard />)
     })
     
     await waitFor(() => {
