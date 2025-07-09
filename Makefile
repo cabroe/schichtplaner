@@ -13,14 +13,13 @@ help: ## Zeigt diese Hilfe an
 
 install: ## Installiert alle Abhängigkeiten (Go Module + Frontend yarn)
 	go mod tidy
-	cd frontend && yarn install
+	cd frontend && yarn
 
 build: ## Baut das Frontend und Backend
 	cd frontend && yarn build
 	ENV=prod go build -buildvcs=false -o ./bin/$(BINARY_NAME) ./main.go
 
-dev: install ## Startet die Entwicklungsumgebung
-	$(MAKE) build
+dev: ## Startet die Entwicklungsumgebung
 	concurrently "cd frontend && yarn dev" "air"
 
 test-backend: ## Führt Backend-Tests aus
@@ -32,9 +31,13 @@ test-frontend: ## Führt Frontend-Tests (Lint + Build) aus
 
 test: test-frontend test-backend ## Führt alle Tests aus
 
+dev-build: ## Baut für Entwicklung (Frontend + Backend)
+	cd frontend && yarn build
+	go build -buildvcs=false -o ./bin/$(BINARY_NAME) ./main.go
+
 clean: ## Löscht Build-Artefakte
 	rm -f ./bin/$(BINARY_NAME)
 	rm -rf ./frontend/dist
 	rm -rf ./tmp
 
-.PHONY: all help install build dev test-backend test-frontend test clean
+.PHONY: all help install build dev dev-build test-backend test-frontend test clean
