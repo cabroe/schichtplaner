@@ -33,14 +33,14 @@ func RegisterHandlers(e *echo.Echo) {
 		setupDevProxy(e)
 		return
 	}
-	
+
 	// Setup static file serving with cache headers
 	e.Use(staticWithCacheHeaders())
-	
+
 	// Use the static assets from the dist directory
 	e.FileFS("/", "index.html", distIndexHTML)
 	e.StaticFS("/", distDirFS)
-	
+
 	// This is needed to serve the index.html file for all routes that are not /api/*
 	// needed for SPA to work when loading a specific url directly
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
@@ -64,16 +64,16 @@ func staticWithCacheHeaders() echo.MiddlewareFunc {
 	return echo.MiddlewareFunc(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			path := c.Request().URL.Path
-			
+
 			// Skip API and metrics endpoints
 			if strings.HasPrefix(path, "/api") || path == "/metrics" {
 				return next(c)
 			}
-			
+
 			// Determine cache duration based on file type
 			var cacheDuration time.Duration
 			var cacheControl string
-			
+
 			ext := strings.ToLower(filepath.Ext(path))
 			switch ext {
 			case ".js", ".css", ".woff", ".woff2", ".ttf", ".eot":
@@ -98,18 +98,18 @@ func staticWithCacheHeaders() echo.MiddlewareFunc {
 					cacheControl = "public, max-age=" + strconv.Itoa(int(cacheDuration.Seconds()))
 				}
 			}
-			
+
 			// Set cache headers
 			c.Response().Header().Set("Cache-Control", cacheControl)
 			if cacheDuration > 0 {
 				c.Response().Header().Set("Expires", time.Now().Add(cacheDuration).Format(http.TimeFormat))
 			}
-			
+
 			// Add ETag for better caching
 			if ext != ".html" && ext != ".htm" && path != "/" {
 				c.Response().Header().Set("ETag", `"`+path+`"`)
 			}
-			
+
 			return next(c)
 		}
 	})
