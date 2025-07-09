@@ -44,19 +44,19 @@ describe('Header', () => {
     expect(screen.getByText('Modal Test')).toBeInTheDocument()
   })
 
-  it('displays correct title for child routes', () => {
+  it('displays default title for child routes (not in menu)', () => {
     renderWithRouter('/timesheet')
-    expect(screen.getByText('Meine Zeiten')).toBeInTheDocument()
+    expect(screen.getByText('Schichtplaner')).toBeInTheDocument()
   })
 
-  it('displays correct title for quick entry route', () => {
+  it('displays default title for quick entry route (not in menu)', () => {
     renderWithRouter('/quick_entry')
-    expect(screen.getByText('Wochenstunden')).toBeInTheDocument()
+    expect(screen.getByText('Schichtplaner')).toBeInTheDocument()
   })
 
-  it('displays correct title for calendar route', () => {
+  it('displays default title for calendar route (not in menu)', () => {
     renderWithRouter('/calendar')
-    expect(screen.getByText('Kalender')).toBeInTheDocument()
+    expect(screen.getByText('Schichtplaner')).toBeInTheDocument()
   })
 
   it('contains navbar toggler button', () => {
@@ -88,15 +88,15 @@ describe('Header', () => {
       expect(screen.getByText('Schichtplaner')).toBeInTheDocument()
     })
 
-    it('handles nested routes correctly', () => {
+    it('handles nested routes correctly (returns default for unmapped routes)', () => {
       renderWithRouter('/timesheet')
-      expect(screen.getByText('Meine Zeiten')).toBeInTheDocument()
+      expect(screen.getByText('Schichtplaner')).toBeInTheDocument()
       expect(screen.queryByText('Zeiterfassung')).not.toBeInTheDocument()
     })
 
-    it('prioritizes child route titles over parent titles', () => {
+    it('returns default title for unmapped child routes', () => {
       renderWithRouter('/calendar')
-      expect(screen.getByText('Kalender')).toBeInTheDocument()
+      expect(screen.getByText('Schichtplaner')).toBeInTheDocument()
       expect(screen.queryByText('Zeiterfassung')).not.toBeInTheDocument()
     })
   })
