@@ -22,6 +22,7 @@
 - `cd frontend && yarn lint` - Lintet Frontend TypeScript/React Code
 - `go test ./...` - Führt alle Go Tests aus
 - `go test ./handlers/... -v` - Führt Handler Tests mit ausführlicher Ausgabe aus
+- `go test ./frontend/... -v` - Führt Frontend Static Cache Tests aus
 
 ### Docker
 - `docker-compose up -d` - Startet vollständigen Stack (App + Monitoring + DB)
@@ -44,7 +45,7 @@
 - **Monitoring**: Prometheus metrics via `/metrics` endpoint
 - **Security**: Configurable rate limiting per IP für API, CORS protection, Security headers (XSS, Clickjacking)
 - **Sessions**: Cookie-based HTTP session management via Gorilla Sessions mit Environment-Secret
-- **Caching**: Intelligente Cache-Headers für statische Assets (JS/CSS: 1 Jahr, Images: 1 Monat)
+- **Caching**: Intelligente Cache-Headers für statische Assets (JS/CSS: 1 Jahr + immutable, Images: 1 Monat, HTML: No-Cache)
 - **Assets**: Lokale FontAwesome-Schriften für optimale Performance
 - **Development**: Vite Dev Server über Go Backend geproxied
 - **Production**: Frontend eingebettet in Go Binary via `embed.FS`
@@ -88,6 +89,7 @@
 │   │   │   └── fonts/  # FontAwesome Schriften (lokal)
 │   │   └── main.tsx    # App Einstiegspunkt
 │   ├── frontend.go     # Static File Serving mit Cache-Headers
+│   ├── cache_test.go   # Tests für Cache-Header-Strategien
 │   └── dist/           # Gebaute Frontend Assets
 ├── monitoring/         # Monitoring & Database Config
 │   ├── prometheus.yml  # Prometheus Konfiguration
@@ -119,6 +121,7 @@
 - **Types**: Strict TypeScript, no unused locals/parameters
 - **Files**: `.tsx` for React components, `.go` for backend
 - **Testing**: Comprehensive CRUD tests with validation testing
+- **Cache Testing**: Umfassende Tests für statische Asset-Caching (ETag, Expires, Cache-Control)
 - **Sprache**: Code und Variablen in Englisch, Kommentare in Deutsch
 
 ## Environment

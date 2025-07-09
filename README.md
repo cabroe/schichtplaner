@@ -41,7 +41,7 @@ Ein modernes Schichtplanungs-Tool entwickelt mit Go, React und TypeScript.
 - **Datenbank**: PostgreSQL mit pgAdmin Interface
 - **Docker Support**: Vollständige Container-Orchestrierung
 - **Environment-Config**: Sichere Konfiguration über Umgebungsvariablen
-- **Performance-Optimiert**: Cache-Headers für statische Assets
+- **Performance-Optimiert**: Intelligente Cache-Headers für statische Assets mit umfassenden Tests
 - **Echtzeit-Entwicklung**: Hot Reload für Frontend und Backend
 
 ## 🛠️ Technologie-Stack
@@ -206,6 +206,7 @@ make test-frontend         # Frontend Tests (Lint + Build + Chart Components)
 make test-backend          # Backend Tests
 go test ./...              # Alle Go Tests
 go test ./handlers/... -v  # Handler Tests (verbose)
+go test ./frontend/... -v  # Frontend Static Cache Tests
 cd frontend && yarn test   # Frontend Unit Tests (Dashboard + Charts)
 
 # Build
@@ -312,8 +313,12 @@ go test ./...
 # Tests mit Details
 go test ./handlers/... -v
 
+# Cache Header Tests
+go test ./frontend/... -v
+
 # Specific test
 go test ./handlers -run TestCRUDEmployees -v
+go test ./frontend -run TestStaticCacheHeaders -v
 ```
 
 **Test Coverage:**
@@ -323,7 +328,9 @@ go test ./handlers -run TestCRUDEmployees -v
 - ✅ Progressive Loading States
 - ✅ Skeleton Loader Components
 - ✅ Pagination Testing
-- ✅ Cache Headers Testing
+- ✅ **Static Cache Headers Testing** (JS/CSS: 1 Jahr, Bilder: 1 Monat, HTML: No-Cache)
+- ✅ **ETag & Expires Headers** für optimale Browser-Caching
+- ✅ **API Endpoint Cache-Exclusion** (keine Cache-Headers für /api/* und /metrics)
 - ✅ Report Generation
 - ✅ CSV Export
 - ✅ Validation Testing
