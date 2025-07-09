@@ -17,7 +17,7 @@ export const sidebarMenuItems: MenuItem[] = [
   {
     id: 'about',
     path: '/about',
-    title: 'Über uns 2',
+    title: 'Über uns',
     icon: 'fas fa-info-circle'
   },
   {

@@ -140,112 +140,98 @@ const ModalTestPage: React.FC = () => {
   );
 
   return (
-    <div className="container-xl">
-      <div className="page-header d-print-none">
-        <div className="row align-items-center">
-          <div className="col">
-            <h2 className="page-title">
-              Modal Test-Seite
-            </h2>
-            <div className="text-muted mt-1">
+    <div className="row row-deck row-cards">
+      <div className="col-12">
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">Modal Test-Seite</h3>
+            {/* <p className="text-muted">
               Verschiedene Anwendungsfälle für die RemoteFormModal-Komponente
-            </div>
+            </p> */}
           </div>
-        </div>
-      </div>
-
-      <div className="page-body">
-        <div className="row">
-          <div className="col-12">
-            <div className="card">
-              <div className="card-header">
-                <h3 className="card-title">Modal-Tests</h3>
-              </div>
-              <div className="card-body">
-                <div className="row g-3">
-                  
-                  {/* Basic Modal */}
-                  <div className="col-md-4">
-                    <div className="card">
-                      <div className="card-body text-center">
-                        <h4>Einfaches Modal</h4>
-                        <p className="text-muted">Grundlegendes Modal ohne Formular</p>
-                        <button 
-                          className="btn btn-primary" 
-                          onClick={() => setBasicModalOpen(true)}
-                        >
-                          Einfaches Modal öffnen
-                        </button>
-                      </div>
-                    </div>
+          <div className="card-body">
+            <div className="row g-3">
+              
+              {/* Basic Modal */}
+              <div className="col-md-4">
+                <div className="card">
+                  <div className="card-body text-center">
+                    <h4>Einfaches Modal</h4>
+                    <p className="text-muted">Grundlegendes Modal ohne Formular</p>
+                    <button 
+                      className="btn btn-primary" 
+                      onClick={() => setBasicModalOpen(true)}
+                    >
+                      Einfaches Modal öffnen
+                    </button>
                   </div>
-
-                  {/* Employee Modal */}
-                  <div className="col-md-4">
-                    <div className="card">
-                      <div className="card-body text-center">
-                        <h4>Mitarbeiter-Modal</h4>
-                        <p className="text-muted">Formular für Mitarbeiterverwaltung</p>
-                        <button 
-                          className="btn btn-success" 
-                          onClick={() => setEmployeeModalOpen(true)}
-                        >
-                          Mitarbeiter hinzufügen
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Shift Modal */}
-                  <div className="col-md-4">
-                    <div className="card">
-                      <div className="card-body text-center">
-                        <h4>Schicht-Modal</h4>
-                        <p className="text-muted">Formular für Schichtplanung</p>
-                        <button 
-                          className="btn btn-info" 
-                          onClick={() => setShiftModalOpen(true)}
-                        >
-                          Schicht erstellen
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Confirm Modal */}
-                  <div className="col-md-4">
-                    <div className="card">
-                      <div className="card-body text-center">
-                        <h4>Bestätigungs-Modal</h4>
-                        <p className="text-muted">Modal für Bestätigungen</p>
-                        <button 
-                          className="btn btn-danger" 
-                          onClick={() => setConfirmModalOpen(true)}
-                        >
-                          Element löschen
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Large Modal */}
-                  <div className="col-md-4">
-                    <div className="card">
-                      <div className="card-body text-center">
-                        <h4>Großes Modal</h4>
-                        <p className="text-muted">Modal mit viel Inhalt</p>
-                        <button 
-                          className="btn btn-warning" 
-                          onClick={() => setLargeModalOpen(true)}
-                        >
-                          Großes Modal öffnen
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
                 </div>
               </div>
+
+              {/* Employee Modal */}
+              <div className="col-md-4">
+                <div className="card">
+                  <div className="card-body text-center">
+                    <h4>Mitarbeiter-Modal</h4>
+                    <p className="text-muted">Formular für Mitarbeiterverwaltung</p>
+                    <button 
+                      className="btn btn-success" 
+                      onClick={() => setEmployeeModalOpen(true)}
+                    >
+                      Mitarbeiter hinzufügen
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Shift Modal */}
+              <div className="col-md-4">
+                <div className="card">
+                  <div className="card-body text-center">
+                    <h4>Schicht-Modal</h4>
+                    <p className="text-muted">Formular für Schichtplanung</p>
+                    <button 
+                      className="btn btn-info" 
+                      onClick={() => setShiftModalOpen(true)}
+                    >
+                      Schicht erstellen
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Confirm Modal */}
+              <div className="col-md-4">
+                <div className="card">
+                  <div className="card-body text-center">
+                    <h4>Bestätigungs-Modal</h4>
+                    <p className="text-muted">Modal für Bestätigungen</p>
+                    <button 
+                      className="btn btn-danger" 
+                      onClick={() => setConfirmModalOpen(true)}
+                    >
+                      Element löschen
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Large Modal */}
+              <div className="col-md-4">
+                <div className="card">
+                  <div className="card-body text-center">
+                    <h4>Großes Modal</h4>
+                    <p className="text-muted">Modal mit viel Inhalt</p>
+                    <button 
+                      className="btn btn-warning" 
+                      onClick={() => setLargeModalOpen(true)}
+                    >
+                      Großes Modal öffnen
+                    </button>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
