@@ -1,3 +1,10 @@
+# Betriebssystem-spezifische Binary-Namen
+ifeq ($(OS),Windows_NT)
+    BINARY_NAME = schichtplaner.exe
+else
+    BINARY_NAME = schichtplaner
+endif
+
 # Standardziel, wenn nur 'make' aufgerufen wird
 all: help
 
@@ -10,7 +17,7 @@ install: ## Installiert alle Abhängigkeiten (Go Module + Frontend yarn)
 
 build: ## Baut das Frontend und Backend
 	cd frontend && yarn build
-	ENV=prod go build -buildvcs=false -o ./bin/schichtplaner ./main.go
+	ENV=prod go build -buildvcs=false -o ./bin/$(BINARY_NAME) ./main.go
 
 dev: install ## Startet die Entwicklungsumgebung
 	$(MAKE) build
@@ -24,3 +31,10 @@ test-frontend: ## Führt Frontend-Tests (Lint + Build) aus
 	cd frontend && yarn build
 
 test: test-frontend test-backend ## Führt alle Tests aus
+
+clean: ## Löscht Build-Artefakte
+	rm -f ./bin/$(BINARY_NAME)
+	rm -rf ./frontend/dist
+	rm -rf ./tmp
+
+.PHONY: all help install build dev test-backend test-frontend test clean
