@@ -33,6 +33,8 @@
 - **Backend**: Go 1.24.4 mit Echo Framework, serviert API unter `/api/*` Routen
 - **Frontend**: React 18 + TypeScript + Vite, SPA serviert von `/`
 - **UI Framework**: Tabler UI (Bootstrap 5-basiert) für modernes Dashboard Design
+- **Charts & Visualization**: Chart.js + react-chartjs-2 für interaktive Datenvisualisierung
+- **Progressive Loading**: Sofortiges HTML-Rendering mit Skeleton Loaders
 - **Routing**: React Router DOM für clientseitiges Navigieren
 - **Data Layer**: In-memory Storage mit vollständigen CRUD Operationen + Pagination
 - **Models**: Employee, Shift, Report mit Validierungs-Tags
@@ -43,6 +45,7 @@
 - **Security**: Configurable rate limiting per IP für API, CORS protection, Security headers (XSS, Clickjacking)
 - **Sessions**: Cookie-based HTTP session management via Gorilla Sessions mit Environment-Secret
 - **Caching**: Intelligente Cache-Headers für statische Assets (JS/CSS: 1 Jahr, Images: 1 Monat)
+- **Assets**: Lokale FontAwesome-Schriften für optimale Performance
 - **Development**: Vite Dev Server über Go Backend geproxied
 - **Production**: Frontend eingebettet in Go Binary via `embed.FS`
 - **Hot reload**: Air für Go Backend, Vite für Frontend
@@ -58,7 +61,9 @@
 ## Frontend Testing
 - **Framework**: Vitest mit React Testing Library und jsdom Environment
 - **Setup**: Globale fetch Mocks, jest-dom Matchers, React Component Testing
-- **Coverage**: Header, MainLayout, Pages mit umfassenden Unit Tests
+- **Coverage**: Header, MainLayout, Dashboard mit Charts, Skeleton Loaders mit umfassenden Unit Tests
+- **Chart Testing**: Mock Chart.js für Dashboard-Komponenten Tests
+- **Loading States**: Testing für Progressive Loading und Skeleton Components
 - **Commands**: `yarn test` (einmalig), `yarn test:watch` (Watch-Modus)
 
 ## Project Structure
@@ -78,7 +83,9 @@
 ├── frontend/           # React Frontend
 │   ├── src/
 │   │   ├── components/ # Wiederverwendbare UI Komponenten
-│   │   ├── pages/      # Seiten Komponenten
+│   │   ├── pages/      # Seiten Komponenten mit Dashboard & Charts
+│   │   ├── assets/     # Lokale Assets (Fonts, Icons)
+│   │   │   └── fonts/  # FontAwesome Schriften (lokal)
 │   │   └── main.tsx    # App Einstiegspunkt
 │   ├── frontend.go     # Static File Serving mit Cache-Headers
 │   └── dist/           # Gebaute Frontend Assets
@@ -105,6 +112,8 @@
 - **Go**: Standard Go conventions, Echo framework patterns
 - **CRUD**: Follow Echo cookbook pattern with `c.Bind()`, `c.Validate()`, `c.JSON()`
 - **TypeScript**: Strict mode enabled, React functional components
+- **Charts**: Chart.js konfiguriert mit responsive design und Tabler-Farbschema
+- **Loading States**: Progressive Loading mit Skeleton Loaders, keine Full-Page Loading
 - **Imports**: ES modules for frontend, standard Go imports
 - **Formatting**: ESLint for frontend, go fmt for backend
 - **Types**: Strict TypeScript, no unused locals/parameters
