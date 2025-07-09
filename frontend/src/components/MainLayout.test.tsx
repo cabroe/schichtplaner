@@ -148,7 +148,6 @@ describe('MainLayout', () => {
     it('accepts ReactNode children prop', () => {
       const stringChild = 'String child'
       const elementChild = <div>Element child</div>
-      const numberChild = 42
       
       // Test string child
       renderWithRouter(stringChild)
