@@ -8,21 +8,31 @@ export function Sidebar() {
     return location.pathname === path;
   };
 
+  const isChildActive = (item: MenuItem): boolean => {
+    if (!item.children) return false;
+    return item.children.some(child => location.pathname === child.path);
+  };
+
   const renderMenuItem = (item: MenuItem) => {
     if (item.isDropdown && item.children) {
+      const hasActiveChild = isChildActive(item);
       return (
-        <li key={item.id} id={item.id} className="nav-item dropdown">
-          <a className="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="true">
+        <li key={item.id} id={item.id} className={`nav-item dropdown ${hasActiveChild ? 'active' : ''}`}>
+          <a className={`nav-link dropdown-toggle ${hasActiveChild ? 'active' : ''}`} role="button" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded={hasActiveChild}>
             <span className="nav-link-icon d-md-none d-lg-inline-block text-center">
               <i className={item.icon}></i>
             </span>
             <span className="nav-link-title">{item.title}</span>
           </a>
-          <div className="dropdown-menu show" data-bs-popper="none">
+          <div className={`dropdown-menu ${hasActiveChild ? 'show' : ''}`} data-bs-popper="none">
             <div className="dropdown-menu-columns">
               <div className="dropdown-menu-column">
                 {item.children.map(child => (
-                  <Link key={child.id} className="dropdown-item" to={child.path}>
+                  <Link 
+                    key={child.id} 
+                    className={`dropdown-item ${isActive(child.path) ? 'active' : ''}`} 
+                    to={child.path}
+                  >
                     <span className="nav-link-icon d-md-none d-lg-inline-block text-center">
                       <i className={child.icon}></i>
                     </span>
