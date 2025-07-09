@@ -53,7 +53,7 @@ func TestReportGeneration(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, rec.Code)
 
-	var response map[string]interface{}
+	var response map[string]any
 	json.Unmarshal(rec.Body.Bytes(), &response)
 	assert.Contains(t, response, "report")
 	assert.Contains(t, response, "data")

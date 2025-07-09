@@ -26,7 +26,7 @@ func getReports(c echo.Context) error {
 
 func getShiftReports(c echo.Context) error {
 	shifts := models.GetAllShifts()
-	
+
 	// Create shift report
 	report := models.CreateReport(
 		"Schichtplan-Bericht",
@@ -34,8 +34,8 @@ func getShiftReports(c echo.Context) error {
 		"Übersicht aller Schichten",
 		fmt.Sprintf("Anzahl Schichten: %d", len(shifts)),
 	)
-	
-	return c.JSON(http.StatusOK, map[string]interface{}{
+
+	return c.JSON(http.StatusOK, map[string]any{
 		"report": report,
 		"data":   shifts,
 	})
@@ -43,7 +43,7 @@ func getShiftReports(c echo.Context) error {
 
 func getEmployeeReports(c echo.Context) error {
 	employees := models.GetAllEmployees()
-	
+
 	// Create employee report
 	report := models.CreateReport(
 		"Mitarbeiter-Bericht",
@@ -51,8 +51,8 @@ func getEmployeeReports(c echo.Context) error {
 		"Übersicht aller Mitarbeiter",
 		fmt.Sprintf("Anzahl Mitarbeiter: %d", len(employees)),
 	)
-	
-	return c.JSON(http.StatusOK, map[string]interface{}{
+
+	return c.JSON(http.StatusOK, map[string]any{
 		"report": report,
 		"data":   employees,
 	})
@@ -63,13 +63,13 @@ func exportReports(c echo.Context) error {
 	if reportType == "" {
 		reportType = "shifts"
 	}
-	
+
 	c.Response().Header().Set("Content-Type", "text/csv")
 	c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s_report.csv\"", reportType))
-	
+
 	writer := csv.NewWriter(c.Response().Writer)
 	defer writer.Flush()
-	
+
 	switch reportType {
 	case "shifts":
 		shifts := models.GetAllShifts()
@@ -99,6 +99,6 @@ func exportReports(c echo.Context) error {
 	default:
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid report type")
 	}
-	
+
 	return nil
 }

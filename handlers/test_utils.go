@@ -13,7 +13,7 @@ type CustomValidator struct {
 }
 
 // Validate validates the struct
-func (cv *CustomValidator) Validate(i interface{}) error {
+func (cv *CustomValidator) Validate(i any) error {
 	return cv.validator.Struct(i)
 }
 

@@ -11,7 +11,7 @@ func RegisterHealthRoutes(api *echo.Group) {
 }
 
 func getHealth(c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]interface{}{
+	return c.JSON(http.StatusOK, map[string]any{
 		"status":  "ok",
 		"service": "schichtplaner",
 	})

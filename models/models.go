@@ -76,10 +76,10 @@ type PaginationRequest struct {
 
 // PaginatedResponse repräsentiert eine paginierte Antwort
 type PaginatedResponse struct {
-	Data       interface{} `json:"data"`
-	Total      int         `json:"total"`
-	Limit      int         `json:"limit"`
-	Offset     int         `json:"offset"`
-	HasMore    bool        `json:"has_more"`
-	TotalPages int         `json:"total_pages"`
+	Data       any  `json:"data"`
+	Total      int  `json:"total"`
+	Limit      int  `json:"limit"`
+	Offset     int  `json:"offset"`
+	HasMore    bool `json:"has_more"`
+	TotalPages int  `json:"total_pages"`
 }
