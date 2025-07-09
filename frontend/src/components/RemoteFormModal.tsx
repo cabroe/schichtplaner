@@ -63,7 +63,7 @@ const RemoteFormModal: React.FC<RemoteFormModalProps> = ({
               className="btn-close" 
               aria-label="Schließen"
               onClick={onClose}
-            />
+            ></button>
           </div>
           <div className="modal-body">
             {children}
