@@ -17,6 +17,11 @@ function Navigation() {
             <span className="nav-link-title">About</span>
           </Link>
         </div>
+        <div className="nav-item">
+          <Link to="/modal-test" className="nav-link">
+            <span className="nav-link-title">Modal Test</span>
+          </Link>
+        </div>
       </div>
     </>
   )
