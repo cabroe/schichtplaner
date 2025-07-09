@@ -83,7 +83,8 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
       - ./monitoring/pgadmin/servers.json:/pgadmin4/servers.json:ro
-      - ./monitoring/pgadmin/pgpass:/tmp/pgpassfile:ro
+      - ./monitoring/pgadmin/pgpass:/var/lib/pgadmin/.pgpass:ro
+    user: "5050:5050"
     networks:
       - monitoring
     depends_on:

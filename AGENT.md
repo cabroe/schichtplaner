@@ -9,7 +9,7 @@
 - `cd frontend && yarn build` - Erstellt nur Frontend
 - `cd frontend && yarn lint` - Lintet Frontend TypeScript/React Code
 - `cd frontend && yarn dev` - Startet Frontend Entwicklungsserver
-- `go build -o ./bin/go-vite .` - Erstellt nur Go Backend
+- `go build -o ./bin/schichtplaner .` - Erstellt nur Go Backend
 - `air` - Hot Reload für Go Backend während Entwicklung
 - `go test ./...` - Führt alle Go Tests aus
 - `go test ./handlers/... -v` - Führt Handler Tests mit ausführlicher Ausgabe aus

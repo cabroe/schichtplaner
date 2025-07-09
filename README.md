@@ -112,7 +112,7 @@ Docker Services verfügbar unter:
 ### Produktions-Build erstellen
 ```bash
 make build
-./bin/go-vite
+./bin/schichtplaner
 ```
 
 ## 📁 Projektstruktur
@@ -176,7 +176,7 @@ go test ./...              # Alle Go Tests
 go test ./handlers/... -v  # Handler Tests (verbose)
 
 # Build
-go build -o ./bin/go-vite .     # Backend Build
+go build -o ./bin/schichtplaner .     # Backend Build
 cd frontend && yarn build       # Frontend Build
 cd frontend && yarn lint        # Frontend Linting
 ```
@@ -298,14 +298,35 @@ go test ./handlers -run TestCRUDEmployees -v
 ### Lokale Produktion
 ```bash
 make build
-./bin/go-vite
+./bin/schichtplaner
 ```
 
-### Docker (zukünftig)
+### Docker Production
 ```bash
-docker build -t schichtplaner .
-docker run -p 3000:3000 schichtplaner
+# Vollständiger Stack
+docker-compose up -d
+
+# Nur Anwendung
+docker-compose up -d schichtplaner
+
+# Mit Datenbank
+docker-compose up -d schichtplaner database
+
+# Mit Monitoring
+docker-compose up -d schichtplaner prometheus grafana
 ```
+
+### Monitoring Setup
+Nach dem Start der Docker Services ist Monitoring verfügbar:
+- **Prometheus**: http://localhost:9090 - Metrics Collection
+- **Grafana**: http://localhost:3001 - Dashboard (admin/admin)
+- **pgAdmin**: http://localhost:5050 - Database Management
+
+Das Grafana Dashboard zeigt automatisch:
+- HTTP Request Rate
+- Response Times (50th/95th Percentile)  
+- HTTP Status Code Distribution
+- Application Performance Metrics
 
 ## 🔧 Entwicklung
 

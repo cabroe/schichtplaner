@@ -14,7 +14,7 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "sum(rate(http_requests_total[5m]))",
+          "expr": "sum(rate(echo_http_requests_total[5m]))",
           "legendFormat": "Requests/sec",
           "refId": "A"
         }
@@ -40,12 +40,12 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(echo_http_request_duration_seconds_bucket[5m])) by (le))",
           "legendFormat": "95th percentile",
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+          "expr": "histogram_quantile(0.50, sum(rate(echo_http_request_duration_seconds_bucket[5m])) by (le))",
           "legendFormat": "50th percentile",
           "refId": "B"
         }
@@ -71,7 +71,7 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "sum(rate(http_requests_total[5m])) by (status)",
+          "expr": "sum(rate(echo_http_requests_total[5m])) by (status)",
           "legendFormat": "{{status}}",
           "refId": "A"
         }
