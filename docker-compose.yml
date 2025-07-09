@@ -9,23 +9,92 @@ services:
     restart: unless-stopped
     environment:
       - ENV=prod
+    networks:
+      - monitoring
     # Optional: Volumes für persistente Daten
     # volumes:
     #   - ./data:/app/data
-    
-  # Optional: Weitere Services wie Datenbank
-  # database:
-  #   image: postgres:15-alpine
-  #   container_name: schichtplaner-db
-  #   environment:
-  #     POSTGRES_DB: schichtplaner
-  #     POSTGRES_USER: user
-  #     POSTGRES_PASSWORD: password
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #   ports:
-  #     - "5432:5432"
 
-# Optional: Volumes Definition
-# volumes:
-#   postgres_data:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: schichtplaner-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+    networks:
+      - monitoring
+    depends_on:
+      - schichtplaner
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: schichtplaner-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - monitoring
+    depends_on:
+      - prometheus
+    
+  database:
+    image: postgres:15-alpine
+    container_name: schichtplaner-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: schichtplaner
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - monitoring
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: schichtplaner-pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@schichtplaner.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./monitoring/pgadmin/servers.json:/pgadmin4/servers.json:ro
+      - ./monitoring/pgadmin/pgpass:/tmp/pgpassfile:ro
+    networks:
+      - monitoring
+    depends_on:
+      - database
+
+networks:
+  monitoring:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:
+  postgres_data:
+  pgadmin_data:

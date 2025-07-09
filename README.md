@@ -9,6 +9,9 @@ Ein modernes Schichtplanungs-Tool entwickelt mit Go, React und TypeScript.
 - **Berichtswesen**: Automatische Report-Generierung und CSV-Export
 - **Moderne UI**: Responsive Dashboard mit Tabler UI Framework
 - **REST API**: Vollständige RESTful API mit Echo Framework
+- **Monitoring**: Prometheus Metrics mit Grafana Dashboard
+- **Datenbank**: PostgreSQL mit pgAdmin Interface
+- **Docker Support**: Vollständige Container-Orchestrierung
 - **Environment-Config**: Sichere Konfiguration über Umgebungsvariablen
 - **Performance-Optimiert**: Cache-Headers für statische Assets
 - **Echtzeit-Entwicklung**: Hot Reload für Frontend und Backend
@@ -19,7 +22,9 @@ Ein modernes Schichtplanungs-Tool entwickelt mit Go, React und TypeScript.
 - **Go 1.24.4** - Moderne, performante Sprache
 - **Echo v4** - Leichtgewichtiges Web Framework
 - **go-playground/validator** - Request-Validierung
-- **In-Memory Storage** - Schnelle Datenhaltung für Entwicklung mit Pagination
+- **PostgreSQL** - Produktive Datenhaltung mit Pagination
+- **In-Memory Storage** - Schnelle Datenhaltung für Entwicklung
+- **Prometheus Metrics** - Application Performance Monitoring
 - **Environment-Config** - Sichere Konfiguration mit .env Support
 
 ### Frontend
@@ -31,9 +36,14 @@ Ein modernes Schichtplanungs-Tool entwickelt mit Go, React und TypeScript.
 
 ## 📋 Voraussetzungen
 
+### Lokale Entwicklung
 - **Go 1.21+**
 - **Node.js 18+**
 - **Yarn**
+
+### Docker Setup
+- **Docker**
+- **Docker Compose**
 
 ## 🚀 Schnellstart
 
@@ -80,6 +90,24 @@ Die Anwendung ist dann verfügbar unter:
 - **Frontend**: http://localhost:5173
 - **Backend API**: http://localhost:3000
 - **Produktions-Build**: http://localhost:3000
+- **Prometheus**: http://localhost:9090
+- **Grafana**: http://localhost:3001
+
+### Docker Setup
+```bash
+# Alle Services starten
+docker-compose up -d
+
+# Nur bestimmte Services
+docker-compose up -d schichtplaner database
+```
+
+Docker Services verfügbar unter:
+- **Schichtplaner**: http://localhost:3000
+- **Prometheus**: http://localhost:9090
+- **Grafana**: http://localhost:3001 (admin/admin)
+- **pgAdmin**: http://localhost:5050 (admin@schichtplaner.com/admin)
+- **PostgreSQL**: localhost:5432 (user/password)
 
 ### Produktions-Build erstellen
 ```bash
@@ -111,8 +139,15 @@ schichtplaner/
 │   ├── frontend.go         # Static File Serving mit Cache-Headers
 │   ├── public/             # Statische Assets
 │   └── dist/               # Build Output
+├── monitoring/              # Monitoring & Database Config
+│   ├── prometheus.yml      # Prometheus Konfiguration
+│   ├── grafana/            # Grafana Setup
+│   │   ├── dashboards/     # Vorkonfigurierte Dashboards
+│   │   └── datasources/    # Prometheus Datasource
+│   └── pgadmin/            # pgAdmin Konfiguration
 ├── templates/               # Go HTML Templates
 ├── bin/                     # Build Output
+├── docker-compose.yml      # Docker Services
 ├── .env.example            # Environment-Variablen Template
 ├── .env                    # Development-Konfiguration
 ├── Makefile                # Build Scripts
@@ -128,8 +163,16 @@ make build                  # Produktions-Build
 air                        # Go Hot Reload
 cd frontend && yarn dev    # Frontend Dev Server
 
+# Docker
+docker-compose up -d        # Alle Services starten
+docker-compose down         # Alle Services stoppen
+docker-compose logs -f      # Logs verfolgen
+
 # Tests
-go test ./...              # Alle Tests
+make test                   # Alle Tests (Frontend + Backend)
+make test-frontend         # Frontend Tests (Lint + Build)
+make test-backend          # Backend Tests
+go test ./...              # Alle Go Tests
 go test ./handlers/... -v  # Handler Tests (verbose)
 
 # Build
@@ -217,6 +260,12 @@ GET /api/reports           # Alle Berichte abrufen
 GET /api/reports/shifts    # Schicht-Berichte
 GET /api/reports/employees # Mitarbeiter-Berichte
 GET /api/reports/export?type=shifts|employees  # CSV-Export
+```
+
+#### Monitoring
+```http
+GET /metrics               # Prometheus Metrics
+GET /api/health           # Application Health Check
 ```
 
 ## 🧪 Testing
