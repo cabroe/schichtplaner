@@ -25,7 +25,7 @@ export const sidebarMenuItems: MenuItem[] = [
     path: '/modal-test',
     title: 'Modal Test',
     icon: 'fas fa-window-restore'
-  },
+  }/* ,
   {
     id: 'times',
     path: '#',
@@ -52,5 +52,5 @@ export const sidebarMenuItems: MenuItem[] = [
         icon: 'fas fa-calendar'
       }
     ]
-  }
+  } */
 ];
