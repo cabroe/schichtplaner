@@ -35380,7 +35380,7 @@ img,svg {
     font-family: Font Awesome\ 6 Free;
     font-style: normal;
     font-weight: 400;
-    src: url(/build/fonts/fa-regular-400.4f6a2dab.woff2) format("woff2"),url(/build/fonts/fa-regular-400.05fdd87b.ttf) format("truetype")
+    src: url("./assets/fonts/fa-regular-400.woff2") format("woff2"),url("./assets/fonts/fa-regular-400.ttf") format("truetype")
 }
 
 .fa-regular,.far {
@@ -35397,7 +35397,7 @@ img,svg {
     font-family: Font Awesome\ 6 Free;
     font-style: normal;
     font-weight: 900;
-    src: url(/assets/fa-solid-900-aa759986.woff2) format("woff2"),url(/assets/fa-solid-900-d2f05935.ttf) format("truetype")
+    src: url("./assets/fonts/fa-solid-900.woff2") format("woff2"),url("./assets/fonts/fa-solid-900.ttf") format("truetype")
 }
 
 .fa-solid,.fas {
@@ -35414,7 +35414,7 @@ img,svg {
     font-family: Font Awesome\ 6 Brands;
     font-style: normal;
     font-weight: 400;
-    src: url(/build/fonts/fa-brands-400.fdbb5585.woff2) format("woff2"),url(/build/fonts/fa-brands-400.26b80c88.ttf) format("truetype")
+    src: url("./assets/fonts/fa-brands-400.woff2") format("woff2"),url("./assets/fonts/fa-brands-400.ttf") format("truetype")
 }
 
 .fa-brands,.fab {
