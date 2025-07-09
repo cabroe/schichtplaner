@@ -9,6 +9,10 @@ services:
     restart: unless-stopped
     environment:
       - ENV=prod
+      - ENVIRONMENT=production
+      - SESSION_SECRET=your-super-secure-32-character-secret-key-here-change-me
+      - SERVER_PORT=3000
+      - RATE_LIMIT_PER_SECOND=20
       - DATABASE_URL=postgres://user:password@database:5432/schichtplaner?sslmode=disable
       - REDIS_URL=redis://redis:6379
     networks:
