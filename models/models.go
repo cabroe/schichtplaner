@@ -10,6 +10,7 @@ type Employee struct {
 	Name      string    `json:"name" validate:"required"`
 	Email     string    `json:"email" validate:"required,email"`
 	Position  string    `json:"position"`
+	Role      string    `json:"role" validate:"required,oneof=user admin manager"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -59,6 +60,7 @@ type EmployeeCreateRequest struct {
 	Name     string `json:"name" validate:"required"`
 	Email    string `json:"email" validate:"required,email"`
 	Position string `json:"position"`
+	Role     string `json:"role" validate:"omitempty,oneof=user admin manager"`
 }
 
 // EmployeeUpdateRequest repräsentiert die Request-Payload für das Aktualisieren eines Mitarbeiters
@@ -66,6 +68,7 @@ type EmployeeUpdateRequest struct {
 	Name     string `json:"name"`
 	Email    string `json:"email" validate:"omitempty,email"`
 	Position string `json:"position"`
+	Role     string `json:"role" validate:"omitempty,oneof=user admin manager"`
 }
 
 // PaginationRequest repräsentiert Parameter für paginierte Anfragen
