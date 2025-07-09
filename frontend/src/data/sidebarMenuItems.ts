@@ -25,6 +25,21 @@ export const sidebarMenuItems: MenuItem[] = [
     path: '/modal-test',
     title: 'Modal Test',
     icon: 'fas fa-window-restore'
+  },
+  {
+    id: 'administration',
+    path: '#',
+    title: 'Administration',
+    icon: 'fas fa-cogs',
+    isDropdown: true,
+    children: [
+      {
+        id: 'employees',
+        path: '/employees',
+        title: 'Mitarbeiter',
+        icon: 'fas fa-users'
+      }
+    ]
   }/* ,
   {
     id: 'times',
