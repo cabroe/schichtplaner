@@ -28,9 +28,9 @@ export const sidebarMenuItems: MenuItem[] = [
     isDropdown: true,
     children: [
       {
-        id: 'modal-test',
-        path: '/modal-test',
-        title: 'Modal Test',
+        id: 'form-modal-test',
+        path: '/form-modal-test',
+        title: 'Form Modal Test',
         icon: 'fas fa-window-restore'
       },
       {

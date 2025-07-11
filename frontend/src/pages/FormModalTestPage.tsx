@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import RemoteFormModal from '../components/FormModal';
+import { FormModal } from '../components/FormModal';
 
-const ModalTestPage: React.FC = () => {
+const FormModalTestPage: React.FC = () => {
   const [basicModalOpen, setBasicModalOpen] = useState(false);
   const [employeeModalOpen, setEmployeeModalOpen] = useState(false);
   const [shiftModalOpen, setShiftModalOpen] = useState(false);
@@ -146,7 +146,7 @@ const ModalTestPage: React.FC = () => {
           <div className="card-header">
             <h3 className="card-title">Modal Test-Seite</h3>
             {/* <p className="text-muted">
-              Verschiedene Anwendungsfälle für die RemoteFormModal-Komponente
+              Verschiedene Anwendungsfälle für die FormModal-Komponente
             </p> */}
           </div>
           <div className="card-body">
@@ -238,7 +238,7 @@ const ModalTestPage: React.FC = () => {
       </div>
 
       {/* Basic Modal */}
-      <RemoteFormModal
+      <FormModal
         title="Einfaches Modal"
         isOpen={basicModalOpen}
         onClose={() => setBasicModalOpen(false)}
@@ -249,10 +249,10 @@ const ModalTestPage: React.FC = () => {
           <h4>Willkommen!</h4>
           <p>Dies ist ein einfaches Modal ohne Formular. Es dient nur zur Anzeige von Informationen.</p>
         </div>
-      </RemoteFormModal>
+      </FormModal>
 
       {/* Employee Modal */}
-      <RemoteFormModal
+      <FormModal
         title="Mitarbeiter hinzufügen"
         isOpen={employeeModalOpen}
         onClose={() => setEmployeeModalOpen(false)}
@@ -324,10 +324,10 @@ const ModalTestPage: React.FC = () => {
             </div>
           </div>
         </form>
-      </RemoteFormModal>
+      </FormModal>
 
       {/* Shift Modal */}
-      <RemoteFormModal
+      <FormModal
         title="Neue Schicht erstellen"
         isOpen={shiftModalOpen}
         onClose={() => setShiftModalOpen(false)}
@@ -403,10 +403,10 @@ const ModalTestPage: React.FC = () => {
             </div>
           </div>
         </form>
-      </RemoteFormModal>
+      </FormModal>
 
       {/* Confirm Modal */}
-      <RemoteFormModal
+      <FormModal
         title="Bestätigung erforderlich"
         isOpen={confirmModalOpen}
         onClose={() => setConfirmModalOpen(false)}
@@ -417,10 +417,10 @@ const ModalTestPage: React.FC = () => {
           <h4>Achtung!</h4>
           <p>Sind Sie sicher, dass Sie dieses Element löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.</p>
         </div>
-      </RemoteFormModal>
+      </FormModal>
 
       {/* Large Modal */}
-      <RemoteFormModal
+      <FormModal
         title="Detaillierte Informationen"
         isOpen={largeModalOpen}
         onClose={() => setLargeModalOpen(false)}
@@ -516,9 +516,9 @@ const ModalTestPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </RemoteFormModal>
+      </FormModal>
     </div>
   );
 };
 
-export default ModalTestPage;
+export default FormModalTestPage;
