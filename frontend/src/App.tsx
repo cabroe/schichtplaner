@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Dashboard from './pages/Dashboard'
 import About from './pages/About'
-import FormModalTestPage from './pages/FormModalTestPage'
-import ContextMenuTestPage from './pages/ContextMenuTestPage'
+import FormModalTestPage from './pages/FormModalTest'
+import ContextMenuTestPage from './pages/ContextMenuTest'
 import Employees from './pages/Employees'
 import { MainLayout } from './components/MainLayout'
 
