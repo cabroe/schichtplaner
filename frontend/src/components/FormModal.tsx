@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-interface RemoteFormModalProps {
+interface FormModalProps {
   title: string;
   isOpen: boolean;
   onClose: () => void;
@@ -9,14 +9,14 @@ interface RemoteFormModalProps {
   children: React.ReactNode;
 }
 
-const RemoteFormModal: React.FC<RemoteFormModalProps> = ({
+export function FormModal({
   title,
   isOpen,
   onClose,
   footer,
   size = 'lg',
   children
-}) => {
+}: FormModalProps) {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -77,6 +77,4 @@ const RemoteFormModal: React.FC<RemoteFormModalProps> = ({
       </div>
     </div>
   );
-};
-
-export default RemoteFormModal;
+}

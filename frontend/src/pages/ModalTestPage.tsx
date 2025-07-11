@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import RemoteFormModal from '../components/RemoteFormModal';
+import RemoteFormModal from '../components/FormModal';
 
 const ModalTestPage: React.FC = () => {
   const [basicModalOpen, setBasicModalOpen] = useState(false);
