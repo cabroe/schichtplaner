@@ -31,6 +31,7 @@ interface ContextSubmenuProps {
  */
 export function ContextMenu({ x, y, isOpen, onClose, children }: ContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ top: y, left: x });
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -48,6 +49,34 @@ export function ContextMenu({ x, y, isOpen, onClose, children }: ContextMenuProp
     };
   }, [isOpen, onClose]);
 
+  useEffect(() => {
+    if (isOpen && menuRef.current) {
+      const menu = menuRef.current;
+      const rect = menu.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      
+      let newLeft = x;
+      let newTop = y;
+
+      // Prüfe horizontale Überlappung
+      if (x + rect.width > viewportWidth) {
+        newLeft = viewportWidth - rect.width - 10; // 10px Abstand vom Rand
+      }
+
+      // Prüfe vertikale Überlappung
+      if (y + rect.height > viewportHeight) {
+        newTop = viewportHeight - rect.height - 10; // 10px Abstand vom Rand
+      }
+
+      // Stelle sicher, dass das Menü nicht außerhalb der linken/oberen Grenzen liegt
+      newLeft = Math.max(10, newLeft);
+      newTop = Math.max(10, newTop);
+
+      setPosition({ top: newTop, left: newLeft });
+    }
+  }, [isOpen, x, y]);
+
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
@@ -62,9 +91,11 @@ export function ContextMenu({ x, y, isOpen, onClose, children }: ContextMenuProp
       className="dropdown-menu action-dropdown d-block"
       style={{
         position: 'fixed',
-        top: y,
-        left: x,
-        zIndex: 1000
+        top: position.top,
+        left: position.left,
+        zIndex: 1000,
+        maxWidth: '250px',
+        minWidth: '180px'
       }}
       onContextMenu={handleContextMenu}
     >

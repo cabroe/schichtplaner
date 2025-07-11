@@ -27,6 +27,12 @@ export const sidebarMenuItems: MenuItem[] = [
     icon: 'fas fa-window-restore'
   },
   {
+    id: 'context-menu-test',
+    path: '/context-menu-test',
+    title: 'Kontextmenü Test',
+    icon: 'fas fa-mouse-pointer'
+  },
+  {
     id: 'administration',
     path: '#',
     title: 'Administration',
