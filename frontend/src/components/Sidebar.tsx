@@ -3,6 +3,22 @@ import { sidebarMenuItems, MenuItem } from '../data/sidebarMenuItems';
 
 export function Sidebar() {
   const location = useLocation();
+
+  const closeMobileMenu = () => {
+    // Verwende setTimeout um sicherzustellen, dass React Router Navigation zuerst passiert
+    setTimeout(() => {
+      const navbarCollapse = document.getElementById('navbar-menu');
+      if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+        // Entferne die 'show' Klasse direkt ohne Bootstrap API
+        navbarCollapse.classList.remove('show');
+        // Setze aria-expanded auf false
+        const toggleButton = document.querySelector('[data-bs-target="#navbar-menu"]');
+        if (toggleButton) {
+          toggleButton.setAttribute('aria-expanded', 'false');
+        }
+      }
+    }, 100);
+  };
   
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -32,6 +48,7 @@ export function Sidebar() {
                     key={child.id} 
                     className={`dropdown-item ${isActive(child.path) ? 'active' : ''}`} 
                     to={child.path}
+                    onClick={closeMobileMenu}
                   >
                     <span className="nav-link-icon d-md-none d-lg-inline-block text-center">
                       <i className={child.icon}></i>
@@ -48,7 +65,7 @@ export function Sidebar() {
 
     return (
       <li key={item.id} id={item.id} className={`nav-item ${isActive(item.path) ? 'active' : ''}`}>
-        <Link className="nav-link" to={item.path}>
+        <Link className="nav-link" to={item.path} onClick={closeMobileMenu}>
           <span className="nav-link-icon d-md-none d-lg-inline-block text-center">
             <i className={item.icon}></i>
           </span>
