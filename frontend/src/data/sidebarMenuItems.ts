@@ -21,16 +21,25 @@ export const sidebarMenuItems: MenuItem[] = [
     icon: 'fas fa-info-circle'
   },
   {
-    id: 'modal-test',
-    path: '/modal-test',
-    title: 'Modal Test',
-    icon: 'fas fa-window-restore'
-  },
-  {
-    id: 'context-menu-test',
-    path: '/context-menu-test',
-    title: 'Kontextmenü Test',
-    icon: 'fas fa-mouse-pointer'
+    id: 'tests',
+    path: '#',
+    title: 'Tests',
+    icon: 'fas fa-flask',
+    isDropdown: true,
+    children: [
+      {
+        id: 'modal-test',
+        path: '/modal-test',
+        title: 'Modal Test',
+        icon: 'fas fa-window-restore'
+      },
+      {
+        id: 'context-menu-test',
+        path: '/context-menu-test',
+        title: 'Kontextmenü Test',
+        icon: 'fas fa-mouse-pointer'
+      }
+    ]
   },
   {
     id: 'administration',
