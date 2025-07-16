@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := help
 
 # Phony targets (nicht als Dateien behandeln)
-.PHONY: build dev test clean install help
+.PHONY: build dev test test-ui clean install help
 
 build: ## Erstellt die Anwendung für Produktion
 	cd frontend && yarn build
@@ -14,6 +14,9 @@ dev: ## Startet die Entwicklungsumgebung
 test: ## Führt alle Tests aus
 	go test ./...
 	cd frontend && yarn test --run
+
+test-ui: ## Startet die Test-UI (Vitest UI)
+	cd frontend && yarn test:ui
 
 clean: ## Entfernt alle generierten Dateien
 	rm -rf ./bin
@@ -27,7 +30,7 @@ clean: ## Entfernt alle generierten Dateien
 install: ## Installiert alle Abhängigkeiten
 	go mod download
 	go mod tidy
-	cd frontend && yarn install
+	cd frontend && yarn
 
 help: ## Zeigt diese Hilfe an
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
