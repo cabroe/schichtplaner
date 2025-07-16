@@ -6,21 +6,30 @@ import (
 
 	"schichtplaner/database"
 	"schichtplaner/models"
+	"schichtplaner/utils"
 
 	"github.com/labstack/echo/v4"
 )
 
-// GetShifts gibt alle Schichten zurück
+// GetShifts gibt alle Schichten mit Pagination zurück
 func GetShifts(c echo.Context) error {
-	var shifts []models.Shift
+	params := utils.GetPaginationParams(c)
 
-	if err := database.DB.Preload("User").Preload("Schedule").Find(&shifts).Error; err != nil {
+	var shifts []models.Shift
+	var total int64
+
+	// Zähle die Gesamtanzahl
+	database.DB.Model(&models.Shift{}).Count(&total)
+
+	// Lade die paginierten Daten mit Preloads
+	if err := database.DB.Preload("User").Preload("Schedule").Offset(params.Offset).Limit(params.PageSize).Find(&shifts).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "Fehler beim Laden der Schichten",
 		})
 	}
 
-	return c.JSON(http.StatusOK, shifts)
+	response := utils.CreatePaginatedResponse(shifts, int(total), params)
+	return c.JSON(http.StatusOK, response)
 }
 
 // GetShift gibt eine spezifische Schicht zurück
@@ -134,7 +143,7 @@ func DeleteShift(c echo.Context) error {
 	})
 }
 
-// GetShiftsByUser gibt alle Schichten eines Benutzers zurück
+// GetShiftsByUser gibt alle Schichten eines Benutzers mit Pagination zurück
 func GetShiftsByUser(c echo.Context) error {
 	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 32)
 	if err != nil {
@@ -143,12 +152,21 @@ func GetShiftsByUser(c echo.Context) error {
 		})
 	}
 
+	params := utils.GetPaginationParams(c)
+
 	var shifts []models.Shift
-	if err := database.DB.Where("user_id = ?", userID).Preload("User").Preload("Schedule").Find(&shifts).Error; err != nil {
+	var total int64
+
+	// Zähle die Gesamtanzahl der Schichten des Benutzers
+	database.DB.Model(&models.Shift{}).Where("user_id = ?", userID).Count(&total)
+
+	// Lade die paginierten Daten
+	if err := database.DB.Where("user_id = ?", userID).Preload("User").Preload("Schedule").Offset(params.Offset).Limit(params.PageSize).Find(&shifts).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "Fehler beim Laden der Schichten",
 		})
 	}
 
-	return c.JSON(http.StatusOK, shifts)
+	response := utils.CreatePaginatedResponse(shifts, int(total), params)
+	return c.JSON(http.StatusOK, response)
 }

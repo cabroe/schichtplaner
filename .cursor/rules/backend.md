@@ -34,4 +34,24 @@
 - Verwende RESTful Endpoints
 - Konsistente URL-Struktur
 - Sinnvolle HTTP-Methoden (GET, POST, PUT, DELETE)
-- JSON als Standard-Response-Format 
+- JSON als Standard-Response-Format
+
+## Pagination Standards
+- Verwende immer Pagination für List-Endpoints
+- Query-Parameter: `?page=1&page_size=10`
+- Standard-Werte: page=1, page_size=10, max_page_size=100
+- Response-Format mit `data` und `pagination` Objekt
+- Verwende `utils.GetPaginationParams()` und `utils.CreatePaginatedResponse()`
+
+## Database Best Practices
+- Verwende GORM für ORM-Operationen
+- Nutze Preloading für Beziehungen (`Preload("User")`)
+- Implementiere Soft Deletes mit `gorm.Model`
+- Verwende Transaktionen für komplexe Operationen
+- Validiere Daten vor dem Speichern
+
+## API Response Standards
+- Konsistente Fehler-Responses: `{"error": "Nachricht"}`
+- Erfolgs-Responses: `{"message": "Nachricht"}` oder Daten-Objekt
+- Paginierte Responses: `{"data": [...], "pagination": {...}}`
+- Verwende deutsche Fehlermeldungen 

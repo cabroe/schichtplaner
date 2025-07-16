@@ -45,4 +45,24 @@
 - Validiere alle User-Inputs
 - Verwende sichere Defaults
 - Halte Dependencies aktuell
-- Implementiere proper Error Handling 
+- Implementiere proper Error Handling
+
+## API Standards
+- Verwende RESTful Design-Prinzipien
+- Konsistente URL-Struktur: `/api/resource/:id`
+- Sinnvolle HTTP-Statuscodes (200, 201, 400, 404, 500)
+- JSON als Standard-Response-Format
+- Deutsche Fehlermeldungen
+
+## Pagination Best Practices
+- Implementiere Pagination für alle List-Endpoints
+- Verwende einheitliche Query-Parameter: `page` und `page_size`
+- Setze sinnvolle Limits (max 100 items per page)
+- Gib immer `total` und `total_pages` in Response zurück
+- Verwende die `utils/pagination.go` Utilities
+
+## Performance
+- Optimiere Datenbankabfragen mit Preloading
+- Verwende Pagination für große Datensätze
+- Implementiere Caching wo sinnvoll
+- Überwache Response-Zeiten 

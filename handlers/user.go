@@ -6,21 +6,30 @@ import (
 
 	"schichtplaner/database"
 	"schichtplaner/models"
+	"schichtplaner/utils"
 
 	"github.com/labstack/echo/v4"
 )
 
-// GetUsers gibt alle Benutzer zurück
+// GetUsers gibt alle Benutzer mit Pagination zurück
 func GetUsers(c echo.Context) error {
-	var users []models.User
+	params := utils.GetPaginationParams(c)
 
-	if err := database.DB.Find(&users).Error; err != nil {
+	var users []models.User
+	var total int64
+
+	// Zähle die Gesamtanzahl
+	database.DB.Model(&models.User{}).Count(&total)
+
+	// Lade die paginierten Daten
+	if err := database.DB.Offset(params.Offset).Limit(params.PageSize).Find(&users).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "Fehler beim Laden der Benutzer",
 		})
 	}
 
-	return c.JSON(http.StatusOK, users)
+	response := utils.CreatePaginatedResponse(users, int(total), params)
+	return c.JSON(http.StatusOK, response)
 }
 
 // GetUser gibt einen spezifischen Benutzer zurück
@@ -120,15 +129,23 @@ func DeleteUser(c echo.Context) error {
 	})
 }
 
-// GetActiveUsers gibt alle aktiven Benutzer zurück
+// GetActiveUsers gibt alle aktiven Benutzer mit Pagination zurück
 func GetActiveUsers(c echo.Context) error {
-	var users []models.User
+	params := utils.GetPaginationParams(c)
 
-	if err := database.DB.Where("is_active = ?", true).Find(&users).Error; err != nil {
+	var users []models.User
+	var total int64
+
+	// Zähle die Gesamtanzahl der aktiven Benutzer
+	database.DB.Model(&models.User{}).Where("is_active = ?", true).Count(&total)
+
+	// Lade die paginierten Daten
+	if err := database.DB.Where("is_active = ?", true).Offset(params.Offset).Limit(params.PageSize).Find(&users).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "Fehler beim Laden der aktiven Benutzer",
 		})
 	}
 
-	return c.JSON(http.StatusOK, users)
+	response := utils.CreatePaginatedResponse(users, int(total), params)
+	return c.JSON(http.StatusOK, response)
 }

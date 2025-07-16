@@ -6,21 +6,30 @@ import (
 
 	"schichtplaner/database"
 	"schichtplaner/models"
+	"schichtplaner/utils"
 
 	"github.com/labstack/echo/v4"
 )
 
-// GetSchedules gibt alle Schichtpläne zurück
+// GetSchedules gibt alle Schichtpläne mit Pagination zurück
 func GetSchedules(c echo.Context) error {
-	var schedules []models.Schedule
+	params := utils.GetPaginationParams(c)
 
-	if err := database.DB.Preload("Shifts").Find(&schedules).Error; err != nil {
+	var schedules []models.Schedule
+	var total int64
+
+	// Zähle die Gesamtanzahl
+	database.DB.Model(&models.Schedule{}).Count(&total)
+
+	// Lade die paginierten Daten mit Preloads
+	if err := database.DB.Preload("Shifts").Offset(params.Offset).Limit(params.PageSize).Find(&schedules).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "Fehler beim Laden der Schichtpläne",
 		})
 	}
 
-	return c.JSON(http.StatusOK, schedules)
+	response := utils.CreatePaginatedResponse(schedules, int(total), params)
+	return c.JSON(http.StatusOK, response)
 }
 
 // GetSchedule gibt einen spezifischen Schichtplan zurück
@@ -134,15 +143,23 @@ func DeleteSchedule(c echo.Context) error {
 	})
 }
 
-// GetActiveSchedules gibt alle aktiven Schichtpläne zurück
+// GetActiveSchedules gibt alle aktiven Schichtpläne mit Pagination zurück
 func GetActiveSchedules(c echo.Context) error {
-	var schedules []models.Schedule
+	params := utils.GetPaginationParams(c)
 
-	if err := database.DB.Where("is_active = ?", true).Preload("Shifts").Find(&schedules).Error; err != nil {
+	var schedules []models.Schedule
+	var total int64
+
+	// Zähle die Gesamtanzahl der aktiven Schichtpläne
+	database.DB.Model(&models.Schedule{}).Where("is_active = ?", true).Count(&total)
+
+	// Lade die paginierten Daten
+	if err := database.DB.Where("is_active = ?", true).Preload("Shifts").Offset(params.Offset).Limit(params.PageSize).Find(&schedules).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "Fehler beim Laden der aktiven Schichtpläne",
 		})
 	}
 
-	return c.JSON(http.StatusOK, schedules)
+	response := utils.CreatePaginatedResponse(schedules, int(total), params)
+	return c.JSON(http.StatusOK, response)
 }
