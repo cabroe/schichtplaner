@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := help
 
 # Phony targets (nicht als Dateien behandeln)
-.PHONY: build dev test test-ui clean install help db-reset db-seed db-reset-seed
+.PHONY: build dev test test-ui clean install help db-reset db-seed db-reset-seed docker-up docker-down
 
 build: ## Erstellt die Anwendung für Produktion
 	cd frontend && yarn build
@@ -43,6 +43,12 @@ db-seed: ## Füllt die Datenbank mit Seed-Daten
 db-reset-seed: ## Setzt die Datenbank zurück und füllt sie mit Seed-Daten
 	go build -o ./bin/db ./cmd/db/main.go
 	./bin/db -reset-and-seed
+
+docker-up: ## Startet alle Services (Schichtplaner + Monitoring)
+	docker-compose up -d
+
+docker-down: ## Stoppt alle Services
+	docker-compose down
 
 help: ## Zeigt diese Hilfe an
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
