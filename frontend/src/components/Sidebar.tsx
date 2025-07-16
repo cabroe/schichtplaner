@@ -3,7 +3,7 @@ import UserDropdown from "./UserDropdown";
 import TicktacActions from "./TicktacActions";
 import { useUiStore } from "../store/useUiStore";
 import RecentActivities from "./RecentActivities";
-import { pageTitles } from "../routes/routeConfig";
+import { routeConfig } from "../routes/routeConfig";
 import { Link, useLocation } from "react-router-dom";
 import type { PageTitleEntry } from "../routes/routeConfig";
 
@@ -43,7 +43,7 @@ const Sidebar: React.FC = () => {
     close();
   }
 
-  const currentTitle = findPageTitle(pathname, pageTitles) || "";
+  const currentTitle = findPageTitle(pathname, routeConfig) || "";
 
   return (
     <aside className="navbar navbar-vertical navbar-expand-lg" data-bs-theme="dark">
@@ -86,7 +86,7 @@ const Sidebar: React.FC = () => {
         {/* Hauptmenü */}
         <div id="navbar-menu" className={"collapse navbar-collapse" + (isOpen("sidebar") ? " show" : "") }>
           <ul className="navbar-nav pt-lg-3">
-            {Object.entries(pageTitles).map(([path, entry]) => {
+            {Object.entries(routeConfig).map(([path, entry]) => {
               if (entry.children) {
                 // Submenu (z.B. Demos)
                 return (

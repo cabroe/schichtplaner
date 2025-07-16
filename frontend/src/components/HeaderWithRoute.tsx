@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "./Header";
 import { useLocation } from "react-router-dom";
-import { pageTitles } from "../routes/routeConfig";
+import { routeConfig } from "../routes/routeConfig";
 import type { PageTitleEntry } from "../routes/routeConfig";
 
 function findPageEntry(pathname: string, entries: Record<string, PageTitleEntry>): PageTitleEntry | undefined {
@@ -18,7 +18,7 @@ function findPageEntry(pathname: string, entries: Record<string, PageTitleEntry>
 const HeaderWithRoute: React.FC = () => {
   const location = useLocation();
   const { pathname } = location;
-  const page = findPageEntry(pathname, pageTitles) || { title: "", pretitle: "", icon: "" };
+  const page = findPageEntry(pathname, routeConfig) || { title: "", pretitle: "", icon: "" };
   return <Header title={page.title} />;
 };
 

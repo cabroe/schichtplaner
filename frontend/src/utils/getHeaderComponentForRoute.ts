@@ -1,4 +1,4 @@
-import { pageTitles } from "../routes/routeConfig";
+import { routeConfig } from "../routes/routeConfig";
 import type { PageTitleEntry } from "../routes/routeConfig";
 
 /**
@@ -16,6 +16,6 @@ export function getHeaderComponentForRoute(pathname: string): React.FC | undefin
     }
     return undefined;
   }
-  const entry = findEntry(pathname, pageTitles);
+  const entry = findEntry(pathname, routeConfig);
   return entry?.headerComponent;
 } 

@@ -12,7 +12,7 @@ export type PageTitleEntry = {
   children?: Record<string, PageTitleEntry>;
 };
 
-export const pageTitles: Record<string, PageTitleEntry> = {
+export const routeConfig: Record<string, PageTitleEntry> = {
   "/": {
     title: "Dashboard",
     pretitle: "Willkommen",
