@@ -13,7 +13,7 @@ dev: ## Startet die Entwicklungsumgebung
 
 test: ## Führt alle Tests aus
 	go test ./...
-	cd frontend && yarn test
+	cd frontend && yarn test --run
 
 clean: ## Entfernt alle generierten Dateien
 	rm -rf ./bin
