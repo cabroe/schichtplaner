@@ -152,6 +152,14 @@ func GetShiftsByUser(c echo.Context) error {
 		})
 	}
 
+	// Prüfe, ob der User existiert
+	var user models.User
+	if err := database.DB.First(&user, userID).Error; err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Benutzer nicht gefunden",
+		})
+	}
+
 	params := utils.GetPaginationParams(c)
 
 	var shifts []models.Shift
