@@ -10,6 +10,7 @@ import (
 	"schichtplaner/frontend"
 	"schichtplaner/routes"
 
+	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -19,17 +20,23 @@ func main() {
 	database.InitDatabase()
 	defer database.CloseDatabase()
 
-	// Create a new echo server
+	// Echo-Server erstellen
 	e := echo.New()
 
 	// Add standard middleware
 	e.Use(middleware.Logger())
 
+	// Prometheus Middleware aktivieren
+	e.Use(echoprometheus.NewMiddleware("schichtplaner"))
+
+	// /metrics-Endpoint für Prometheus (VOR dem Frontend)
+	e.GET("/metrics", echoprometheus.NewHandler())
+
 	// Setup the frontend handlers to service vite static assets
 	frontend.RegisterHandlers(e)
 
 	// Setup the API Group
-	// Die API-Routen werden jetzt in routes/api.go registriert
+	// Die API-Routen werden jetzt in routes/routes.go registriert
 	routes.RegisterAPIRoutes(e)
 
 	// Graceful Shutdown
