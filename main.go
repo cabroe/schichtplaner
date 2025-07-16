@@ -30,8 +30,8 @@ func main() {
 	// Prometheus Middleware aktivieren
 	e.Use(echoprometheus.NewMiddleware("schichtplaner"))
 
-	// /metrics-Endpoint für Prometheus (VOR dem Frontend)
-	e.GET("/metrics", echoprometheus.NewHandler())
+	// /api/metrics-Endpoint für Prometheus (VOR dem Frontend)
+	e.GET("/api/metrics", echoprometheus.NewHandler())
 
 	// Setup the frontend handlers to service vite static assets
 	frontend.RegisterHandlers(e)

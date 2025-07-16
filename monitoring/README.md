@@ -36,7 +36,7 @@ docker-compose up -d prometheus grafana
 
 ### 3. Metriken anzeigen
 
-- **Prometheus Metriken**: http://localhost:3000/metrics
+- **Prometheus Metriken**: http://localhost:3000/api/metrics
 - **Health Check**: http://localhost:3000/api/health
 
 ## Dashboard
@@ -76,7 +76,7 @@ Die Echo Prometheus Middleware sammelt automatisch:
 ### Prometheus kann keine Metriken sammeln
 
 1. Prüfe, ob Schichtplaner läuft: `curl http://localhost:3000/api/health`
-2. Prüfe Metriken: `curl http://localhost:3000/metrics`
+2. Prüfe Metriken: `curl http://localhost:3000/api/metrics`
 3. Prüfe Prometheus Targets: http://localhost:9090/targets
 
 ### Grafana zeigt keine Daten

@@ -36,8 +36,8 @@ func RegisterHandlers(e *echo.Echo) {
 	// neede for SPA to work when loading a specific url directly
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		Skipper: func(c echo.Context) bool {
-			// Skip static handling für /api und /metrics
-			return (len(c.Path()) >= 4 && c.Path()[:4] == "/api") || c.Path() == "/metrics"
+			// Skip static handling für /api
+			return len(c.Path()) >= 4 && c.Path()[:4] == "/api"
 		},
 		// Root directory from where the static content is served.
 		Root: "/",
