@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/signal"
@@ -52,7 +53,7 @@ func main() {
 	<-quit
 
 	// Graceful Shutdown
-	if err := e.Shutdown(nil); err != nil {
+	if err := e.Shutdown(context.TODO()); err != nil {
 		e.Logger.Fatal(err)
 	}
 }
