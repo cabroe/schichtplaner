@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/danhawkins/go-vite-react-example/frontend"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
+	"github.com/danhawkins/go-vite-react-example/routes"
 )
 
 func main() {
@@ -20,12 +21,8 @@ func main() {
 	frontend.RegisterHandlers(e)
 
 	// Setup the API Group
-	api := e.Group("/api")
-
-	// Basic APi endpoint
-	api.GET("/message", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]string{"message": "Hello, from the golang World!"})
-	})
+	// Die API-Routen werden jetzt in routes/api.go registriert
+	routes.RegisterAPIRoutes(e)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", 3000)))
 }
