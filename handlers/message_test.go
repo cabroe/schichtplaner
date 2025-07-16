@@ -1,4 +1,4 @@
-package routes
+package handlers
 
 import (
 	"net/http"
@@ -16,7 +16,7 @@ func TestGetMessageHandler(t *testing.T) {
 	c := e.NewContext(req, rec)
 
 	// Handler direkt aufrufen
-	if assert.NoError(t, getMessageHandler(c)) {
+	if assert.NoError(t, GetMessageHandler(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.JSONEq(t, `{"message": "Hello, from the golang World!"}`, rec.Body.String())
 	}
