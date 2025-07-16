@@ -1,0 +1,60 @@
+<header id="" class="navbar navbar-expand-md d-none d-lg-flex d-print-none">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="navbar-nav flex-row order-md-last">
+                                                        <div class="nav-item d-flex me-1 ticktac">
+<div class="btn-list">
+                                        <div class="ticktac-menu" data-api="/api/timesheets/active" data-href="/api/timesheets/000/stop" style="display:none">
+<a title="Zeiterfassung stoppen" data-replacer="url" class="api-link ticktac-running ticktac-stop btn btn-dark btn-icon px-sm-2" href="#" data-href="/api/timesheets/000/stop" data-event="kimai.timesheetStop kimai.timesheetUpdate" data-method="PATCH" data-msg-error="timesheet.stop.error" data-msg-success="timesheet.stop.success">
+    <i class="text-red far fa-stop-circle me-0 me-sm-1"></i>
+    <span class="d-none d-sm-block" data-replacer="duration" data-title="true" data-since="">0:00</span>
+</a>
+</div>
+<div class="ticktac-menu-empty" style="">
+<a title="Zeiterfassung starten" href="/de/timesheet/create" class="modal-ajax-form ticktac-start btn btn-dark btn-icon px-sm-2" accesskey="n">
+    <i class="text-green fas fa-play me-0 me-sm-1"></i>
+    <span class="d-none d-sm-block">0:00</span>
+</a>
+</div>
+</div>
+</div>                                <div class="nav-item d-flex me-1 recent-activities">
+<a href="/de/favorite/timesheet/" class="btn btn-icon px-0 remote-modal-load recent-activities-btn" data-modal-title="Eine Ihrer letzten Tätigkeiten neu starten" tabindex="-1" title="Eine Ihrer letzten Tätigkeiten neu starten">
+<i class="icon fas fa-repeat"></i>
+</a>
+</div>
+                                    
+                                            
+
+                                                            <div class="nav-item dropdown">
+<a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open personal menu" aria-expanded="false">
+                    <span class="avatar avatar-sm">
+                <span class="avatar" style="background-color: #E91E63; color: #ffffff" title="admin">AD</span>
+
+</span>
+
+            <div class="d-none d-xl-block ps-2">
+    <div>admin</div>
+                </div>
+        </a>
+<div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                    <a href="/de/profile/admin" class="dropdown-item">Mein Profil</a>
+                                                    <a href="/de/profile/admin/edit" class="dropdown-item">Bearbeiten</a>
+                                                    <a href="/de/profile/admin/password" class="dropdown-item">Passwort</a>
+                                                    <a href="/de/profile/admin/2fa" class="dropdown-item">Zwei-Faktor (2FA)</a>
+                                                    <a href="/de/profile/admin/api-token" class="dropdown-item">API Zugang</a>
+                                                    <a href="/de/profile/admin/prefs" class="dropdown-item">Einstellungen</a>
+                                            <div class="dropdown-divider"></div>
+    <a href="/de/logout" class="dropdown-item">Abmelden</a>
+        </div>
+</div>
+
+    
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbar-menu">
+                    <h2 class="page-title me-2">Dashboard</h2>                    </div>
+    </div>
+</header>

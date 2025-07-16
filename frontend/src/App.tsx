@@ -1,35 +1,27 @@
-import { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {
+  Route,
+  Routes,
+} from "react-router-dom";
+import Times from "./pages/Times";
+import Settings from "./pages/Settings";
+import Dashboard from "./pages/Dashboard";
+import ModalDemo from "./pages/ModalDemo";
+import ToastDemo from "./pages/ToastDemo";
+import MainTemplate from "./templates/MainTemplate";
+import NotFound from "./pages/NotFound";
+import "./App.css";
 
-function App() {
-  const [messageFromServer, setMessageFromServer] = useState('')
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch('/api/message')
-      const data = await response.json()
-      setMessageFromServer(data.message)
-    }
-
-    fetchData().catch((e) => console.error(e))
-  }, [])
-
+function AppRoutes() {
   return (
-    <>
-      <div>
-        <a href='https://vitejs.dev' target='_blank'>
-          <img src={viteLogo} className='logo' alt='Vite logo' />
-        </a>
-        <a href='https://react.dev' target='_blank'>
-          <img src={reactLogo} className='logo react' alt='React logo' />
-        </a>
-      </div>
-      <h1>Golang + Vite + React</h1>
-      <h2>{messageFromServer}</h2>
-    </>
-  )
+    <Routes>
+      <Route path="/" element={<MainTemplate><Dashboard /></MainTemplate>} />
+      <Route path="/times" element={<MainTemplate><Times /></MainTemplate>} />
+      <Route path="/settings" element={<MainTemplate><Settings /></MainTemplate>} />
+      <Route path="/modal-demo" element={<MainTemplate><ModalDemo /></MainTemplate>} />
+      <Route path="/toast-demo" element={<MainTemplate><ToastDemo /></MainTemplate>} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
 }
 
-export default App
+export default AppRoutes;
