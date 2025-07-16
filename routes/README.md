@@ -22,8 +22,7 @@ Dieses Paket enthält alle API-Routen für das Schichtplaner-System. Die Routen 
 
 ### `general.go`
 - **RegisterGeneralRoutes**: Allgemeine API-Endpoints
-- Endpoints: `GET /message`
-
+- Endpoints: `GET /health`
 ## Verwendung
 
 ```go

@@ -4,10 +4,7 @@ Dieses Paket enthält alle HTTP-Handler für das Schichtplaner-System. Die Handl
 
 ## Struktur
 
-### `message.go`
-- **GetMessageHandler**: Einfacher Test-Endpoint
-- Endpoint: `GET /api/message`
-- Response: `{"message": "Hello, from the golang World!"}`
+
 
 ### `user.go`
 - **GetUsers**: Gibt alle Benutzer mit Pagination zurück
