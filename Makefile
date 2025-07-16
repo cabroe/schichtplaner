@@ -4,3 +4,7 @@ build:
 
 dev:
 	concurrently "cd frontend && yarn dev" "air"
+
+test:
+	go test ./...
+	cd frontend && yarn test
