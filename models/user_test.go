@@ -7,6 +7,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestUser_All(t *testing.T) {
+	// Führe alle User-Tests zusammen aus
+	t.Run("Create", TestUser_Create)
+	t.Run("Validation", TestUser_Validation)
+	t.Run("UniqueConstraints", TestUser_UniqueConstraints)
+	t.Run("DefaultValues", TestUser_DefaultValues)
+	t.Run("SoftDelete", TestUser_SoftDelete)
+	t.Run("Relationships", TestUser_Relationships)
+}
+
 func TestUser_Create(t *testing.T) {
 	db := setupTestDB(t)
 

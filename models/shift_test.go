@@ -7,6 +7,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestShift_All(t *testing.T) {
+	// Führe alle Shift-Tests zusammen aus
+	t.Run("Create", TestShift_Create)
+	t.Run("Validation", TestShift_Validation)
+	t.Run("DefaultValues", TestShift_DefaultValues)
+	t.Run("TimeValidation", TestShift_TimeValidation)
+	t.Run("Relationships", TestShift_Relationships)
+	t.Run("SoftDelete", TestShift_SoftDelete)
+}
+
 func TestShift_Create(t *testing.T) {
 	db := setupTestDB(t)
 
