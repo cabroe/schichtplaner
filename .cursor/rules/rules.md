@@ -10,11 +10,12 @@
 - Echo Framework für HTTP-Server
 - GORM für Datenbankoperationen
 - SQLite als Datenbank
-- Struktur: `handlers/`, `routes/`, `models/`
+- Struktur: `handlers/`, `routes/`, `models/`, `database/`
 - Pagination: `?page=1&page_size=10`
 - RESTful APIs mit JSON-Responses
 - Deutsche Fehlermeldungen
 - Tests mit testify und httptest
+- In-Memory SQLite für Tests
 
 ## Frontend (React/TypeScript)
 - TypeScript für alle Komponenten
@@ -24,6 +25,7 @@
 - Font Awesome für Icons (CSS-Klassen)
 - 2 Spaces Einrückung
 - Deutsche UI-Texte
+- Vite für Build-Tool
 
 ## Development
 - `make dev` für parallele Entwicklung
@@ -43,4 +45,5 @@
 - Kurze, fokussierte Funktionen
 - Vermeide Code-Duplikation
 - Kommentiere komplexe Logik
-- Aussagekräftige Commit-Messages 
+- Aussagekräftige Commit-Messages
+- Tests für alle Handler und Routen 
