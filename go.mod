@@ -1,4 +1,4 @@
-module github.com/danhawkins/go-vite-react-example
+module schichtplaner
 
 go 1.21.0
 

@@ -3,11 +3,12 @@ package main
 import (
 	"fmt"
 
-	"github.com/danhawkins/go-vite-react-example/frontend"
+	"schichtplaner/frontend"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	"github.com/danhawkins/go-vite-react-example/routes"
+	"schichtplaner/routes"
 )
 
 func main() {

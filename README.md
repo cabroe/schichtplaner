@@ -28,7 +28,7 @@ Using `docker build -t go-vite .`, will use a multistage dockerfile to build the
 
 Instead of serving static assets from go when we running in dev mode, we will setup a proxy from echo that will route the requests to a running vite dev server, unless the path is prefixed with `/api`, this will allow for the HMR and live reloading to happen just as if you were running `vite dev` but it will also allow for api paths to be served.
 
-All the changes required to take the initial project and support hot module reloading can be found in the [pull request](https://github.com/danhawkins/go-vite-react-example/pull/1)
+All the changes required to take the initial project and support hot module reloading can be found in the [pull request](https://schichtplaner/pull/1)
 
 ### Step 1
 
