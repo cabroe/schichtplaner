@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := help
 
 # Phony targets (nicht als Dateien behandeln)
-.PHONY: build dev test test-ui clean install help
+.PHONY: build dev test test-ui clean install help db-reset db-seed db-reset-seed
 
 build: ## Erstellt die Anwendung für Produktion
 	cd frontend && yarn build
@@ -31,6 +31,18 @@ install: ## Installiert alle Abhängigkeiten
 	go mod download
 	go mod tidy
 	cd frontend && yarn
+
+db-reset: ## Setzt die Datenbank zurück (löscht alle Daten)
+	go build -o ./bin/db ./cmd/db/main.go
+	./bin/db -reset
+
+db-seed: ## Füllt die Datenbank mit Seed-Daten
+	go build -o ./bin/db ./cmd/db/main.go
+	./bin/db -seed
+
+db-reset-seed: ## Setzt die Datenbank zurück und füllt sie mit Seed-Daten
+	go build -o ./bin/db ./cmd/db/main.go
+	./bin/db -reset-and-seed
 
 help: ## Zeigt diese Hilfe an
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
