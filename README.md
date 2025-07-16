@@ -22,7 +22,7 @@ Using `make build`, will build frontend assets and then compile the golang binar
 
 ### Build a dockerfile
 
-Using `docker build -t go-vite .`, will use a multistage dockerfile to build the vite frontend code using a node image, then the golang using a golang image, the put the single binary into an alpine image.
+Using `docker build -t schichtplaner .`, will use a multistage dockerfile to build the vite frontend code using a node image, then the golang using a golang image, the put the single binary into an alpine image.
 
 ## Hot Reloading
 

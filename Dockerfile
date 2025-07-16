@@ -25,14 +25,14 @@ COPY . .
 # Copt the frontend build into the expected folder
 COPY --from=build-frontend /build/dist ./frontend/dist
 
-RUN CGO_ENABLED=0 ENV=prod go build -buildvcs=false -o ./bin/go-vite ./main.go
+RUN CGO_ENABLED=0 ENV=prod go build -buildvcs=false -o ./bin/schichtplaner ./main.go
 
 FROM alpine:3.14
 
-COPY --from=build /build/bin/go-vite /usr/bin/go-vite
+COPY --from=build /build/bin/schichtplaner /usr/bin/schichtplaner
 
 # This container exposes port 3000 to the outside world
 EXPOSE 3000
 
 # Run the executable
-CMD ["/usr/bin/go-vite"]
+CMD ["/usr/bin/schichtplaner"]
