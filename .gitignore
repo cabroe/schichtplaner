@@ -19,3 +19,6 @@ schichtplaner
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+# Frontend import files
+/frontend/import/Footer.html
