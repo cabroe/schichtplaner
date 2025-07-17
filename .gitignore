@@ -21,4 +21,4 @@ schichtplaner
 *.out
 
 # Import files 
-/frontend/import/
+/frontend/import
