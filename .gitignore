@@ -19,6 +19,3 @@ schichtplaner
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
-
-# Import files 
-/frontend/import
