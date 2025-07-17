@@ -7,8 +7,24 @@ const LogoutHandler: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        logout();
-        navigate("/login", { replace: true });
+        const performLogout = async () => {
+            try {
+                await logout();
+            } catch (error) {
+                // Silently handle logout errors - user will still be redirected
+                console.error("Logout error:", error);
+            }
+            
+            try {
+                // Always navigate to login page, even if logout fails
+                navigate("/login", { replace: true });
+            } catch (navigationError) {
+                // Silently handle navigation errors
+                console.error("Navigation error:", navigationError);
+            }
+        };
+
+        performLogout();
     }, [logout, navigate]);
 
     return (

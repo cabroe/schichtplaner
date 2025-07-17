@@ -23,7 +23,7 @@ const LoginPage: React.FC = () => {
             const from = location.state?.from?.pathname || "/";
             navigate(from, { replace: true });
         }
-    }, [isAuthenticated, location.state?.from?.pathname, navigate]);
+    }, [isAuthenticated, location.state?.from?.pathname]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

@@ -1,7 +1,18 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import App from "./App";
+
+// Mock AuthContext
+vi.mock("./contexts/AuthContext", () => ({
+  AuthProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  useAuth: () => ({
+    isAuthenticated: true,
+    login: vi.fn(),
+    logout: vi.fn(),
+    user: { username: "testuser" },
+  }),
+}));
 
 describe("App", () => {
   it("zeigt das Dashboard auf /", () => {
