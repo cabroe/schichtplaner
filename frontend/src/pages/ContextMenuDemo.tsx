@@ -47,7 +47,7 @@ const ContextMenuDemo: React.FC = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#f8f9fa",
+          backgroundColor: "",
           cursor: "context-menu",
         }}
         onContextMenu={handleContextMenu}
