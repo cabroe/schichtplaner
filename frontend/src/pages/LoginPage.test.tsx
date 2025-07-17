@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import LoginPage from "./LoginPage";
@@ -116,9 +116,11 @@ describe("LoginPage", () => {
             const passwordInput = screen.getByPlaceholderText("Passwort");
             const submitButton = screen.getByRole("button", { name: "Anmelden" });
 
-            fireEvent.change(usernameInput, { target: { value: "admin" } });
-            fireEvent.change(passwordInput, { target: { value: "admin" } });
-            fireEvent.click(submitButton);
+            await act(async () => {
+                fireEvent.change(usernameInput, { target: { value: "admin" } });
+                fireEvent.change(passwordInput, { target: { value: "admin" } });
+                fireEvent.click(submitButton);
+            });
 
             expect(screen.getByText("Anmelden...")).toBeInTheDocument();
             expect(submitButton).toBeDisabled();
@@ -131,9 +133,11 @@ describe("LoginPage", () => {
             const passwordInput = screen.getByPlaceholderText("Passwort");
             const submitButton = screen.getByRole("button", { name: "Anmelden" });
 
-            fireEvent.change(usernameInput, { target: { value: "admin" } });
-            fireEvent.change(passwordInput, { target: { value: "admin" } });
-            fireEvent.click(submitButton);
+            await act(async () => {
+                fireEvent.change(usernameInput, { target: { value: "admin" } });
+                fireEvent.change(passwordInput, { target: { value: "admin" } });
+                fireEvent.click(submitButton);
+            });
 
             // Since the AuthContext is mocked, we can't test the actual navigation
             // This test verifies that the form submission works
@@ -147,9 +151,11 @@ describe("LoginPage", () => {
             const passwordInput = screen.getByPlaceholderText("Passwort");
             const submitButton = screen.getByRole("button", { name: "Anmelden" });
 
-            fireEvent.change(usernameInput, { target: { value: "wronguser" } });
-            fireEvent.change(passwordInput, { target: { value: "wrongpass" } });
-            fireEvent.click(submitButton);
+            await act(async () => {
+                fireEvent.change(usernameInput, { target: { value: "wronguser" } });
+                fireEvent.change(passwordInput, { target: { value: "wrongpass" } });
+                fireEvent.click(submitButton);
+            });
 
             // Since the actual login logic is mocked, we can't test the error message
             // This test verifies that the form submission works
@@ -160,7 +166,10 @@ describe("LoginPage", () => {
             renderLoginPage();
 
             const submitButton = screen.getByRole("button", { name: "Anmelden" });
-            fireEvent.click(submitButton);
+            
+            await act(async () => {
+                fireEvent.click(submitButton);
+            });
 
             // Since the actual login logic is mocked, we can't test the error message
             // This test verifies that the form submission works
