@@ -55,7 +55,7 @@ const LoginPage: React.FC = () => {
                     </h1>
                 </div>
 
-                <div className="card" style={{ minWidth: "320px", maxWidth: "450px", width: "90vw" }}>
+                <div className="card" style={{ minWidth: "320px", maxWidth: "400px", width: "90vw" }}>
                     <div className="card-body p-4 p-md-5">
                         <h2 className="card-title text-center mb-4">
                             Anmelden
@@ -65,18 +65,20 @@ const LoginPage: React.FC = () => {
                                 <label htmlFor="username" className="form-label">
                                     Benutzername
                                 </label>
-                                <input
-                                    autoComplete="username"
-                                    type="text"
-                                    id="username"
-                                    name="_username"
-                                    className="form-control"
-                                    placeholder="Benutzername"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    tabIndex={1}
-                                    required
-                                />
+                                <div className="input-group input-group-flat">
+                                    <input
+                                        autoComplete="username"
+                                        type="text"
+                                        id="username"
+                                        name="_username"
+                                        className="form-control"
+                                        placeholder="Benutzername"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        tabIndex={1}
+                                        required
+                                    />
+                                </div>
                             </div>
                             <div className="mb-3">
                                 <label htmlFor="password" className="form-label">
@@ -85,7 +87,7 @@ const LoginPage: React.FC = () => {
                                         <Link to="/reset-password" tabIndex={-1}>Passwort vergessen</Link>
                                     </span>
                                 </label>
-                                <div className="input-group input-group-flat">
+                                <div className="position-relative">
                                     <input
                                         autoComplete="new-password"
                                         id="password"
@@ -98,17 +100,16 @@ const LoginPage: React.FC = () => {
                                         tabIndex={2}
                                         required
                                     />
-                                    <span className="input-group-text">
-                                        <button
-                                            type="button"
-                                            className="btn btn-link link-secondary"
-                                            onClick={togglePasswordVisibility}
-                                            title={showPassword ? "Passwort verstecken" : "Passwort anzeigen"}
-                                            tabIndex={-1}
-                                        >
-                                            <i className={`fas fa-${showPassword ? "eye-slash" : "eye"}`}></i>
-                                        </button>
-                                    </span>
+                                    <button
+                                        type="button"
+                                        className="btn btn-link link-secondary position-absolute"
+                                        style={{ right: "10px", top: "50%", transform: "translateY(-50%)", zIndex: 10 }}
+                                        onClick={togglePasswordVisibility}
+                                        title={showPassword ? "Passwort verstecken" : "Passwort anzeigen"}
+                                        tabIndex={-1}
+                                    >
+                                        <i className={`fas fa-${showPassword ? "eye-slash" : "eye"}`}></i>
+                                    </button>
                                 </div>
                             </div>
                             {error && (

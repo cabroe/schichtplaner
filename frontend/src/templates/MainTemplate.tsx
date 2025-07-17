@@ -4,6 +4,7 @@ import HeaderWithRoute from "../components/HeaderWithRoute";
 import PageHeader from "../components/PageHeader";
 import { useLocation } from "react-router-dom";
 import { getHeaderComponentForRoute } from "../utils/getHeaderComponentForRoute";
+import Footer from "../components/Footer";
 
 interface MainTemplateProps {
   children: React.ReactNode;
@@ -35,6 +36,7 @@ const MainTemplate: React.FC<MainTemplateProps> = ({ children }) => {
             {children}
           </div>
         </div>
+        <Footer />
       </div>
     </div>
   );
