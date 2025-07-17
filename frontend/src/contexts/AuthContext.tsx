@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 interface AuthContextType {
     isAuthenticated: boolean;
+    isLoading: boolean;
     user: User | null;
     login: (username: string, password: string) => Promise<boolean>;
     logout: () => void;
@@ -30,10 +31,13 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
 
     // Check for existing session on mount
     useEffect(() => {
+        const checkAuthStatus = async () => {
+            try {
         const token = localStorage.getItem("authToken");
         const userData = localStorage.getItem("userData");
 
@@ -48,6 +52,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 localStorage.removeItem("userData");
             }
         }
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        checkAuthStatus();
     }, []);
 
     const login = async (username: string, password: string): Promise<boolean> => {
@@ -84,6 +94,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const value: AuthContextType = {
         isAuthenticated,
+        isLoading,
         user,
         login,
         logout

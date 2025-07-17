@@ -43,7 +43,7 @@ const ContextMenuDemo: React.FC = () => {
         style={{
           width: "400px",
           height: "300px",
-          border: "2px dashed #ccc",
+          border: "1px dashed #ccc",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",

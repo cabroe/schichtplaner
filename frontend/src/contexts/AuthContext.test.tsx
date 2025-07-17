@@ -5,10 +5,11 @@ import { AuthProvider, useAuth } from "./AuthContext";
 
 // Hilfskomponente für Tests
 const TestComponent = () => {
-    const { isAuthenticated, user, login, logout } = useAuth();
+    const { isAuthenticated, isLoading, user, login, logout } = useAuth();
     return (
         <div>
             <span data-testid="auth-status">{isAuthenticated ? "auth" : "noauth"}</span>
+            <span data-testid="loading-status">{isLoading ? "loading" : "loaded"}</span>
             <span data-testid="user">{user ? user.username : "no-user"}</span>
             <button onClick={() => login("admin", "admin")} data-testid="login-btn">Login</button>
             <button onClick={logout} data-testid="logout-btn">Logout</button>
@@ -25,14 +26,37 @@ describe("AuthContext", () => {
         localStorage.clear();
     });
 
-    it("startet nicht authentifiziert und ohne User", () => {
+    it("startet im Loading-Zustand", () => {
         renderWithProvider(<TestComponent />);
+        expect(screen.getByTestId("loading-status").textContent).toBe("loading");
+    });
+
+    it("beendet Loading-Zustand nach Auth-Prüfung", async () => {
+        renderWithProvider(<TestComponent />);
+        
+        await waitFor(() => {
+            expect(screen.getByTestId("loading-status").textContent).toBe("loaded");
+        }, { timeout: 2000 });
+    });
+
+    it("startet nicht authentifiziert und ohne User nach Loading", async () => {
+        renderWithProvider(<TestComponent />);
+        
+        await waitFor(() => {
+            expect(screen.getByTestId("loading-status").textContent).toBe("loaded");
+        });
+        
         expect(screen.getByTestId("auth-status").textContent).toBe("noauth");
         expect(screen.getByTestId("user").textContent).toBe("no-user");
     });
 
     it("kann sich erfolgreich einloggen (admin:admin)", async () => {
         renderWithProvider(<TestComponent />);
+        
+        // Warten bis Loading beendet ist
+        await waitFor(() => {
+            expect(screen.getByTestId("loading-status").textContent).toBe("loaded");
+        });
         
         // Klick auslösen und auf die asynchrone login-Funktion warten
         await act(async () => {
@@ -52,12 +76,19 @@ describe("AuthContext", () => {
 
     it("verweigert Login bei falschen Credentials", async () => {
         const WrongLogin = () => {
-            const { login, isAuthenticated } = useAuth();
+            const { login, isAuthenticated, isLoading } = useAuth();
             return (
-                <button data-testid="login-fail" onClick={() => login("foo", "bar")}>{isAuthenticated ? "auth" : "noauth"}</button>
+                <button data-testid="login-fail" onClick={() => login("foo", "bar")}>
+                    {isLoading ? "loading" : isAuthenticated ? "auth" : "noauth"}
+                </button>
             );
         };
         renderWithProvider(<WrongLogin />);
+        
+        // Warten bis Loading beendet ist
+        await waitFor(() => {
+            expect(screen.getByTestId("login-fail").textContent).toBe("noauth");
+        });
         
         // Klick auslösen und auf die asynchrone login-Funktion warten
         await act(async () => {
@@ -74,6 +105,11 @@ describe("AuthContext", () => {
 
     it("kann sich ausloggen und löscht localStorage", async () => {
         renderWithProvider(<TestComponent />);
+        
+        // Warten bis Loading beendet ist
+        await waitFor(() => {
+            expect(screen.getByTestId("loading-status").textContent).toBe("loaded");
+        });
         
         // Erst einloggen und auf die asynchrone Funktion warten
         await act(async () => {
@@ -100,21 +136,27 @@ describe("AuthContext", () => {
         localStorage.setItem("authToken", "test-token-123");
         localStorage.setItem("userData", JSON.stringify({ id: "1", username: "admin", role: "admin" }));
         renderWithProvider(<TestComponent />);
-        // Einen Tick warten, damit useEffect ausgeführt wird
-        await act(async () => { await Promise.resolve(); });
+        
+        // Warten bis Loading beendet ist und Auth-Status geprüft wurde
         await waitFor(() => {
+            expect(screen.getByTestId("loading-status").textContent).toBe("loaded");
             expect(screen.getByTestId("auth-status").textContent).toBe("auth");
             expect(screen.getByTestId("user").textContent).toBe("admin");
-        });
+        }, { timeout: 2000 });
     });
 
-    it("ignoriert fehlerhaftes userData im localStorage", () => {
+    it("ignoriert fehlerhaftes userData im localStorage", async () => {
         localStorage.setItem("authToken", "test-token-123");
         localStorage.setItem("userData", "not-a-json");
         const errorSpy = vi.spyOn(console, "error").mockImplementation(() => { });
         renderWithProvider(<TestComponent />);
+        
+        await waitFor(() => {
+            expect(screen.getByTestId("loading-status").textContent).toBe("loaded");
         expect(screen.getByTestId("auth-status").textContent).toBe("noauth");
         expect(screen.getByTestId("user").textContent).toBe("no-user");
+        });
+        
         expect(localStorage.getItem("authToken")).toBeNull();
         expect(localStorage.getItem("userData")).toBeNull();
         errorSpy.mockRestore();
