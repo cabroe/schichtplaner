@@ -232,7 +232,7 @@ describe("LoginPage", () => {
             const card = document.querySelector(".card");
             expect(card).toHaveStyle({
                 minWidth: "320px",
-                maxWidth: "450px",
+                maxWidth: "400px",
                 width: "90vw",
             });
         });
