@@ -12,4 +12,4 @@ const SimpleTemplate: React.FC<SimpleTemplateProps> = ({ children }) => {
   );
 };
 
-export default SimpleTemplate; 
+export default SimpleTemplate;
