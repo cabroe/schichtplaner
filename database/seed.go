@@ -14,7 +14,7 @@ func ResetDatabase() error {
 
 	// Prüfe, ob DB verfügbar ist
 	if DB == nil {
-		return fmt.Errorf("Datenbank ist nicht initialisiert")
+		return fmt.Errorf("datenbank ist nicht initialisiert")
 	}
 
 	// Lösche alle Daten aus allen Tabellen
@@ -43,7 +43,7 @@ func SeedDatabase() error {
 
 	// Prüfe, ob DB verfügbar ist
 	if DB == nil {
-		return fmt.Errorf("Datenbank ist nicht initialisiert")
+		return fmt.Errorf("datenbank ist nicht initialisiert")
 	}
 
 	// Erstelle Test-Users
