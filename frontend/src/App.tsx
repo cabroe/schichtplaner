@@ -13,6 +13,7 @@ import Settings from "./pages/Settings";
 import Dashboard from "./pages/Dashboard";
 import ModalDemo from "./pages/ModalDemo";
 import ToastDemo from "./pages/ToastDemo";
+import ContextMenuDemo from "./pages/ContextMenuDemo";
 import LoginPage from "./pages/LoginPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import About from "./pages/About";
@@ -70,6 +71,13 @@ function AppRoutes() {
           <ProtectedRoute>
             <MainTemplate>
               <ToastDemo />
+            </MainTemplate>
+          </ProtectedRoute>
+        } />
+        <Route path="/context-menu-demo" element={
+          <ProtectedRoute>
+            <MainTemplate>
+              <ContextMenuDemo />
             </MainTemplate>
           </ProtectedRoute>
         } />

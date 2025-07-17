@@ -48,6 +48,11 @@ export const routeConfig: Record<string, PageTitleEntry> = {
         icon: "fas fa-bell",
         headerComponent: ToastDemoHeader,
       },
+      "/context-menu-demo": {
+        title: "ContextMenu Demo",
+        pretitle: "Beispielseite",
+        icon: "fas fa-mouse-pointer",
+      },
     },
   },
 };
