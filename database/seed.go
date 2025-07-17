@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -10,6 +11,11 @@ import (
 // ResetDatabase löscht alle Daten aus der Datenbank
 func ResetDatabase() error {
 	log.Println("Setze Datenbank zurück...")
+
+	// Prüfe, ob DB verfügbar ist
+	if DB == nil {
+		return fmt.Errorf("Datenbank ist nicht initialisiert")
+	}
 
 	// Lösche alle Daten aus allen Tabellen
 	if err := DB.Exec("DELETE FROM shifts").Error; err != nil {
@@ -34,6 +40,11 @@ func ResetDatabase() error {
 // SeedDatabase füllt die Datenbank mit Testdaten
 func SeedDatabase() error {
 	log.Println("Fülle Datenbank mit Seed-Daten...")
+
+	// Prüfe, ob DB verfügbar ist
+	if DB == nil {
+		return fmt.Errorf("Datenbank ist nicht initialisiert")
+	}
 
 	// Erstelle Test-Users
 	users := []models.User{
