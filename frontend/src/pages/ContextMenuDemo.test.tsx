@@ -18,8 +18,8 @@ describe("ContextMenuDemo", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("ContextMenu Demo")).toBeInTheDocument();
-    expect(screen.getByText("Klicken Sie mit der rechten Maustaste auf den Bereich unten, um das Kontextmenü zu öffnen:")).toBeInTheDocument();
+    expect(screen.getByText("ContextMenu Demo - Erweiterte Version")).toBeInTheDocument();
+    expect(screen.getByText("Klicken Sie mit der rechten Maustaste auf den Bereich unten, um das erweiterte Kontextmenü zu öffnen:")).toBeInTheDocument();
     expect(screen.getByText("Rechtsklick hier für Kontextmenü")).toBeInTheDocument();
   });
 
@@ -41,7 +41,7 @@ describe("ContextMenuDemo", () => {
     expect(screen.getByText("Kopieren")).toBeInTheDocument();
     expect(screen.getByText("Ausschneiden")).toBeInTheDocument();
     expect(screen.getByText("Löschen")).toBeInTheDocument();
-    expect(screen.getByText("Eigenschaften (deaktiviert)")).toBeInTheDocument();
+    expect(screen.getByText("Hilfe (deaktiviert)")).toBeInTheDocument();
   });
 
   it("führt Aktionen aus wenn auf Menü-Einträge geklickt wird", () => {
@@ -56,7 +56,7 @@ describe("ContextMenuDemo", () => {
 
     // Auf "Bearbeiten" klicken
     fireEvent.click(screen.getByText("Bearbeiten"));
-    expect(consoleSpy).toHaveBeenCalledWith("Aktion ausgeführt: Bearbeiten");
+    expect(consoleSpy).toHaveBeenCalledWith("Aktion ausgeführt: Bearbeiten von \"Beispiel-Element\"");
 
     // Menü sollte geschlossen sein
     expect(screen.queryByText("Bearbeiten")).not.toBeInTheDocument();
@@ -74,12 +74,12 @@ describe("ContextMenuDemo", () => {
     // Erste Aktion
     fireEvent.contextMenu(contextArea!);
     fireEvent.click(screen.getByText("Kopieren"));
-    expect(consoleSpy).toHaveBeenCalledWith("Aktion ausgeführt: Kopieren");
+    expect(consoleSpy).toHaveBeenCalledWith("Aktion ausgeführt: Kopieren von \"Beispiel-Element\"");
 
     // Zweite Aktion
     fireEvent.contextMenu(contextArea!);
     fireEvent.click(screen.getByText("Löschen"));
-    expect(consoleSpy).toHaveBeenCalledWith("Aktion ausgeführt: Löschen");
+    expect(consoleSpy).toHaveBeenCalledWith("Aktion ausgeführt: Löschen von \"Beispiel-Element\"");
   });
 
   it("verhindert Standard-Kontextmenü-Verhalten", () => {
@@ -114,13 +114,13 @@ describe("ContextMenuDemo", () => {
     const copyIcon = document.querySelector('.fas.fa-copy');
     const cutIcon = document.querySelector('.fas.fa-cut');
     const trashIcon = document.querySelector('.fas.fa-trash');
-    const infoIcon = document.querySelector('.fas.fa-info-circle');
+    const questionIcon = document.querySelector('.fas.fa-question-circle');
 
     expect(editIcon).toBeInTheDocument();
     expect(copyIcon).toBeInTheDocument();
     expect(cutIcon).toBeInTheDocument();
     expect(trashIcon).toBeInTheDocument();
-    expect(infoIcon).toBeInTheDocument();
+    expect(questionIcon).toBeInTheDocument();
   });
 
   it("deaktiviert Menü-Einträge korrekt", () => {
@@ -133,7 +133,7 @@ describe("ContextMenuDemo", () => {
     const contextArea = screen.getByText("Rechtsklick hier für Kontextmenü").parentElement;
     fireEvent.contextMenu(contextArea!);
 
-    const disabledItem = screen.getByText("Eigenschaften (deaktiviert)");
+    const disabledItem = screen.getByText("Hilfe (deaktiviert)");
     expect(disabledItem).toHaveClass("disabled");
   });
 

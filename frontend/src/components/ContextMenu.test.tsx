@@ -81,7 +81,7 @@ describe("ContextMenu", () => {
     );
 
     const menu = document.querySelector('.dropdown-menu');
-    expect(menu).toHaveClass('dropdown-menu', 'show');
+    expect(menu).toHaveClass('dropdown-menu', 'action-dropdown', 'd-block');
   });
 });
 
