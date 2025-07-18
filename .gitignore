@@ -19,3 +19,14 @@ schichtplaner
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+.DS_Store
+*.zip
+*.tar
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.lzma
+*.tar.lz
+*.tar.lzo
+*.tar.lrz
