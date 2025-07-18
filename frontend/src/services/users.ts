@@ -32,13 +32,15 @@ class UserService {
     // Hier würde eine spezielle Such-API implementiert werden
     const response = await api.getUsers(page, limit);
     // Filtere die Ergebnisse client-seitig (temporär)
-    if (response.data) {
+    if (response.data && query.trim()) {
+      const searchQuery = query.toLowerCase();
       response.data = response.data.filter((user: User) =>
-        user.firstName.toLowerCase().includes(query.toLowerCase()) ||
-        user.lastName.toLowerCase().includes(query.toLowerCase()) ||
-        user.username.toLowerCase().includes(query.toLowerCase())
+        (user.firstName?.toLowerCase() || '').includes(searchQuery) ||
+        (user.lastName?.toLowerCase() || '').includes(searchQuery) ||
+        (user.username?.toLowerCase() || '').includes(searchQuery)
       );
     }
+    // Bei leerer Suchanfrage alle User zurückgeben
     return response;
   }
 
