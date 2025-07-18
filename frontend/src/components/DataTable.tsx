@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import type { ReactNode } from 'react';
 
 interface DataTableProps {
@@ -15,7 +15,7 @@ interface DataTableProps {
 /**
  * Eine wiederverwendbare Tabellen-Komponente mit Tabler-Styling
  */
-const DataTable: React.FC<DataTableProps> = ({
+const DataTable = React.memo<DataTableProps>(({
   id,
   children,
   className = '',
@@ -26,24 +26,28 @@ const DataTable: React.FC<DataTableProps> = ({
   darkMode = false
 }) => {
   // Kombiniere die Standard-Klassen mit zusätzlichen Klassen
-  const tableClasses = [
-    'table',
-    'table-vcenter',
-    'table-hover',
-    'dataTable',
-    className
-  ];
+  const tableClasses = useMemo(() => {
+    const classes = [
+      'table',
+      'table-vcenter',
+      'table-hover',
+      'dataTable',
+      className
+    ];
 
-  // Füge optionale Klassen hinzu
-  if (striped) tableClasses.push('table-striped');
-  if (bordered) tableClasses.push('table-bordered');
-  if (size) tableClasses.push(`table-${size}`);
-  if (darkMode) tableClasses.push('table-dark');
+    // Füge optionale Klassen hinzu
+    if (striped) classes.push('table-striped');
+    if (bordered) classes.push('table-bordered');
+    if (size) classes.push(`table-${size}`);
+    if (darkMode) classes.push('table-dark');
+    
+    return classes.join(' ');
+  }, [className, striped, bordered, size, darkMode]);
 
   const tableElement = (
     <table
       id={id}
-      className={tableClasses.join(' ')}
+      className={tableClasses}
     >
       {children}
     </table>
@@ -63,6 +67,6 @@ const DataTable: React.FC<DataTableProps> = ({
   }
   
   return tableElement;
-};
+});
 
 export default DataTable; 

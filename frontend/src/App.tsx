@@ -1,96 +1,74 @@
-import {
-  Route,
-  Routes,
-} from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
+import { Suspense } from "react";
 import MainTemplate from "./templates/MainTemplate";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LogoutHandler from "./components/LogoutHandler";
 import { AuthProvider } from "./contexts/AuthContext";
 import SimpleTemplate from "./templates/SimpleTemplate";
-import Times from "./pages/Times";
-import Settings from "./pages/Settings";
-import Dashboard from "./pages/Dashboard";
-import ModalDemo from "./pages/ModalDemo";
-import ToastDemo from "./pages/ToastDemo";
-import ContextMenuDemo from "./pages/ContextMenuDemo";
-import DataTableDemo from "./pages/DataTableDemo";
-import LoginPage from "./pages/LoginPage";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
-import About from "./pages/About";
+import { publicRoutes, protectedRoutes } from "./routes/routeDefinitions";
+
+// Loading-Komponente
+const LoadingSpinner = () => (
+  <div className="d-flex justify-content-center align-items-center min-vh-100">
+    <div className="spinner-border" role="status">
+      <span className="visually-hidden">Laden...</span>
+    </div>
+  </div>
+);
 
 function AppRoutes() {
   return (
     <AuthProvider>
-      <Routes>
-        <Route path="/login" element={
-          <SimpleTemplate>
-            <LoginPage />
-          </SimpleTemplate>
-        } />
- 
-        <Route path="/logout" element={<LogoutHandler />} />
-        <Route path="/reset-password" element={
-          <SimpleTemplate>
-            <ResetPasswordPage />
-          </SimpleTemplate>
-        } />
-        <Route path="/about" element={
-          <MainTemplate>
-            <About />
-          </MainTemplate>
-        } />
-        <Route path="/" element={
-          <ProtectedRoute>
-            <MainTemplate>
-              <Dashboard />
-            </MainTemplate>
-          </ProtectedRoute>
-        } />
-        <Route path="/times" element={
-          <ProtectedRoute>
-            <MainTemplate>
-              <Times />
-            </MainTemplate>
-          </ProtectedRoute>
-        } />
-        <Route path="/settings" element={
-          <ProtectedRoute>
-            <MainTemplate>
-              <Settings />
-            </MainTemplate>
-          </ProtectedRoute>
-        } />
-        <Route path="/modal-demo" element={
-          <ProtectedRoute>
-            <MainTemplate>
-              <ModalDemo />
-            </MainTemplate>
-          </ProtectedRoute>
-        } />
-        <Route path="/toast-demo" element={
-          <ProtectedRoute>
-            <MainTemplate>
-              <ToastDemo />
-            </MainTemplate>
-          </ProtectedRoute>
-        } />
-        <Route path="/context-menu-demo" element={
-          <ProtectedRoute>
-            <MainTemplate>
-              <ContextMenuDemo />
-            </MainTemplate>
-          </ProtectedRoute>
-        } />
-        <Route path="/data-table-demo" element={
-          <ProtectedRoute>
-            <MainTemplate>
-              <DataTableDemo />
-            </MainTemplate>
-          </ProtectedRoute>
-        } />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Routes>
+          {/* Logout Route */}
+          <Route path="/logout" element={<LogoutHandler />} />
+          
+          {/* Public Routes */}
+          {publicRoutes.map(({ path, component: Component, template }) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                template === 'simple' ? (
+                  <SimpleTemplate>
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <Component />
+                    </Suspense>
+                  </SimpleTemplate>
+                ) : (
+                  <MainTemplate>
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <Component />
+                    </Suspense>
+                  </MainTemplate>
+                )
+              }
+            />
+          ))}
+          
+          {/* Protected Routes */}
+          {protectedRoutes.map(({ path, component: Component }) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                <ProtectedRoute>
+                  <MainTemplate>
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <Component />
+                    </Suspense>
+                  </MainTemplate>
+                </ProtectedRoute>
+              }
+            />
+          ))}
+          
+          {/* 404 Route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </AuthProvider>
   );
 }

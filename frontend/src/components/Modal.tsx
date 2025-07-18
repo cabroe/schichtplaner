@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useUiStore } from "../store/useUiStore";
 
 interface ModalProps {
@@ -8,14 +8,14 @@ interface ModalProps {
   onClose?: () => void;
 }
 
-const Modal: React.FC<ModalProps> = ({ title, children, footer, onClose }) => {
+const Modal = React.memo<ModalProps>(({ title, children, footer, onClose }) => {
   const { isOpen, close } = useUiStore();
   const show = isOpen("remoteModal");
 
-  function handleClose() {
+  const handleClose = useCallback(() => {
     close();
     if (onClose) onClose();
-  }
+  }, [close, onClose]);
 
   return (
     <div
@@ -53,6 +53,6 @@ const Modal: React.FC<ModalProps> = ({ title, children, footer, onClose }) => {
       </div>
     </div>
   );
-};
+});
 
 export default Modal; 

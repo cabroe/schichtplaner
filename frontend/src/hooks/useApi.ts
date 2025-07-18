@@ -11,6 +11,11 @@ interface UseApiReturn<T> extends ApiState<T> {
   reset: () => void;
 }
 
+interface UseApiWithRetryReturn<T> extends UseApiReturn<T> {
+  retry: () => void;
+  retryCount: number;
+}
+
 export function useApi<T>(
   apiFunction: (...args: any[]) => Promise<T>
 ): UseApiReturn<T> {
@@ -55,6 +60,40 @@ export function useApi<T>(
     execute,
     reset,
   };
+}
+
+export function useApiWithRetry<T>(
+  apiFunction: (...args: any[]) => Promise<T>,
+  retryCount = 3,
+  retryDelay = 1000
+): UseApiWithRetryReturn<T> {
+  const [retryAttempt, setRetryAttempt] = useState(0);
+  
+  const retry = useCallback(() => {
+    setRetryAttempt(prev => prev + 1);
+  }, []);
+  
+  const executeWithRetry = useCallback(
+    async (...args: any[]) => {
+      for (let i = 0; i < retryCount; i++) {
+        try {
+          return await apiFunction(...args);
+        } catch (error) {
+          if (i === retryCount - 1) throw error;
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+        }
+      }
+    },
+    [apiFunction, retryCount, retryDelay]
+  );
+  
+  const apiState = useApi(executeWithRetry);
+  
+  return { 
+    ...apiState, 
+    retry, 
+    retryCount: retryAttempt 
+  } as UseApiWithRetryReturn<T>;
 }
 
 // Spezialisierte Hooks für häufige API-Operationen

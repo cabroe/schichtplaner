@@ -1,12 +1,26 @@
 // Basis-API-Konfiguration
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
-// HTTP-Client mit Interceptors
+// HTTP-Client mit Interceptors und Caching
 class ApiClient {
   private baseURL: string;
+  private cache = new Map<string, { data: any; timestamp: number }>();
+  private cacheTimeout = 5 * 60 * 1000; // 5 Minuten
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
+  }
+
+  private getCacheKey(endpoint: string, params?: any): string {
+    return `${endpoint}${params ? JSON.stringify(params) : ''}`;
+  }
+
+  private isCacheValid(timestamp: number): boolean {
+    return Date.now() - timestamp < this.cacheTimeout;
+  }
+
+  clearCache(): void {
+    this.cache.clear();
   }
 
   private async request<T>(
@@ -51,37 +65,73 @@ class ApiClient {
   }
 
   // GET Request
-  async get<T>(endpoint: string): Promise<T> {
-    return this.request<T>(endpoint, { method: 'GET' });
+  async get<T>(endpoint: string, useCache = true): Promise<T> {
+    if (useCache) {
+      const cacheKey = this.getCacheKey(endpoint);
+      const cached = this.cache.get(cacheKey);
+      
+      if (cached && this.isCacheValid(cached.timestamp)) {
+        return cached.data;
+      }
+    }
+    
+    const result = await this.request<T>(endpoint, { method: 'GET' });
+    
+    if (useCache) {
+      const cacheKey = this.getCacheKey(endpoint);
+      this.cache.set(cacheKey, { data: result, timestamp: Date.now() });
+    }
+    
+    return result;
   }
 
   // POST Request
   async post<T>(endpoint: string, data?: any): Promise<T> {
-    return this.request<T>(endpoint, {
+    const result = await this.request<T>(endpoint, {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
     });
+    
+    // Cache invalidieren bei POST-Requests
+    this.clearCache();
+    
+    return result;
   }
 
   // PUT Request
   async put<T>(endpoint: string, data?: any): Promise<T> {
-    return this.request<T>(endpoint, {
+    const result = await this.request<T>(endpoint, {
       method: 'PUT',
       body: data ? JSON.stringify(data) : undefined,
     });
+    
+    // Cache invalidieren bei PUT-Requests
+    this.clearCache();
+    
+    return result;
   }
 
   // PATCH Request
   async patch<T>(endpoint: string, data?: any): Promise<T> {
-    return this.request<T>(endpoint, {
+    const result = await this.request<T>(endpoint, {
       method: 'PATCH',
       body: data ? JSON.stringify(data) : undefined,
     });
+    
+    // Cache invalidieren bei PATCH-Requests
+    this.clearCache();
+    
+    return result;
   }
 
   // DELETE Request
   async delete<T>(endpoint: string): Promise<T> {
-    return this.request<T>(endpoint, { method: 'DELETE' });
+    const result = await this.request<T>(endpoint, { method: 'DELETE' });
+    
+    // Cache invalidieren bei DELETE-Requests
+    this.clearCache();
+    
+    return result;
   }
 
   // Paginierte GET Request
