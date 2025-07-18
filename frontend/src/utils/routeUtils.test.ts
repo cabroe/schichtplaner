@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getHeaderComponentForRoute } from "./getHeaderComponentForRoute";
+import { getHeaderComponentForRoute } from "./routeUtils";
 import DashboardHeader from "../pages/pageHeaders/DashboardHeader";
 import TimesHeader from "../pages/pageHeaders/TimesHeader";
 import SettingsHeader from "../pages/pageHeaders/SettingsHeader";

@@ -3,7 +3,7 @@ import Sidebar from "../components/Sidebar";
 import HeaderWithRoute from "../components/HeaderWithRoute";
 import PageHeader from "../components/PageHeader";
 import { useLocation } from "react-router-dom";
-import { getHeaderComponentForRoute } from "../utils/getHeaderComponentForRoute";
+import { getHeaderComponentForRoute } from "../utils/routeUtils";
 
 interface MainTemplateProps {
   children: React.ReactNode;
