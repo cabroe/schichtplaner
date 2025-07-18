@@ -13,7 +13,7 @@ const ContextMenuDemo: React.FC = () => {
   });
 
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
-  const [selectedItem, setSelectedItem] = useState<string>("Beispiel-Element");
+  const [selectedItem] = useState<string>("Beispiel-Element");
 
   const handleContextMenu = (event: React.MouseEvent) => {
     event.preventDefault();
