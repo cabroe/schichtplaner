@@ -53,6 +53,11 @@ export const routeConfig: Record<string, PageTitleEntry> = {
         pretitle: "Beispielseite",
         icon: "fas fa-mouse-pointer",
       },
+      "/data-table-demo": {
+        title: "DataTable Demo",
+        pretitle: "Beispielseite",
+        icon: "fas fa-table",
+      },
     },
   },
 };
