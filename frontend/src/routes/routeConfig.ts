@@ -3,6 +3,7 @@ import TimesHeader from "../pages/pageHeaders/TimesHeader";
 import SettingsHeader from "../pages/pageHeaders/SettingsHeader";
 import ModalDemoHeader from "../pages/pageHeaders/ModalDemoHeader";
 import ToastDemoHeader from "../pages/pageHeaders/ToastDemoHeader";
+import ShiftPlanningHeader from "../pages/pageHeaders/ShiftPlanningHeader";
 
 export type PageTitleEntry = {
   title: string;
@@ -24,6 +25,12 @@ export const routeConfig: Record<string, PageTitleEntry> = {
     pretitle: "Übersicht",
     icon: "fas fa-clock",
     headerComponent: TimesHeader,
+  },
+  "/shift-planning": {
+    title: "Schichtplanung",
+    pretitle: "Planung",
+    icon: "fas fa-calendar-alt",
+    headerComponent: ShiftPlanningHeader,
   },
   "/settings": {
     title: "Einstellungen",

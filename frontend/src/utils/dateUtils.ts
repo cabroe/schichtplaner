@@ -149,4 +149,122 @@ export function formatRelativeTime(date: Date | string): string {
   } else {
     return formatDate(dateObj);
   }
+}
+
+// ===== KALENDER-SPEZIFISCHE FUNKTIONEN =====
+
+/**
+ * Berechnet die Kalenderwoche für ein Datum
+ */
+export function getWeekNumber(date: Date): number {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+}
+
+/**
+ * Gruppiert Tage nach Kalenderwochen
+ */
+export function groupDaysByWeek(days: Date[]): Date[][] {
+  const weeks: Date[][] = [];
+  let currentWeek: Date[] = [];
+  
+  days.forEach((day, index) => {
+    currentWeek.push(day);
+    if ((index + 1) % 7 === 0) {
+      weeks.push(currentWeek);
+      currentWeek = [];
+    }
+  });
+  
+  if (currentWeek.length > 0) {
+    weeks.push(currentWeek);
+  }
+  
+  return weeks;
+}
+
+/**
+ * Generiert Kalendertage für eine bestimmte Anzahl von Wochen
+ */
+export function generateCalendarDays(weeksToShow: number): Date[] {
+  const days: Date[] = [];
+  const today = new Date();
+  const startDate = getWeekStart(today);
+  
+  for (let week = 0; week < weeksToShow; week++) {
+    for (let day = 0; day < 7; day++) {
+      const date = addDays(startDate, (week * 7) + day);
+      days.push(date);
+    }
+  }
+  
+  return days;
+}
+
+/**
+ * Formatiert ein Datum für die Kalenderanzeige (Kurzformat)
+ */
+export function formatCalendarDate(date: Date, locale = 'de-DE'): string {
+  return date.toLocaleDateString(locale, { weekday: 'short' });
+}
+
+/**
+ * Formatiert ein Datum für die Kalenderanzeige (Langformat)
+ */
+export function formatCalendarDateLong(date: Date, locale = 'de-DE'): string {
+  return date.toLocaleDateString(locale, { 
+    day: '2-digit', 
+    month: '2-digit' 
+  });
+}
+
+/**
+ * Prüft ob ein Datum am Wochenende liegt
+ */
+export function isWeekend(date: Date): boolean {
+  const day = date.getDay();
+  return day === 0 || day === 6; // Sonntag = 0, Samstag = 6
+}
+
+/**
+ * Prüft ob ein Datum ein Feiertag ist (einfache Implementierung)
+ */
+export function isHoliday(date: Date): boolean {
+  const month = date.getMonth();
+  const day = date.getDate();
+  
+  // Deutsche Feiertage (vereinfacht)
+  const holidays = [
+    { month: 0, day: 1 },   // Neujahr
+    { month: 4, day: 1 },   // Tag der Arbeit
+    { month: 9, day: 3 },   // Tag der Deutschen Einheit
+    { month: 11, day: 25 }, // Weihnachten
+    { month: 11, day: 26 }, // 2. Weihnachtstag
+  ];
+  
+  return holidays.some(holiday => holiday.month === month && holiday.day === day);
+}
+
+/**
+ * Erstellt ein Datum für den ersten Tag des Monats
+ */
+export function getMonthStart(date: Date = new Date()): Date {
+  const result = new Date(date);
+  result.setDate(1);
+  result.setHours(0, 0, 0, 0);
+  return result;
+}
+
+/**
+ * Erstellt ein Datum für den letzten Tag des Monats
+ */
+export function getMonthEnd(date: Date = new Date()): Date {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() + 1);
+  result.setDate(0);
+  result.setHours(23, 59, 59, 999);
+  return result;
 } 

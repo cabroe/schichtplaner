@@ -8,6 +8,7 @@ const ModalDemo = lazy(() => import('../pages/ModalDemo'));
 const ToastDemo = lazy(() => import('../pages/ToastDemo'));
 const ContextMenuDemo = lazy(() => import('../pages/ContextMenuDemo'));
 const DataTableDemo = lazy(() => import('../pages/DataTableDemo'));
+const ShiftPlanning = lazy(() => import('../pages/ShiftPlanning'));
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
 const About = lazy(() => import('../pages/About'));
@@ -54,6 +55,13 @@ export const protectedRoutes: RouteDefinition[] = [
     path: '/times',
     component: Times,
     title: 'Zeiten',
+    protected: true,
+    template: 'main'
+  },
+  {
+    path: '/shift-planning',
+    component: ShiftPlanning,
+    title: 'Schichtplanung',
     protected: true,
     template: 'main'
   },

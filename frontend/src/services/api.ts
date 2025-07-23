@@ -1,11 +1,10 @@
-// Basis-API-Konfiguration
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+import { API_CONFIG } from '../utils/config';
 
 // HTTP-Client mit Interceptors und Caching
 class ApiClient {
   private baseURL: string;
   private cache = new Map<string, { data: any; timestamp: number }>();
-  private cacheTimeout = 5 * 60 * 1000; // 5 Minuten
+  private cacheTimeout = API_CONFIG.CACHE_TIMEOUT;
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
@@ -150,7 +149,7 @@ class ApiClient {
 }
 
 // API-Client-Instanz
-export const apiClient = new ApiClient(API_BASE_URL);
+export const apiClient = new ApiClient(API_CONFIG.BASE_URL);
 
 // Utility-Funktionen für häufige API-Operationen
 export const api = {
