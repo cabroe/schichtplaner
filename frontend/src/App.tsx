@@ -7,6 +7,7 @@ import LogoutHandler from "./components/LogoutHandler";
 import { AuthProvider } from "./contexts/AuthContext";
 import SimpleTemplate from "./templates/SimpleTemplate";
 import { publicRoutes, protectedRoutes } from "./routes/routeDefinitions";
+import "./App.css";
 
 // Loading-Komponente
 const LoadingSpinner = () => (
