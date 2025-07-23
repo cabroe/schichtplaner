@@ -19,10 +19,13 @@ const mockUser: User = {
   id: 1,
   username: 'testuser',
   email: 'test@example.com',
-  firstName: 'Test',
-  lastName: 'User',
+  name: 'Test User',
+  color: '#ff0000',
   role: 'employee',
+  personalnummer: 'EMP001',
+  accountNumber: 'ACC001',
   isActive: true,
+  isAdmin: false,
   createdAt: new Date('2024-01-01'),
   updatedAt: new Date('2024-01-01'),
 };
@@ -30,9 +33,11 @@ const mockUser: User = {
 const mockUserForm: UserForm = {
   username: 'newuser',
   email: 'new@example.com',
-  firstName: 'New',
-  lastName: 'User',
+  name: 'New User',
+  color: '#00ff00',
   role: 'employee',
+  personalnummer: 'EMP002',
+  accountNumber: 'ACC002',
   password: 'password123',
 };
 
@@ -43,16 +48,15 @@ const mockUsersResponse = {
       ...mockUser,
       id: 2,
       username: 'admin',
-      firstName: 'Admin',
-      lastName: 'User',
+      name: 'Admin User',
       role: 'admin',
+      isAdmin: true,
     },
     {
       ...mockUser,
       id: 3,
       username: 'inactive',
-      firstName: 'Inactive',
-      lastName: 'User',
+      name: 'Inactive User',
       isActive: false,
     },
   ],
@@ -156,8 +160,8 @@ describe('UserService', () => {
   describe('updateUser', () => {
     it('aktualisiert einen User erfolgreich', async () => {
       const mockApi = vi.mocked(api);
-      const updatedUser = { ...mockUser, firstName: 'Updated' };
-      const updateData = { firstName: 'Updated' };
+      const updatedUser = { ...mockUser, name: 'Updated User' };
+      const updateData = { name: 'Updated User' };
       mockApi.updateUser.mockResolvedValue({ data: updatedUser, success: true });
 
       const result = await userService.updateUser(1, updateData);
@@ -171,8 +175,8 @@ describe('UserService', () => {
       const error = new Error('User not found');
       mockApi.updateUser.mockRejectedValue(error);
 
-      await expect(userService.updateUser(999, { firstName: 'Test' })).rejects.toThrow('User not found');
-      expect(mockApi.updateUser).toHaveBeenCalledWith(999, { firstName: 'Test' });
+      await expect(userService.updateUser(999, { name: 'Test User' })).rejects.toThrow('User not found');
+      expect(mockApi.updateUser).toHaveBeenCalledWith(999, { name: 'Test User' });
     });
 
     it('aktualisiert nur teilweise User-Daten', async () => {
@@ -209,23 +213,12 @@ describe('UserService', () => {
   });
 
   describe('searchUsers', () => {
-    it('sucht User nach Namen (case-insensitive)', async () => {
-      const mockApi = vi.mocked(api);
-      mockApi.getUsers.mockResolvedValue(mockUsersResponse);
-
-      const result = await userService.searchUsers('test');
-
-      expect(mockApi.getUsers).toHaveBeenCalledWith(1, 10);
-      expect(result.data).toHaveLength(1);
-      expect(result.data[0].username).toBe('testuser');
-    });
-
-    it('sucht User nach Vorname', async () => {
+    it('sucht User nach Namen', async () => {
       const mockApi = vi.mocked(api);
       const testResponse = {
         data: [
-          { ...mockUser, firstName: 'Admin', username: 'admin' },
-          { ...mockUser, id: 2, firstName: 'Test', username: 'testuser' },
+          { ...mockUser, name: 'Admin User', username: 'admin' },
+          { ...mockUser, id: 2, name: 'Test User', username: 'testuser' },
         ],
         pagination: { page: 1, limit: 10, total: 2, totalPages: 1 },
         success: true,
@@ -235,25 +228,43 @@ describe('UserService', () => {
       const result = await userService.searchUsers('admin');
 
       expect(result.data).toHaveLength(1);
-      expect(result.data[0].firstName).toBe('Admin');
+      expect(result.data[0].name).toBe('Admin User');
     });
 
-    it('sucht User nach Nachname', async () => {
+    it('sucht User nach Personalnummer', async () => {
       const mockApi = vi.mocked(api);
       const testResponse = {
         data: [
-          { ...mockUser, lastName: 'User' },
-          { ...mockUser, id: 2, lastName: 'User' },
-          { ...mockUser, id: 3, lastName: 'User' },
+          { ...mockUser, personalnummer: 'EMP001' },
+          { ...mockUser, id: 2, personalnummer: 'EMP002' },
+          { ...mockUser, id: 3, personalnummer: 'EMP003' },
         ],
         pagination: { page: 1, limit: 10, total: 3, totalPages: 1 },
         success: true,
       };
       mockApi.getUsers.mockResolvedValue(testResponse);
 
-      const result = await userService.searchUsers('user');
+      const result = await userService.searchUsers('EMP001');
 
-      expect(result.data).toHaveLength(3); // Alle User haben "User" im Nachnamen
+      expect(result.data).toHaveLength(1); // Nur 1 User mit EMP001
+    });
+
+    it('sucht User nach AccountNumber', async () => {
+      const mockApi = vi.mocked(api);
+      const testResponse = {
+        data: [
+          { ...mockUser, accountNumber: 'ACC001' },
+          { ...mockUser, id: 2, accountNumber: 'ACC002' },
+          { ...mockUser, id: 3, accountNumber: 'ACC003' },
+        ],
+        pagination: { page: 1, limit: 10, total: 3, totalPages: 1 },
+        success: true,
+      };
+      mockApi.getUsers.mockResolvedValue(testResponse);
+
+      const result = await userService.searchUsers('ACC001');
+
+      expect(result.data).toHaveLength(1); // Nur 1 User mit ACC001
     });
 
     it('gibt leere Ergebnisse bei keiner Übereinstimmung zurück', async () => {
@@ -419,8 +430,8 @@ describe('UserService', () => {
       const usersWithNullValues = {
         ...mockUsersResponse,
         data: [
-          { ...mockUser, firstName: null, lastName: undefined },
-          { ...mockUser, id: 2, firstName: 'Valid', lastName: 'User' },
+          { ...mockUser, name: null },
+          { ...mockUser, id: 2, name: 'Valid User' },
         ],
       };
       mockApi.getUsers.mockResolvedValue(usersWithNullValues);
@@ -428,7 +439,7 @@ describe('UserService', () => {
       const result = await userService.searchUsers('valid');
 
       expect(result.data).toHaveLength(1);
-      expect(result.data[0].firstName).toBe('Valid');
+      expect(result.data[0].name).toBe('Valid User');
     });
   });
 

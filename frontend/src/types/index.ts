@@ -4,21 +4,24 @@ export interface User {
   id: number;
   username: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  name: string;
+  color: string;
   role: UserRole;
+  personalnummer: string;
+  accountNumber: string;
   isActive: boolean;
+  isAdmin: boolean;
   createdAt: Date;
   updatedAt: Date;
-  
 }
 
-export type UserRole = 'admin' | 'manager' | 'employee';
+export type UserRole = 'admin' | 'manager' | 'employee' | 'user';
 
 export const UserRoles = {
   ADMIN: 'admin' as const,
   MANAGER: 'manager' as const,
-  EMPLOYEE: 'employee' as const
+  EMPLOYEE: 'employee' as const,
+  USER: 'user' as const
 } as const;
 
 export interface Schedule {
@@ -101,10 +104,14 @@ export interface LoginForm {
 export interface UserForm {
   username: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  name: string;
+  color: string;
   role: UserRole;
+  personalnummer: string;
+  accountNumber: string;
   password?: string;
+  isActive?: boolean;
+  isAdmin?: boolean;
 }
 
 export interface ScheduleForm {

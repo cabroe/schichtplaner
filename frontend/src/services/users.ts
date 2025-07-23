@@ -35,9 +35,10 @@ class UserService {
     if (response.data && query.trim()) {
       const searchQuery = query.toLowerCase();
       response.data = response.data.filter((user: User) =>
-        (user.firstName?.toLowerCase() || '').includes(searchQuery) ||
-        (user.lastName?.toLowerCase() || '').includes(searchQuery) ||
-        (user.username?.toLowerCase() || '').includes(searchQuery)
+        (user.name?.toLowerCase() || '').includes(searchQuery) ||
+        (user.username?.toLowerCase() || '').includes(searchQuery) ||
+        (user.personalnummer?.toLowerCase() || '').includes(searchQuery) ||
+        (user.accountNumber?.toLowerCase() || '').includes(searchQuery)
       );
     }
     // Bei leerer Suchanfrage alle User zurückgeben

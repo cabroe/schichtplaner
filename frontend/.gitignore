@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # Import files 
-import/
+import
