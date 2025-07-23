@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"schichtplaner/models"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // ResetDatabase löscht alle Daten aus der Datenbank
@@ -46,47 +48,68 @@ func SeedDatabase() error {
 		return fmt.Errorf("datenbank ist nicht initialisiert")
 	}
 
+	// Hash für Standard-Passwort
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte("password123"), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("fehler beim hashen des passworts: %v", err)
+	}
+
 	// Erstelle Test-Users
 	users := []models.User{
 		{
-			Username:  "admin",
-			Email:     "admin@schichtplaner.de",
-			FirstName: "Admin",
-			LastName:  "User",
-			IsActive:  true,
-			Role:      "admin",
+			Username:      "admin",
+			Email:         "admin@schichtplaner.de",
+			Password:      string(hashedPassword),
+			AccountNumber: "ADM001",
+			Name:          "Admin User",
+			Color:         "#ff0000",
+			Role:          "admin",
+			IsActive:      true,
+			IsAdmin:       true,
 		},
 		{
-			Username:  "max.mustermann",
-			Email:     "max@schichtplaner.de",
-			FirstName: "Max",
-			LastName:  "Mustermann",
-			IsActive:  true,
-			Role:      "user",
+			Username:      "max.mustermann",
+			Email:         "max@schichtplaner.de",
+			Password:      string(hashedPassword),
+			AccountNumber: "EMP001",
+			Name:          "Max Mustermann",
+			Color:         "#00ff00",
+			Role:          "user",
+			IsActive:      true,
+			IsAdmin:       false,
 		},
 		{
-			Username:  "anna.schmidt",
-			Email:     "anna@schichtplaner.de",
-			FirstName: "Anna",
-			LastName:  "Schmidt",
-			IsActive:  true,
-			Role:      "user",
+			Username:      "anna.schmidt",
+			Email:         "anna@schichtplaner.de",
+			Password:      string(hashedPassword),
+			AccountNumber: "EMP002",
+			Name:          "Anna Schmidt",
+			Color:         "#0000ff",
+			Role:          "user",
+			IsActive:      true,
+			IsAdmin:       false,
 		},
 		{
-			Username:  "peter.weber",
-			Email:     "peter@schichtplaner.de",
-			FirstName: "Peter",
-			LastName:  "Weber",
-			IsActive:  true,
-			Role:      "user",
+			Username:      "peter.weber",
+			Email:         "peter@schichtplaner.de",
+			Password:      string(hashedPassword),
+			AccountNumber: "EMP003",
+			Name:          "Peter Weber",
+			Color:         "#ffff00",
+			Role:          "user",
+			IsActive:      true,
+			IsAdmin:       false,
 		},
 		{
-			Username:  "lisa.mueller",
-			Email:     "lisa@schichtplaner.de",
-			FirstName: "Lisa",
-			LastName:  "Müller",
-			IsActive:  false, // Inaktiver User
-			Role:      "user",
+			Username:      "lisa.mueller",
+			Email:         "lisa@schichtplaner.de",
+			Password:      string(hashedPassword),
+			AccountNumber: "EMP004",
+			Name:          "Lisa Müller",
+			Color:         "#ff00ff",
+			Role:          "user",
+			IsActive:      false, // Inaktiver User
+			IsAdmin:       false,
 		},
 	}
 

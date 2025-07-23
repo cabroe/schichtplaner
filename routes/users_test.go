@@ -19,12 +19,15 @@ func TestRegisterUserRoutes(t *testing.T) {
 
 	// Test-User erstellen für ID-basierte Tests
 	testUser := models.User{
-		Username:  "testuser",
-		Email:     "test@example.com",
-		FirstName: "Test",
-		LastName:  "User",
-		IsActive:  true,
-		Role:      "user",
+		Username:      "testuser",
+		Email:         "test@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP001",
+		Name:          "Test User",
+		Color:         "#ff0000",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
 	}
 	err := database.DB.Create(&testUser).Error
 	assert.NoError(t, err)

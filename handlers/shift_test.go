@@ -39,10 +39,15 @@ func TestCreateShift(t *testing.T) {
 
 	// Erstelle einen Test-User
 	user := models.User{
-		Username:  "testuser",
-		Email:     "test@example.com",
-		FirstName: "Test",
-		LastName:  "User",
+		Username:      "testuser",
+		Email:         "test@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP001",
+		Name:          "Test User",
+		Color:         "#ff0000",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
 	}
 	database.DB.Create(&user)
 

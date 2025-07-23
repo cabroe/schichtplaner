@@ -21,12 +21,15 @@ func TestUser_Create(t *testing.T) {
 	db := setupTestDB(t)
 
 	user := User{
-		Username:  "testuser",
-		Email:     "test@example.com",
-		FirstName: "Test",
-		LastName:  "User",
-		IsActive:  true,
-		Role:      "user",
+		Username:      "testuser",
+		Email:         "test@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP001",
+		Name:          "Test User",
+		Color:         "#ff0000",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
 	}
 
 	result := db.Create(&user)
@@ -41,9 +44,10 @@ func TestUser_Validation(t *testing.T) {
 
 	// Test: Username ist required (GORM validiert nicht automatisch, aber wir testen es)
 	user := User{
-		Email:     "test@example.com",
-		FirstName: "Test",
-		LastName:  "User",
+		Email:         "test@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP001",
+		Name:          "Test User",
 	}
 
 	result := db.Create(&user)
@@ -53,9 +57,10 @@ func TestUser_Validation(t *testing.T) {
 
 	// Test: Email ist required
 	user = User{
-		Username:  "testuser",
-		FirstName: "Test",
-		LastName:  "User",
+		Username:      "testuser",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP002",
+		Name:          "Test User",
 	}
 
 	result = db.Create(&user)
@@ -67,12 +72,14 @@ func TestUser_UniqueConstraints(t *testing.T) {
 
 	// Ersten User erstellen
 	user1 := User{
-		Username:  "testuser",
-		Email:     "test@example.com",
-		FirstName: "Test",
-		LastName:  "User",
-		IsActive:  true,
-		Role:      "user",
+		Username:      "testuser",
+		Email:         "test@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP001",
+		Name:          "Test User",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
 	}
 
 	result := db.Create(&user1)
@@ -80,12 +87,14 @@ func TestUser_UniqueConstraints(t *testing.T) {
 
 	// Zweiten User mit gleichem Username erstellen
 	user2 := User{
-		Username:  "testuser", // Gleicher Username
-		Email:     "test2@example.com",
-		FirstName: "Test2",
-		LastName:  "User2",
-		IsActive:  true,
-		Role:      "user",
+		Username:      "testuser", // Gleicher Username
+		Email:         "test2@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP002",
+		Name:          "Test User 2",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
 	}
 
 	result = db.Create(&user2)
@@ -93,15 +102,32 @@ func TestUser_UniqueConstraints(t *testing.T) {
 
 	// Dritten User mit gleicher Email erstellen
 	user3 := User{
-		Username:  "testuser3",
-		Email:     "test@example.com", // Gleiche Email
-		FirstName: "Test3",
-		LastName:  "User3",
-		IsActive:  true,
-		Role:      "user",
+		Username:      "testuser3",
+		Email:         "test@example.com", // Gleiche Email
+		Password:      "hashedpassword",
+		AccountNumber: "EMP003",
+		Name:          "Test User 3",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
 	}
 
 	result = db.Create(&user3)
+	assert.Error(t, result.Error) // Sollte fehlschlagen wegen Unique-Constraint
+
+	// Vierten User mit gleicher AccountNumber erstellen
+	user4 := User{
+		Username:      "testuser4",
+		Email:         "test4@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP001", // Gleiche AccountNumber
+		Name:          "Test User 4",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
+	}
+
+	result = db.Create(&user4)
 	assert.Error(t, result.Error) // Sollte fehlschlagen wegen Unique-Constraint
 }
 
@@ -109,10 +135,11 @@ func TestUser_DefaultValues(t *testing.T) {
 	db := setupTestDB(t)
 
 	user := User{
-		Username:  "testuser",
-		Email:     "test@example.com",
-		FirstName: "Test",
-		LastName:  "User",
+		Username:      "testuser",
+		Email:         "test@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP001",
+		Name:          "Test User",
 	}
 
 	result := db.Create(&user)
@@ -121,18 +148,21 @@ func TestUser_DefaultValues(t *testing.T) {
 	// Prüfen, ob Default-Werte gesetzt wurden
 	assert.True(t, user.IsActive)      // Default sollte true sein
 	assert.Equal(t, "user", user.Role) // Default sollte "user" sein
+	assert.False(t, user.IsAdmin)      // Default sollte false sein
 }
 
 func TestUser_SoftDelete(t *testing.T) {
 	db := setupTestDB(t)
 
 	user := User{
-		Username:  "testuser",
-		Email:     "test@example.com",
-		FirstName: "Test",
-		LastName:  "User",
-		IsActive:  true,
-		Role:      "user",
+		Username:      "testuser",
+		Email:         "test@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP001",
+		Name:          "Test User",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
 	}
 
 	result := db.Create(&user)
@@ -159,12 +189,14 @@ func TestUser_Relationships(t *testing.T) {
 
 	// User erstellen
 	user := User{
-		Username:  "testuser",
-		Email:     "test@example.com",
-		FirstName: "Test",
-		LastName:  "User",
-		IsActive:  true,
-		Role:      "user",
+		Username:      "testuser",
+		Email:         "test@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP001",
+		Name:          "Test User",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
 	}
 
 	result := db.Create(&user)

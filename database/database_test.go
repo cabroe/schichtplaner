@@ -110,12 +110,15 @@ func TestResetDatabase_AutoIncrement(t *testing.T) {
 	assert.NoError(t, ResetDatabase())
 	// Neuen User anlegen
 	user := models.User{
-		Username:  "neuer.user",
-		Email:     "neu@schichtplaner.de",
-		FirstName: "Neu",
-		LastName:  "User",
-		IsActive:  true,
-		Role:      "user",
+		Username:      "neuer.user",
+		Email:         "neu@schichtplaner.de",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP999",
+		Name:          "Neu User",
+		Color:         "#ff0000",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
 	}
 	assert.NoError(t, DB.Create(&user).Error)
 	assert.Equal(t, uint(1), user.ID, "Nach Reset sollte die User-ID wieder bei 1 starten")
@@ -301,8 +304,8 @@ func TestDatabaseDataIntegrity(t *testing.T) {
 	for _, user := range users {
 		assert.NotEmpty(t, user.Username, "Username sollte nicht leer sein")
 		assert.NotEmpty(t, user.Email, "Email sollte nicht leer sein")
-		assert.NotEmpty(t, user.FirstName, "FirstName sollte nicht leer sein")
-		assert.NotEmpty(t, user.LastName, "LastName sollte nicht leer sein")
+		assert.NotEmpty(t, user.Name, "Name sollte nicht leer sein")
+		assert.NotEmpty(t, user.AccountNumber, "AccountNumber sollte nicht leer sein")
 		assert.NotEmpty(t, user.Role, "Role sollte nicht leer sein")
 	}
 }

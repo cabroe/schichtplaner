@@ -22,12 +22,15 @@ func TestShift_Create(t *testing.T) {
 
 	// User und Schedule für Tests erstellen
 	user := User{
-		Username:  "testuser",
-		Email:     "test@example.com",
-		FirstName: "Test",
-		LastName:  "User",
-		IsActive:  true,
-		Role:      "user",
+		Username:      "testuser",
+		Email:         "test@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP001",
+		Name:          "Test User",
+		Color:         "#ff0000",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
 	}
 	db.Create(&user)
 
@@ -62,12 +65,15 @@ func TestShift_Validation(t *testing.T) {
 
 	// User und Schedule für Tests erstellen
 	user := User{
-		Username:  "testuser",
-		Email:     "test@example.com",
-		FirstName: "Test",
-		LastName:  "User",
-		IsActive:  true,
-		Role:      "user",
+		Username:      "testuser",
+		Email:         "test@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP001",
+		Name:          "Test User",
+		Color:         "#ff0000",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
 	}
 	db.Create(&user)
 
@@ -139,12 +145,15 @@ func TestShift_DefaultValues(t *testing.T) {
 
 	// User und Schedule für Tests erstellen
 	user := User{
-		Username:  "testuser",
-		Email:     "test@example.com",
-		FirstName: "Test",
-		LastName:  "User",
-		IsActive:  true,
-		Role:      "user",
+		Username:      "testuser",
+		Email:         "test@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP001",
+		Name:          "Test User",
+		Color:         "#ff0000",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
 	}
 	db.Create(&user)
 
@@ -178,12 +187,15 @@ func TestShift_TimeValidation(t *testing.T) {
 
 	// User und Schedule für Tests erstellen
 	user := User{
-		Username:  "testuser",
-		Email:     "test@example.com",
-		FirstName: "Test",
-		LastName:  "User",
-		IsActive:  true,
-		Role:      "user",
+		Username:      "testuser",
+		Email:         "test@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP001",
+		Name:          "Test User",
+		Color:         "#ff0000",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
 	}
 	db.Create(&user)
 
@@ -217,12 +229,15 @@ func TestShift_Relationships(t *testing.T) {
 
 	// User erstellen
 	user := User{
-		Username:  "testuser",
-		Email:     "test@example.com",
-		FirstName: "Test",
-		LastName:  "User",
-		IsActive:  true,
-		Role:      "user",
+		Username:      "testuser",
+		Email:         "test@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP001",
+		Name:          "Test User",
+		Color:         "#ff0000",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
 	}
 	db.Create(&user)
 
@@ -268,12 +283,15 @@ func TestShift_SoftDelete(t *testing.T) {
 
 	// User und Schedule für Tests erstellen
 	user := User{
-		Username:  "testuser",
-		Email:     "test@example.com",
-		FirstName: "Test",
-		LastName:  "User",
-		IsActive:  true,
-		Role:      "user",
+		Username:      "testuser",
+		Email:         "test@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP001",
+		Name:          "Test User",
+		Color:         "#ff0000",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
 	}
 	db.Create(&user)
 

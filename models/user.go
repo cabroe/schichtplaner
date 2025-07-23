@@ -7,11 +7,14 @@ import (
 // User repräsentiert einen Benutzer im System
 type User struct {
 	gorm.Model
-	Username  string  `gorm:"uniqueIndex;not null" json:"username"`
-	Email     string  `gorm:"uniqueIndex;not null" json:"email"`
-	FirstName string  `json:"first_name"`
-	LastName  string  `json:"last_name"`
-	IsActive  bool    `gorm:"default:true" json:"is_active"`
-	Role      string  `gorm:"default:'user'" json:"role"`
-	Shifts    []Shift `gorm:"foreignKey:UserID" json:"shifts,omitempty"`
+	Username      string  `gorm:"uniqueIndex;not null" json:"username"`
+	Email         string  `gorm:"uniqueIndex;not null" json:"email"`
+	Password      string  `gorm:"not null" json:"-"` // "-" versteckt das Passwort in JSON-Responses
+	AccountNumber string  `gorm:"uniqueIndex" json:"account_number"`
+	Name          string  `json:"name"`
+	Color         string  `json:"color"`
+	Role          string  `gorm:"default:'user'" json:"role"`
+	IsActive      bool    `gorm:"default:true" json:"is_active"`
+	IsAdmin       bool    `gorm:"default:false" json:"is_admin"`
+	Shifts        []Shift `gorm:"foreignKey:UserID" json:"shifts,omitempty"`
 }
