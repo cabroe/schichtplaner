@@ -26,6 +26,7 @@
 - 2 Spaces Einrückung
 - Deutsche UI-Texte
 - Vite für Build-Tool
+- Yarn für Package Management
 
 ## Development
 - `make dev` für parallele Entwicklung
