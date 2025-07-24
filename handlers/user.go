@@ -43,7 +43,7 @@ func GetUser(c echo.Context) error {
 	}
 
 	var user models.User
-	if err := database.DB.Preload("Shifts").First(&user, id).Error; err != nil {
+	if err := database.DB.Preload("Shifts").Preload("Team").First(&user, id).Error; err != nil {
 		return c.JSON(http.StatusNotFound, map[string]string{
 			"error": "Benutzer nicht gefunden",
 		})
@@ -267,4 +267,53 @@ func ChangePassword(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]string{
 		"message": "Passwort erfolgreich geändert",
 	})
+}
+
+// GetUsersByTeam gibt alle Benutzer eines bestimmten Teams zurück
+func GetUsersByTeam(c echo.Context) error {
+	teamID, err := strconv.ParseUint(c.Param("team_id"), 10, 32)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Ungültige Team-ID",
+		})
+	}
+
+	params := utils.GetPaginationParams(c)
+
+	var users []models.User
+	var total int64
+
+	// Zähle die Gesamtanzahl der Benutzer im Team
+	database.DB.Model(&models.User{}).Where("team_id = ?", teamID).Count(&total)
+
+	// Lade die paginierten Daten
+	if err := database.DB.Where("team_id = ?", teamID).Preload("Team").Offset(params.Offset).Limit(params.PageSize).Find(&users).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "Fehler beim Laden der Team-Benutzer",
+		})
+	}
+
+	response := utils.CreatePaginatedResponse(users, int(total), params)
+	return c.JSON(http.StatusOK, response)
+}
+
+// GetUsersWithoutTeam gibt alle Benutzer zurück, die keinem Team angehören
+func GetUsersWithoutTeam(c echo.Context) error {
+	params := utils.GetPaginationParams(c)
+
+	var users []models.User
+	var total int64
+
+	// Zähle die Gesamtanzahl der Benutzer ohne Team
+	database.DB.Model(&models.User{}).Where("team_id IS NULL").Count(&total)
+
+	// Lade die paginierten Daten
+	if err := database.DB.Where("team_id IS NULL").Offset(params.Offset).Limit(params.PageSize).Find(&users).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "Fehler beim Laden der Benutzer ohne Team",
+		})
+	}
+
+	response := utils.CreatePaginatedResponse(users, int(total), params)
+	return c.JSON(http.StatusOK, response)
 }

@@ -13,4 +13,6 @@ func RegisterAPIRoutes(e *echo.Echo) {
 	RegisterUserRoutes(api)
 	RegisterShiftRoutes(api)
 	RegisterScheduleRoutes(api)
+	RegisterShiftTypeRoutes(api)
+	RegisterTeamRoutes(api)
 }

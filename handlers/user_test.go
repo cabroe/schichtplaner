@@ -26,7 +26,7 @@ func setupTestDB() {
 	}
 
 	// Auto-Migration für Tests
-	database.DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{})
+	database.DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{}, &models.Team{}, &models.ShiftType{})
 }
 
 func cleanupTestDB() {

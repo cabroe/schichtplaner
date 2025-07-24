@@ -15,4 +15,8 @@ func RegisterUserRoutes(api *echo.Group) {
 	api.POST("/users", handlers.CreateUser)
 	api.PUT("/users/:id", handlers.UpdateUser)
 	api.DELETE("/users/:id", handlers.DeleteUser)
+
+	// Team-bezogene User-Endpunkte
+	api.GET("/teams/:team_id/users", handlers.GetUsersByTeam)
+	api.GET("/users/without-team", handlers.GetUsersWithoutTeam)
 }

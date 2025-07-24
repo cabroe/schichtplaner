@@ -19,7 +19,7 @@ func setupTestDB(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Migration durchführen
-	err = database.DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{})
+	err = database.DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{}, &models.Team{}, &models.ShiftType{})
 	assert.NoError(t, err)
 }
 

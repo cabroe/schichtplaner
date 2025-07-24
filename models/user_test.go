@@ -7,36 +7,44 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUser_All(t *testing.T) {
-	// Führe alle User-Tests zusammen aus
-	t.Run("Create", TestUser_Create)
-	t.Run("Validation", TestUser_Validation)
-	t.Run("UniqueConstraints", TestUser_UniqueConstraints)
-	t.Run("DefaultValues", TestUser_DefaultValues)
-	t.Run("SoftDelete", TestUser_SoftDelete)
-	t.Run("Relationships", TestUser_Relationships)
-}
+// Entfernt TestUser_All um Test-Isolation zu gewährleisten
+// Jeder Test läuft jetzt individuell mit seiner eigenen Datenbank-Instanz
 
 func TestUser_Create(t *testing.T) {
 	db := setupTestDB(t)
 
+	// Team erstellen
+	team := Team{
+		Name:        "Test Team",
+		Description: "Test Team Description",
+		Color:       "#3B82F6",
+		IsActive:    true,
+		SortOrder:   1,
+	}
+
+	result := db.Create(&team)
+	assert.NoError(t, result.Error)
+
 	user := User{
-		Username:      "testuser",
-		Email:         "test@example.com",
+		Username:      "testuser_create",
+		Email:         "test_create@example.com",
 		Password:      "hashedpassword",
-		AccountNumber: "EMP001",
-		Name:          "Test User",
+		AccountNumber: "EMP_CREATE_001",
+		Name:          "Test User Create",
 		Color:         "#ff0000",
 		IsActive:      true,
 		Role:          "user",
 		IsAdmin:       false,
+		TeamID:        &team.ID,
 	}
 
-	result := db.Create(&user)
+	result = db.Create(&user)
 	assert.NoError(t, result.Error)
 	assert.NotZero(t, user.ID)
 	assert.NotZero(t, user.CreatedAt)
 	assert.NotZero(t, user.UpdatedAt)
+	assert.NotNil(t, user.TeamID)
+	assert.Equal(t, team.ID, *user.TeamID)
 }
 
 func TestUser_Validation(t *testing.T) {
@@ -44,10 +52,10 @@ func TestUser_Validation(t *testing.T) {
 
 	// Test: Username ist required (GORM validiert nicht automatisch, aber wir testen es)
 	user := User{
-		Email:         "test@example.com",
+		Email:         "test_validation1@example.com",
 		Password:      "hashedpassword",
-		AccountNumber: "EMP001",
-		Name:          "Test User",
+		AccountNumber: "EMP_VALIDATION1",
+		Name:          "Test User Validation 1",
 	}
 
 	result := db.Create(&user)
@@ -57,10 +65,10 @@ func TestUser_Validation(t *testing.T) {
 
 	// Test: Email ist required
 	user = User{
-		Username:      "testuser",
+		Username:      "testuser_validation2",
 		Password:      "hashedpassword",
-		AccountNumber: "EMP002",
-		Name:          "Test User",
+		AccountNumber: "EMP_VALIDATION2",
+		Name:          "Test User Validation 2",
 	}
 
 	result = db.Create(&user)
@@ -72,11 +80,11 @@ func TestUser_UniqueConstraints(t *testing.T) {
 
 	// Ersten User erstellen
 	user1 := User{
-		Username:      "testuser",
-		Email:         "test@example.com",
+		Username:      "testuser_unique1",
+		Email:         "test_unique1@example.com",
 		Password:      "hashedpassword",
-		AccountNumber: "EMP001",
-		Name:          "Test User",
+		AccountNumber: "EMP_UNIQUE1",
+		Name:          "Test User Unique 1",
 		IsActive:      true,
 		Role:          "user",
 		IsAdmin:       false,
@@ -87,11 +95,11 @@ func TestUser_UniqueConstraints(t *testing.T) {
 
 	// Zweiten User mit gleichem Username erstellen
 	user2 := User{
-		Username:      "testuser", // Gleicher Username
-		Email:         "test2@example.com",
+		Username:      "testuser_unique1", // Gleicher Username
+		Email:         "test_unique2@example.com",
 		Password:      "hashedpassword",
-		AccountNumber: "EMP002",
-		Name:          "Test User 2",
+		AccountNumber: "EMP_UNIQUE2",
+		Name:          "Test User Unique 2",
 		IsActive:      true,
 		Role:          "user",
 		IsAdmin:       false,
@@ -102,11 +110,11 @@ func TestUser_UniqueConstraints(t *testing.T) {
 
 	// Dritten User mit gleicher Email erstellen
 	user3 := User{
-		Username:      "testuser3",
-		Email:         "test@example.com", // Gleiche Email
+		Username:      "testuser_unique3",
+		Email:         "test_unique1@example.com", // Gleiche Email
 		Password:      "hashedpassword",
-		AccountNumber: "EMP003",
-		Name:          "Test User 3",
+		AccountNumber: "EMP_UNIQUE3",
+		Name:          "Test User Unique 3",
 		IsActive:      true,
 		Role:          "user",
 		IsAdmin:       false,
@@ -117,11 +125,11 @@ func TestUser_UniqueConstraints(t *testing.T) {
 
 	// Vierten User mit gleicher AccountNumber erstellen
 	user4 := User{
-		Username:      "testuser4",
-		Email:         "test4@example.com",
+		Username:      "testuser_unique4",
+		Email:         "test_unique4@example.com",
 		Password:      "hashedpassword",
-		AccountNumber: "EMP001", // Gleiche AccountNumber
-		Name:          "Test User 4",
+		AccountNumber: "EMP_UNIQUE1", // Gleiche AccountNumber
+		Name:          "Test User Unique 4",
 		IsActive:      true,
 		Role:          "user",
 		IsAdmin:       false,
@@ -135,11 +143,11 @@ func TestUser_DefaultValues(t *testing.T) {
 	db := setupTestDB(t)
 
 	user := User{
-		Username:      "testuser",
-		Email:         "test@example.com",
+		Username:      "testuser_default",
+		Email:         "test_default@example.com",
 		Password:      "hashedpassword",
-		AccountNumber: "EMP001",
-		Name:          "Test User",
+		AccountNumber: "EMP_DEFAULT",
+		Name:          "Test User Default",
 	}
 
 	result := db.Create(&user)
@@ -155,11 +163,11 @@ func TestUser_SoftDelete(t *testing.T) {
 	db := setupTestDB(t)
 
 	user := User{
-		Username:      "testuser",
-		Email:         "test@example.com",
+		Username:      "testuser_delete",
+		Email:         "test_delete@example.com",
 		Password:      "hashedpassword",
-		AccountNumber: "EMP001",
-		Name:          "Test User",
+		AccountNumber: "EMP_DELETE",
+		Name:          "Test User Delete",
 		IsActive:      true,
 		Role:          "user",
 		IsAdmin:       false,
@@ -187,19 +195,32 @@ func TestUser_SoftDelete(t *testing.T) {
 func TestUser_Relationships(t *testing.T) {
 	db := setupTestDB(t)
 
+	// Team erstellen
+	team := Team{
+		Name:        "Test Team",
+		Description: "Test Team Description",
+		Color:       "#3B82F6",
+		IsActive:    true,
+		SortOrder:   1,
+	}
+
+	result := db.Create(&team)
+	assert.NoError(t, result.Error)
+
 	// User erstellen
 	user := User{
-		Username:      "testuser",
-		Email:         "test@example.com",
+		Username:      "testuser_rel",
+		Email:         "test_rel@example.com",
 		Password:      "hashedpassword",
-		AccountNumber: "EMP001",
-		Name:          "Test User",
+		AccountNumber: "EMP_REL",
+		Name:          "Test User Relationships",
 		IsActive:      true,
 		Role:          "user",
 		IsAdmin:       false,
+		TeamID:        &team.ID,
 	}
 
-	result := db.Create(&user)
+	result = db.Create(&user)
 	assert.NoError(t, result.Error)
 
 	// Schedule erstellen
@@ -214,9 +235,25 @@ func TestUser_Relationships(t *testing.T) {
 	result = db.Create(&schedule)
 	assert.NoError(t, result.Error)
 
+	// Schichttyp erstellen
+	shiftType := ShiftType{
+		Name:         "Test Shift Type",
+		Description:  "Test Shift Type Description",
+		Color:        "#3B82F6",
+		DefaultStart: time.Date(2024, 1, 1, 6, 0, 0, 0, time.UTC),
+		DefaultEnd:   time.Date(2024, 1, 1, 14, 0, 0, 0, time.UTC),
+		DefaultBreak: 30,
+		IsActive:     true,
+		SortOrder:    1,
+	}
+
+	result = db.Create(&shiftType)
+	assert.NoError(t, result.Error)
+
 	// Shift für User erstellen
 	shift := Shift{
 		UserID:      user.ID,
+		ShiftTypeID: &shiftType.ID,
 		StartTime:   time.Now(),
 		EndTime:     time.Now().Add(8 * time.Hour),
 		BreakTime:   30,
@@ -228,10 +265,132 @@ func TestUser_Relationships(t *testing.T) {
 	result = db.Create(&shift)
 	assert.NoError(t, result.Error)
 
-	// User mit Shifts laden
+	// User mit Shifts, Team und Schichttyp laden
 	var userWithShifts User
-	result = db.Preload("Shifts").First(&userWithShifts, user.ID)
+	result = db.Preload("Shifts").Preload("Shifts.ShiftType").Preload("Team").First(&userWithShifts, user.ID)
 	assert.NoError(t, result.Error)
 	assert.Len(t, userWithShifts.Shifts, 1)
 	assert.Equal(t, shift.ID, userWithShifts.Shifts[0].ID)
+	assert.NotNil(t, userWithShifts.Team)
+	assert.Equal(t, team.ID, userWithShifts.Team.ID)
+	assert.NotNil(t, userWithShifts.Shifts[0].ShiftType)
+	assert.Equal(t, shiftType.ID, userWithShifts.Shifts[0].ShiftType.ID)
+}
+
+func TestUser_TeamRelationships(t *testing.T) {
+	db := setupTestDB(t)
+
+	// Team erstellen
+	team := Team{
+		Name:        "Test Team",
+		Description: "Test Team Description",
+		Color:       "#3B82F6",
+		IsActive:    true,
+		SortOrder:   1,
+	}
+
+	result := db.Create(&team)
+	assert.NoError(t, result.Error)
+
+	// User ohne Team erstellen
+	userWithoutTeam := User{
+		Username:      "user_no_team",
+		Email:         "user_no_team@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP_NO_TEAM",
+		Name:          "User Without Team",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
+		// TeamID ist nil (kein Team)
+	}
+
+	result = db.Create(&userWithoutTeam)
+	assert.NoError(t, result.Error)
+	assert.Nil(t, userWithoutTeam.TeamID)
+
+	// User mit Team erstellen
+	userWithTeam := User{
+		Username:      "user_with_team",
+		Email:         "user_with_team@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP_WITH_TEAM",
+		Name:          "User With Team",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
+		TeamID:        &team.ID,
+	}
+
+	result = db.Create(&userWithTeam)
+	assert.NoError(t, result.Error)
+	assert.NotNil(t, userWithTeam.TeamID)
+	assert.Equal(t, team.ID, *userWithTeam.TeamID)
+
+	// User mit Team laden
+	var loadedUser User
+	result = db.Preload("Team").First(&loadedUser, userWithTeam.ID)
+	assert.NoError(t, result.Error)
+	assert.NotNil(t, loadedUser.Team)
+	assert.Equal(t, team.ID, loadedUser.Team.ID)
+	assert.Equal(t, "Test Team", loadedUser.Team.Name)
+
+	// User ohne Team laden
+	var userNoTeam User
+	result = db.Preload("Team").First(&userNoTeam, userWithoutTeam.ID)
+	assert.NoError(t, result.Error)
+	assert.Nil(t, userNoTeam.TeamID)
+	assert.Equal(t, uint(0), userNoTeam.Team.ID) // Leeres Team-Objekt
+
+	// Team mit Users laden
+	var loadedTeam Team
+	result = db.Preload("Users").First(&loadedTeam, team.ID)
+	assert.NoError(t, result.Error)
+	assert.Len(t, loadedTeam.Users, 1)
+	assert.Equal(t, userWithTeam.ID, loadedTeam.Users[0].ID)
+
+	// User zu Team hinzufügen
+	userWithoutTeam.TeamID = &team.ID
+	result = db.Save(&userWithoutTeam)
+	assert.NoError(t, result.Error)
+
+	// Prüfen, dass User jetzt im Team ist
+	var updatedTeam Team
+	result = db.Preload("Users").First(&updatedTeam, team.ID)
+	assert.NoError(t, result.Error)
+	assert.Len(t, updatedTeam.Users, 2)
+
+	// User aus Team entfernen
+	userWithoutTeam.TeamID = nil
+	result = db.Save(&userWithoutTeam)
+	assert.NoError(t, result.Error)
+
+	// Prüfen, dass User nicht mehr im Team ist
+	var finalTeam Team
+	result = db.Preload("Users").First(&finalTeam, team.ID)
+	assert.NoError(t, result.Error)
+	assert.Len(t, finalTeam.Users, 1)
+
+	// Test: User ohne Team erstellen
+	userNoTeam2 := User{
+		Username:      "user_no_team_2",
+		Email:         "user_no_team_2@example.com",
+		Password:      "hashedpassword",
+		AccountNumber: "EMP_NO_TEAM_2",
+		Name:          "User No Team 2",
+		IsActive:      true,
+		Role:          "user",
+		IsAdmin:       false,
+		// TeamID ist nil
+	}
+
+	result = db.Create(&userNoTeam2)
+	assert.NoError(t, result.Error)
+	assert.Nil(t, userNoTeam2.TeamID)
+
+	// Test: User ohne Team laden
+	var loadedUserNoTeam User
+	loadResult := db.Preload("Team").First(&loadedUserNoTeam, userNoTeam2.ID)
+	assert.NoError(t, loadResult.Error)
+	assert.Nil(t, loadedUserNoTeam.TeamID)
 }

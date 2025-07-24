@@ -9,23 +9,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestSchedule_All(t *testing.T) {
-	// Führe alle Schedule-Tests zusammen aus
-	t.Run("Create", TestSchedule_Create)
-	t.Run("Validation", TestSchedule_Validation)
-	t.Run("DefaultValues", TestSchedule_DefaultValues)
-	t.Run("DateValidation", TestSchedule_DateValidation)
-	t.Run("Relationships", TestSchedule_Relationships)
-	t.Run("SoftDelete", TestSchedule_SoftDelete)
-	t.Run("DateRange", TestSchedule_DateRange)
-}
-
 func setupTestDB(t *testing.T) *gorm.DB {
 	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	assert.NoError(t, err)
 
 	// Migration durchführen
-	err = db.AutoMigrate(&User{}, &Shift{}, &Schedule{})
+	err = db.AutoMigrate(&User{}, &Shift{}, &Schedule{}, &Team{}, &ShiftType{})
 	assert.NoError(t, err)
 
 	return db

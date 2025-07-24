@@ -34,7 +34,7 @@ func setupTestDB(t *testing.T) {
 	DB, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	assert.NoError(t, err)
 	// Migration durchführen
-	err = DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{})
+	err = DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{}, &models.Team{}, &models.ShiftType{})
 	assert.NoError(t, err)
 }
 
@@ -55,7 +55,7 @@ func TestSeedDatabase(t *testing.T) {
 	users, schedules, shifts := countAll(t)
 	assert.Equal(t, int64(5), users, "Es sollten 5 User angelegt werden")
 	assert.Equal(t, int64(3), schedules, "Es sollten 3 Schedules angelegt werden")
-	assert.Equal(t, int64(6), shifts, "Es sollten 6 Shifts angelegt werden")
+	assert.Equal(t, int64(8), shifts, "Es sollten 8 Shifts angelegt werden")
 
 	// Prüfe, ob ein Admin-User existiert
 	var admin models.User
@@ -85,16 +85,16 @@ func TestResetAndSeedDatabase(t *testing.T) {
 	users, schedules, shifts := countAll(t)
 	assert.Equal(t, int64(5), users)
 	assert.Equal(t, int64(3), schedules)
-	assert.Equal(t, int64(6), shifts)
+	assert.Equal(t, int64(8), shifts)
 }
 
 func TestSeedDatabase_EmptyTables(t *testing.T) {
 	setupTestDB(t)
 	// Seed sollte auch funktionieren, wenn Tabellen leer sind
 	assert.NoError(t, SeedDatabase())
-	// Nochmal seeden sollte wegen Unique-Constraints fehlschlagen
+	// Nochmal seeden sollte jetzt funktionieren (da Duplikate vermieden werden)
 	err := SeedDatabase()
-	assert.Error(t, err, "Doppeltes Seeden sollte einen Fehler werfen")
+	assert.NoError(t, err, "Doppeltes Seeden sollte jetzt funktionieren")
 }
 
 func TestResetDatabase_EmptyTables(t *testing.T) {
@@ -133,7 +133,7 @@ func TestInitDatabase(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Migration sollte funktionieren
-	err = DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{})
+	err = DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{}, &models.Team{}, &models.ShiftType{})
 	assert.NoError(t, err)
 
 	// Prüfe, ob Tabellen existieren
@@ -205,7 +205,7 @@ func TestDatabaseOperations_Integration(t *testing.T) {
 	users, schedules, shifts := countAll(t)
 	assert.Equal(t, int64(5), users)
 	assert.Equal(t, int64(3), schedules)
-	assert.Equal(t, int64(6), shifts)
+	assert.Equal(t, int64(8), shifts)
 
 	// Reset
 	err = ResetDatabase()
@@ -223,7 +223,7 @@ func TestDatabaseOperations_Integration(t *testing.T) {
 	users, schedules, shifts = countAll(t)
 	assert.Equal(t, int64(5), users)
 	assert.Equal(t, int64(3), schedules)
-	assert.Equal(t, int64(6), shifts)
+	assert.Equal(t, int64(8), shifts)
 }
 
 func TestDatabaseFileOperations(t *testing.T) {
@@ -239,7 +239,7 @@ func TestDatabaseFileOperations(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Migration
-	err = DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{})
+	err = DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{}, &models.Team{}, &models.ShiftType{})
 	assert.NoError(t, err)
 
 	// Seed
@@ -250,7 +250,7 @@ func TestDatabaseFileOperations(t *testing.T) {
 	users, schedules, shifts := countAll(t)
 	assert.Equal(t, int64(5), users)
 	assert.Equal(t, int64(3), schedules)
-	assert.Equal(t, int64(6), shifts)
+	assert.Equal(t, int64(8), shifts)
 
 	// Schließe DB
 	CloseDatabase()

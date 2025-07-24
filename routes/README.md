@@ -6,4 +6,6 @@ API-Routen-Konfiguration mit Echo Framework.
 - `general.go` - Allgemeine Routen
 - `users.go` - Benutzer-Routen
 - `shifts.go` - Schicht-Routen
-- `schedules.go` - Zeitplan-Routen 
+- `schedules.go` - Zeitplan-Routen
+- `shift_types.go` - Schichttyp-Routen
+- `teams.go` - Team-Routen 
