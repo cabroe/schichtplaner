@@ -54,23 +54,5 @@ docker-up: ## Startet alle Services (Schichtplaner + Monitoring)
 docker-down: ## Stoppt alle Services
 	@docker-compose down
 
-todo: ## Zeigt TODO-Status an
-	@./scripts/update_todo.sh status
-
-todo-add: ## Fügt neue TODO-Aufgabe hinzu (interaktiv)
-	@./scripts/update_todo.sh add
-
-todo-complete: ## Markiert TODO-Aufgabe als abgeschlossen (interaktiv)
-	@./scripts/update_todo.sh complete
-
-todo-complete-title: ## Markiert TODO-Aufgabe als abgeschlossen (per Titel)
-	@./scripts/update_todo.sh complete-title
-
-todo-progress: ## Zeigt detaillierten TODO-Fortschritt
-	@./scripts/update_todo.sh progress
-
-todo-update: ## Aktualisiert TODO-Fortschritt
-	@./scripts/update_todo.sh update
-
 help: ## Zeigt diese Hilfe an
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
