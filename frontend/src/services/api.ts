@@ -173,6 +173,16 @@ export const api = {
     apiClient.put(`/users/${id}`, userData),
   
   deleteUser: (id: number) => apiClient.delete(`/users/${id}`),
+  
+  // User-spezifische Endpunkte
+  getActiveUsers: (page?: number, limit?: number) =>
+    apiClient.getPaginated('/users/active', page, limit),
+  
+  getUsersByTeam: (teamId: number, page?: number, limit?: number) =>
+    apiClient.getPaginated(`/teams/${teamId}/users`, page, limit),
+  
+  getUsersWithoutTeam: (page?: number, limit?: number) =>
+    apiClient.getPaginated('/users/without-team', page, limit),
 
   // Schedules
   getSchedules: (page?: number, limit?: number) =>

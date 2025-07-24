@@ -38,6 +38,18 @@ export const routeConfig: Record<string, PageTitleEntry> = {
     icon: "fas fa-cog",
     headerComponent: SettingsHeader,
   },
+  "/admin": {
+    title: "Administration",
+    pretitle: "Systemverwaltung",
+    icon: "fas fa-shield-alt",
+    children: {
+      "/admin/users": {
+        title: "Benutzer",
+        pretitle: "Verwaltung",
+        icon: "fas fa-users",
+      },
+    },
+  },
   "/demos": {
     title: "Demos",
     pretitle: "Beispiele",

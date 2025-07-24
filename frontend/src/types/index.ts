@@ -7,12 +7,13 @@ export interface User {
   name: string;
   color: string;
   role: UserRole;
-  personalnummer: string;
-  accountNumber: string;
-  isActive: boolean;
-  isAdmin: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  personalnummer?: string; // Optional, da Backend es nicht hat
+  account_number: string; // Angepasst an Backend
+  is_active: boolean; // Angepasst an Backend
+  is_admin: boolean; // Angepasst an Backend
+  team_id?: number; // Optional, da Backend es hat
+  created_at?: string; // Angepasst an Backend
+  updated_at?: string; // Angepasst an Backend
 }
 
 export type UserRole = 'admin' | 'manager' | 'employee' | 'user';
@@ -107,11 +108,11 @@ export interface UserForm {
   name: string;
   color: string;
   role: UserRole;
-  personalnummer: string;
-  accountNumber: string;
+  personalnummer?: string; // Optional
+  account_number: string; // Angepasst an Backend
   password?: string;
-  isActive?: boolean;
-  isAdmin?: boolean;
+  is_active?: boolean; // Angepasst an Backend
+  is_admin?: boolean; // Angepasst an Backend
 }
 
 export interface ScheduleForm {

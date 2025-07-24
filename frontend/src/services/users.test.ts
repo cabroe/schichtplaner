@@ -11,6 +11,9 @@ vi.mock('./api', () => ({
     createUser: vi.fn(),
     updateUser: vi.fn(),
     deleteUser: vi.fn(),
+    getActiveUsers: vi.fn(),
+    getUsersByTeam: vi.fn(),
+    getUsersWithoutTeam: vi.fn(),
   },
 }));
 
@@ -23,11 +26,11 @@ const mockUser: User = {
   color: '#ff0000',
   role: 'employee',
   personalnummer: 'EMP001',
-  accountNumber: 'ACC001',
-  isActive: true,
-  isAdmin: false,
-  createdAt: new Date('2024-01-01'),
-  updatedAt: new Date('2024-01-01'),
+  account_number: 'ACC001',
+  is_active: true,
+  is_admin: false,
+  created_at: '2024-01-01T00:00:00Z',
+  updated_at: '2024-01-01T00:00:00Z',
 };
 
 const mockUserForm: UserForm = {
@@ -37,7 +40,7 @@ const mockUserForm: UserForm = {
   color: '#00ff00',
   role: 'employee',
   personalnummer: 'EMP002',
-  accountNumber: 'ACC002',
+  account_number: 'ACC002',
   password: 'password123',
 };
 
@@ -57,7 +60,7 @@ const mockUsersResponse = {
       id: 3,
       username: 'inactive',
       name: 'Inactive User',
-      isActive: false,
+      is_active: false,
     },
   ],
   pagination: {
@@ -307,11 +310,11 @@ describe('UserService', () => {
     it('filtert nur aktive User', async () => {
       const mockApi = vi.mocked(api);
       const testResponse = {
-        data: [
-          { ...mockUser, isActive: true },
-          { ...mockUser, id: 2, isActive: true },
-          { ...mockUser, id: 3, isActive: false },
-        ],
+              data: [
+        { ...mockUser, is_active: true },
+        { ...mockUser, id: 2, is_active: true },
+        { ...mockUser, id: 3, is_active: false },
+      ],
         pagination: { page: 1, limit: 10, total: 3, totalPages: 1 },
         success: true,
       };
@@ -321,14 +324,14 @@ describe('UserService', () => {
 
       expect(mockApi.getUsers).toHaveBeenCalledWith(1, 10);
       expect(result.data).toHaveLength(2); // Nur 2 aktive User
-      expect(result.data.every((user: User) => user.isActive)).toBe(true);
+      expect(result.data.every((user: User) => user.is_active)).toBe(true);
     });
 
     it('gibt leere Liste zurück wenn keine aktiven User', async () => {
       const mockApi = vi.mocked(api);
       const inactiveUsersResponse = {
         ...mockUsersResponse,
-        data: mockUsersResponse.data.map(user => ({ ...user, isActive: false })),
+        data: mockUsersResponse.data.map(user => ({ ...user, is_active: false })),
       };
       mockApi.getUsers.mockResolvedValue(inactiveUsersResponse);
 
