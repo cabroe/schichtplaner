@@ -13,8 +13,8 @@ dev: ## Startet die Entwicklungsumgebung
 
 test: test-backend test-frontend ## Führt alle Tests aus (inkl. Datenbank und Frontend)
 
-test-backend: ## Führt nur Backend-Tests aus (ohne Datenbank)
-	go test ./utils ./handlers ./routes ./models ./database
+test-backend: ## Führt nur Backend-Tests aus
+	go test ./...
 
 test-frontend: ## Führt Frontend-Tests aus
 	cd frontend && yarn test --run
