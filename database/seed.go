@@ -36,6 +36,9 @@ func ResetDatabase() error {
 	if err := DB.Exec("DELETE FROM shift_types").Error; err != nil {
 		return err
 	}
+	if err := DB.Exec("DELETE FROM shift_templates").Error; err != nil {
+		return err
+	}
 
 	// Setze Auto-Increment-Zähler zurück
 	if err := DB.Exec("DELETE FROM sqlite_sequence WHERE name IN ('users', 'schedules', 'shifts', 'teams', 'shift_types', 'shift_templates')").Error; err != nil {

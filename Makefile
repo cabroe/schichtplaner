@@ -11,8 +11,12 @@ build: ## Erstellt die Anwendung für Produktion
 dev: ## Startet die Entwicklungsumgebung
 	concurrently "cd frontend && yarn dev" "air"
 
-test: ## Führt alle Tests aus
-	go test ./...
+test: test-backend test-frontend ## Führt alle Tests aus (inkl. Datenbank und Frontend)
+
+test-backend: ## Führt nur Backend-Tests aus (ohne Datenbank)
+	go test ./utils ./handlers ./routes ./models ./database
+
+test-frontend: ## Führt Frontend-Tests aus
 	cd frontend && yarn test --run
 
 test-ui: ## Startet die Test-UI (Vitest UI)

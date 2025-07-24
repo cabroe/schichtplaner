@@ -14,7 +14,7 @@ func setupTestDB(t *testing.T) *gorm.DB {
 	assert.NoError(t, err)
 
 	// Migration durchführen
-	err = db.AutoMigrate(&User{}, &Shift{}, &Schedule{}, &Team{}, &ShiftType{})
+	err = db.AutoMigrate(&User{}, &Shift{}, &Schedule{}, &Team{}, &ShiftType{}, &ShiftTemplate{})
 	assert.NoError(t, err)
 
 	return db
