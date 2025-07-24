@@ -7,19 +7,3 @@
 
 ### Health Check abrufen
 GET http://localhost:3000/api/health
-
-### ========================================
-### ERROR TESTS
-### ========================================
-
-### Nicht existierende Route
-GET http://localhost:3000/api/nonexistent
-
-### Falsche HTTP-Methode
-POST http://localhost:3000/api/health
-
-### Root-Pfad
-GET http://localhost:3000/
-
-### API-Root ohne Endpunkt
-GET http://localhost:3000/api/ 

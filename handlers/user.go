@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"schichtplaner/database"
 	"schichtplaner/models"
@@ -72,6 +73,28 @@ func CreateUser(c echo.Context) error {
 		})
 	}
 
+	// Validiere Pflichtfelder
+	if userRequest.Username == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Benutzername ist ein Pflichtfeld",
+		})
+	}
+	if userRequest.Email == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "E-Mail ist ein Pflichtfeld",
+		})
+	}
+	if userRequest.Password == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Passwort ist ein Pflichtfeld",
+		})
+	}
+	if userRequest.Name == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Name ist ein Pflichtfeld",
+		})
+	}
+
 	// Hash das Passwort
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userRequest.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -80,12 +103,19 @@ func CreateUser(c echo.Context) error {
 		})
 	}
 
+	// Generiere eine AccountNumber falls nicht angegeben
+	accountNumber := userRequest.AccountNumber
+	if accountNumber == "" {
+		// Einfache Generierung basierend auf Username und Timestamp
+		accountNumber = "ACC-" + userRequest.Username + "-" + strconv.FormatInt(time.Now().Unix(), 10)
+	}
+
 	// Erstelle den neuen Benutzer
 	user := models.User{
 		Username:      userRequest.Username,
 		Email:         userRequest.Email,
 		Password:      string(hashedPassword),
-		AccountNumber: userRequest.AccountNumber,
+		AccountNumber: accountNumber,
 		Name:          userRequest.Name,
 		Color:         userRequest.Color,
 		Role:          userRequest.Role,
@@ -94,8 +124,10 @@ func CreateUser(c echo.Context) error {
 	}
 
 	if err := database.DB.Create(&user).Error; err != nil {
+		// Log den spezifischen Fehler für Debugging
+		c.Logger().Errorf("Fehler beim Erstellen des Benutzers: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{
-			"error": "Fehler beim Erstellen des Benutzers",
+			"error": "Fehler beim Erstellen des Benutzers: " + err.Error(),
 		})
 	}
 
@@ -136,10 +168,30 @@ func UpdateUser(c echo.Context) error {
 		})
 	}
 
+	// Validiere Pflichtfelder beim Update
+	if updateRequest.Username == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Benutzername ist ein Pflichtfeld",
+		})
+	}
+	if updateRequest.Email == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "E-Mail ist ein Pflichtfeld",
+		})
+	}
+	if updateRequest.Name == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Name ist ein Pflichtfeld",
+		})
+	}
+
 	// Aktualisiere die Felder
 	user.Username = updateRequest.Username
 	user.Email = updateRequest.Email
-	user.AccountNumber = updateRequest.AccountNumber
+	// Nur AccountNumber aktualisieren wenn sie angegeben wurde
+	if updateRequest.AccountNumber != "" {
+		user.AccountNumber = updateRequest.AccountNumber
+	}
 	user.Name = updateRequest.Name
 	user.Color = updateRequest.Color
 	user.Role = updateRequest.Role
@@ -158,8 +210,10 @@ func UpdateUser(c echo.Context) error {
 	}
 
 	if err := database.DB.Save(&user).Error; err != nil {
+		// Log den spezifischen Fehler für Debugging
+		c.Logger().Errorf("Fehler beim Aktualisieren des Benutzers: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{
-			"error": "Fehler beim Aktualisieren des Benutzers",
+			"error": "Fehler beim Aktualisieren des Benutzers: " + err.Error(),
 		})
 	}
 

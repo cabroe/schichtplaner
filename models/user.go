@@ -6,8 +6,8 @@ type User struct {
 	Username      string  `gorm:"uniqueIndex;not null" json:"username"`
 	Email         string  `gorm:"uniqueIndex;not null" json:"email"`
 	Password      string  `gorm:"not null" json:"-"` // "-" versteckt das Passwort in JSON-Responses
-	AccountNumber string  `gorm:"uniqueIndex" json:"account_number"`
-	Name          string  `json:"name"`
+	AccountNumber string  `gorm:"uniqueIndex" json:"account_number,omitempty"`
+	Name          string  `gorm:"not null" json:"name"`
 	Color         string  `json:"color"`
 	Role          string  `gorm:"default:'user'" json:"role"`
 	IsActive      bool    `gorm:"default:true" json:"is_active"`
