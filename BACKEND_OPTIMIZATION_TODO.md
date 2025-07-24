@@ -47,6 +47,20 @@
 
 ## 🔧 **Mittel (Nächste Iteration) - Wichtige Verbesserungen**
 
+### 9. Test Aufgabe
+- [x] **Datei**: `test.go`
+- [x] **Aufgabe**: Test Beschreibung
+- [x] **Schätzung**: 1 Stunden
+- [x] **Status**: Offen
+
+
+### 9. DB-Tool Tests
+- [x] **Datei**: `cmd/db/main.go`
+- [x] **Aufgabe**: Umfassende Tests implementieren
+- [x] **Schätzung**: 3 Stunden
+- [x] **Status**: Offen
+
+
 ### 5. Strukturiertes Logging
 - [ ] **Datei**: `middleware/logging.go` (neu)
 - [ ] **Aufgabe**: Strukturiertes Logging mit Fields implementieren
@@ -158,4 +172,4 @@
 
 ---
 
-*Letzte Aktualisierung: $(date)* 
+*Letzte Aktualisierung: Thu Jul 24 19:14:43 CEST 2025* 

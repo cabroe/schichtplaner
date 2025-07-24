@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # TODO-Liste Pflege Skript
-# Verwendung: ./scripts/update_todo.sh [status|progress|add|complete]
+# Verwendung: ./scripts/update_todo.sh [status|progress|add|complete|update]
+# Parameter-basierte Steuerung ohne Benutzerinteraktion
 
 TODO_FILE="BACKEND_OPTIMIZATION_TODO.md"
 
@@ -56,14 +57,26 @@ show_progress() {
 }
 
 add_task() {
+    # Parameter: add <priority> <title> <file> <description> <estimate>
+    if [ $# -lt 5 ]; then
+        echo -e "${RED}Fehler: add benötigt 5 Parameter: priority title file description estimate${NC}"
+        echo "Beispiel: $0 add mittel 'DB-Tool Tests' 'cmd/db/main.go' 'Umfassende Tests implementieren' 3"
+        exit 1
+    fi
+    
+    priority="$2"
+    title="$3"
+    file="$4"
+    description="$5"
+    estimate="$6"
+    
     echo -e "${BLUE}➕ Neue Aufgabe hinzufügen${NC}"
     echo "================================"
-    
-    read -p "Priorität (hoch/mittel/niedrig): " priority
-    read -p "Titel: " title
-    read -p "Datei: " file
-    read -p "Beschreibung: " description
-    read -p "Schätzung (Stunden): " estimate
+    echo "Priorität: $priority"
+    echo "Titel: $title"
+    echo "Datei: $file"
+    echo "Beschreibung: $description"
+    echo "Schätzung: $estimate Stunden"
     
     # Bestimme nächste Nummer
     case $priority in
@@ -83,50 +96,96 @@ add_task() {
             section="Niedrig (Langfristig)"
             ;;
         *)
-            echo -e "${RED}Ungültige Priorität${NC}"
+            echo -e "${RED}Ungültige Priorität: $priority${NC}"
             exit 1
             ;;
     esac
     
-    # Füge Aufgabe hinzu
-    task_entry="### $next_num. $title
-- [ ] **Datei**: \`$file\`
-- [ ] **Aufgabe**: $description
-- [ ] **Schätzung**: $estimate Stunden
-- [ ] **Status**: Offen
-
-"
-    
-    # Finde die richtige Stelle und füge hinzu
-    awk -v task="$task_entry" -v section="$section" '
-    /^## 🔧 \*\*Mittel/ && section == "Mittel (Nächste Iteration)" {
-        print task
-        print
-    }
-    /^## 📈 \*\*Niedrig/ && section == "Niedrig (Langfristig)" {
-        print task
-        print
-    }
-    { print }
-    ' "$TODO_FILE" > "${TODO_FILE}.tmp" && mv "${TODO_FILE}.tmp" "$TODO_FILE"
+    # Füge Aufgabe hinzu - verwende sed statt awk für bessere Zeilenumbrruch-Behandlung
+    if [ "$section" = "Mittel (Nächste Iteration)" ]; then
+        # Füge nach der Mittel-Sektion hinzu
+        sed -i '' "/^## 🔧 \*\*Mittel/a\\
+\\
+### $next_num. $title\\
+- [ ] **Datei**: \`$file\`\\
+- [ ] **Aufgabe**: $description\\
+- [ ] **Schätzung**: $estimate Stunden\\
+- [ ] **Status**: Offen\\
+\\
+" "$TODO_FILE"
+    elif [ "$section" = "Niedrig (Langfristig)" ]; then
+        # Füge nach der Niedrig-Sektion hinzu
+        sed -i '' "/^## 📈 \*\*Niedrig/a\\
+\\
+### $next_num. $title\\
+- [ ] **Datei**: \`$file\`\\
+- [ ] **Aufgabe**: $description\\
+- [ ] **Schätzung**: $estimate Stunden\\
+- [ ] **Status**: Offen\\
+\\
+" "$TODO_FILE"
+    else
+        # Füge nach der Hoch-Sektion hinzu
+        sed -i '' "/^## 🚀 \*\*Hoch/a\\
+\\
+### $next_num. $title\\
+- [ ] **Datei**: \`$file\`\\
+- [ ] **Aufgabe**: $description\\
+- [ ] **Schätzung**: $estimate Stunden\\
+- [ ] **Status**: Offen\\
+\\
+" "$TODO_FILE"
+    fi
     
     echo -e "${GREEN}✅ Aufgabe hinzugefügt!${NC}"
 }
 
 complete_task() {
+    # Parameter: complete <line_number>
+    if [ $# -lt 2 ]; then
+        echo -e "${RED}Fehler: complete benötigt Zeilennummer${NC}"
+        echo "Beispiel: $0 complete 15"
+        exit 1
+    fi
+    
+    line_num="$2"
+    
     echo -e "${BLUE}✅ Aufgabe als abgeschlossen markieren${NC}"
     echo "============================================="
-    
-    # Zeige alle offenen Aufgaben
-    echo "Offene Aufgaben:"
-    grep -n "^- \[ \]" "$TODO_FILE" | head -20
-    
-    read -p "Zeile der abzuschließenden Aufgabe: " line_num
+    echo "Markiere Zeile $line_num als abgeschlossen"
     
     # Markiere als abgeschlossen (macOS-kompatibel)
     sed -i '' "${line_num}s/^- \[ \]/- [x]/" "$TODO_FILE"
     
     echo -e "${GREEN}✅ Aufgabe als abgeschlossen markiert!${NC}"
+}
+
+complete_by_title() {
+    # Parameter: complete-title <title>
+    if [ $# -lt 2 ]; then
+        echo -e "${RED}Fehler: complete-title benötigt Titel${NC}"
+        echo "Beispiel: $0 complete-title 'DB-Tool Tests'"
+        exit 1
+    fi
+    
+    title="$2"
+    
+    echo -e "${BLUE}✅ Aufgabe als abgeschlossen markieren${NC}"
+    echo "============================================="
+    echo "Suche nach Aufgabe: $title"
+    
+    # Finde Zeile mit dem Titel und markiere als abgeschlossen
+    line_num=$(grep -n "### [0-9]*\. $title" "$TODO_FILE" | cut -d: -f1)
+    
+    if [ -z "$line_num" ]; then
+        echo -e "${RED}❌ Aufgabe '$title' nicht gefunden${NC}"
+        exit 1
+    fi
+    
+    # Markiere alle Checkboxen der Aufgabe als abgeschlossen
+    sed -i '' "${line_num},$((line_num + 5))s/^- \[ \]/- [x]/" "$TODO_FILE"
+    
+    echo -e "${GREEN}✅ Aufgabe '$title' als abgeschlossen markiert!${NC}"
 }
 
 update_progress() {
@@ -148,10 +207,13 @@ case "${1:-status}" in
         show_progress
         ;;
     "add")
-        add_task
+        add_task "$@"
         ;;
     "complete")
-        complete_task
+        complete_task "$@"
+        ;;
+    "complete-title")
+        complete_by_title "$@"
         ;;
     "update")
         update_progress
@@ -159,14 +221,21 @@ case "${1:-status}" in
     *)
         echo -e "${BLUE}📋 TODO-Liste Pflege Tool${NC}"
         echo "================================"
-        echo "Verwendung: $0 [status|progress|add|complete|update]"
+        echo "Verwendung: $0 [status|progress|add|complete|complete-title|update]"
         echo ""
         echo "Befehle:"
-        echo "  status    - Zeige Übersicht"
-        echo "  progress  - Zeige detaillierten Fortschritt"
-        echo "  add       - Neue Aufgabe hinzufügen"
-        echo "  complete  - Aufgabe als abgeschlossen markieren"
-        echo "  update    - Fortschritt aktualisieren"
+        echo "  status                    - Zeige Übersicht"
+        echo "  progress                  - Zeige detaillierten Fortschritt"
+        echo "  add <priority> <title> <file> <description> <estimate>"
+        echo "                            - Neue Aufgabe hinzufügen"
+        echo "  complete <line_number>    - Aufgabe als abgeschlossen markieren (per Zeile)"
+        echo "  complete-title <title>    - Aufgabe als abgeschlossen markieren (per Titel)"
+        echo "  update                    - Fortschritt aktualisieren"
+        echo ""
+        echo "Beispiele:"
+        echo "  $0 add mittel 'DB-Tool Tests' 'cmd/db/main.go' 'Umfassende Tests implementieren' 3"
+        echo "  $0 complete-title 'DB-Tool Tests'"
+        echo "  $0 complete 15"
         echo ""
         show_status
         ;;
