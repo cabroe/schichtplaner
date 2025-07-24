@@ -61,6 +61,28 @@ func CreateShift(c echo.Context) error {
 		})
 	}
 
+	// Validiere Pflichtfelder
+	if shift.UserID == 0 {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Benutzer-ID ist ein Pflichtfeld",
+		})
+	}
+	if shift.ScheduleID == 0 {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Schichtplan-ID ist ein Pflichtfeld",
+		})
+	}
+	if shift.StartTime.IsZero() {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Startzeit ist ein Pflichtfeld",
+		})
+	}
+	if shift.EndTime.IsZero() {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Endzeit ist ein Pflichtfeld",
+		})
+	}
+
 	// Validiere Zeiten
 	if shift.StartTime.After(shift.EndTime) {
 		return c.JSON(http.StatusBadRequest, map[string]string{
@@ -97,6 +119,28 @@ func UpdateShift(c echo.Context) error {
 	if err := c.Bind(&updateData); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": "Ungültige Schichtdaten",
+		})
+	}
+
+	// Validiere Pflichtfelder
+	if updateData.UserID == 0 {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Benutzer-ID ist ein Pflichtfeld",
+		})
+	}
+	if updateData.ScheduleID == 0 {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Schichtplan-ID ist ein Pflichtfeld",
+		})
+	}
+	if updateData.StartTime.IsZero() {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Startzeit ist ein Pflichtfeld",
+		})
+	}
+	if updateData.EndTime.IsZero() {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Endzeit ist ein Pflichtfeld",
 		})
 	}
 

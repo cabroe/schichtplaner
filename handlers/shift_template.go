@@ -100,6 +100,13 @@ func CreateShiftTemplate(c echo.Context) error {
 		})
 	}
 
+	// Validiere Pflichtfelder
+	if shiftTemplate.Name == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Name ist ein Pflichtfeld",
+		})
+	}
+
 	// Validiere, dass alle Schichttyp-IDs existieren (falls gesetzt)
 	if err := validateShiftTypeIDs(&shiftTemplate); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
@@ -150,6 +157,13 @@ func UpdateShiftTemplate(c echo.Context) error {
 	if err := c.Bind(&updateData); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": "Ungültige Schichtvorlagen-Daten",
+		})
+	}
+
+	// Validiere Pflichtfelder
+	if updateData.Name == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Name ist ein Pflichtfeld",
 		})
 	}
 

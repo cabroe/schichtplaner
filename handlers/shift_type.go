@@ -74,6 +74,13 @@ func CreateShiftType(c echo.Context) error {
 		})
 	}
 
+	// Validiere Pflichtfelder
+	if shiftType.Name == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Name ist ein Pflichtfeld",
+		})
+	}
+
 	// Validiere Standardzeiten
 	if !shiftType.DefaultStart.IsZero() && !shiftType.DefaultEnd.IsZero() {
 		if shiftType.DefaultStart.After(shiftType.DefaultEnd) {
@@ -121,6 +128,13 @@ func UpdateShiftType(c echo.Context) error {
 	if err := c.Bind(&updateData); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": "Ungültige Schichttyp-Daten",
+		})
+	}
+
+	// Validiere Pflichtfelder
+	if updateData.Name == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Name ist ein Pflichtfeld",
 		})
 	}
 

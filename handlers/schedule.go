@@ -61,6 +61,23 @@ func CreateSchedule(c echo.Context) error {
 		})
 	}
 
+	// Validiere Pflichtfelder
+	if schedule.Name == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Name ist ein Pflichtfeld",
+		})
+	}
+	if schedule.StartDate.IsZero() {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Startdatum ist ein Pflichtfeld",
+		})
+	}
+	if schedule.EndDate.IsZero() {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Enddatum ist ein Pflichtfeld",
+		})
+	}
+
 	// Validiere Zeitraum
 	if schedule.StartDate.After(schedule.EndDate) {
 		return c.JSON(http.StatusBadRequest, map[string]string{
@@ -97,6 +114,23 @@ func UpdateSchedule(c echo.Context) error {
 	if err := c.Bind(&updateData); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": "Ungültige Schichtplan-Daten",
+		})
+	}
+
+	// Validiere Pflichtfelder
+	if updateData.Name == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Name ist ein Pflichtfeld",
+		})
+	}
+	if updateData.StartDate.IsZero() {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Startdatum ist ein Pflichtfeld",
+		})
+	}
+	if updateData.EndDate.IsZero() {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Enddatum ist ein Pflichtfeld",
 		})
 	}
 
