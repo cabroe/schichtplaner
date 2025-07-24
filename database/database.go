@@ -36,7 +36,7 @@ func InitDatabase() {
 	log.Println("Datenbank erfolgreich verbunden")
 
 	// Auto-Migration für alle Modelle
-	if err := DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{}, &models.Team{}, &models.ShiftType{}); err != nil {
+	if err := DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{}, &models.Team{}, &models.ShiftType{}, &models.ShiftTemplate{}); err != nil {
 		log.Fatal("Fehler bei der Datenbank-Migration:", err)
 	}
 

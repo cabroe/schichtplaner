@@ -38,7 +38,7 @@ func ResetDatabase() error {
 	}
 
 	// Setze Auto-Increment-Zähler zurück
-	if err := DB.Exec("DELETE FROM sqlite_sequence WHERE name IN ('users', 'schedules', 'shifts', 'teams', 'shift_types')").Error; err != nil {
+	if err := DB.Exec("DELETE FROM sqlite_sequence WHERE name IN ('users', 'schedules', 'shifts', 'teams', 'shift_types', 'shift_templates')").Error; err != nil {
 		return err
 	}
 
@@ -334,14 +334,98 @@ func SeedDatabase() error {
 		// Schedule existiert bereits, überspringe
 	}
 
+	// Erstelle Test-Schichtvorlagen
+	// Lade die erstellten Schichttypen für Vorlagen
+	var createdShiftTypes []models.ShiftType
+	DB.Find(&createdShiftTypes)
+
+	if len(createdShiftTypes) == 0 {
+		log.Println("Keine Schichttypen gefunden für Vorlagen-Erstellung")
+		return nil
+	}
+
+	// Erstelle verschiedene Schichtvorlagen
+	shiftTemplates := []models.ShiftTemplate{
+		{
+			Name:        "Vollzeit-Standard",
+			Description: "Standard-Vollzeit-Schichtvorlage (Mo-Fr, 8h)",
+			Color:       "#3B82F6",
+			IsActive:    true,
+			SortOrder:   1,
+			// Montag bis Freitag Frühschicht
+			MondayShiftTypeID:    &createdShiftTypes[0].ID, // Frühschicht
+			TuesdayShiftTypeID:   &createdShiftTypes[0].ID, // Frühschicht
+			WednesdayShiftTypeID: &createdShiftTypes[0].ID, // Frühschicht
+			ThursdayShiftTypeID:  &createdShiftTypes[0].ID, // Frühschicht
+			FridayShiftTypeID:    &createdShiftTypes[0].ID, // Frühschicht
+			// Samstag und Sonntag frei (nil)
+		},
+		{
+			Name:        "Wechsel-Schicht",
+			Description: "Wechsel zwischen Früh- und Spätschicht",
+			Color:       "#EF4444",
+			IsActive:    true,
+			SortOrder:   2,
+			// Montag, Mittwoch, Freitag: Frühschicht
+			MondayShiftTypeID:    &createdShiftTypes[0].ID, // Frühschicht
+			WednesdayShiftTypeID: &createdShiftTypes[0].ID, // Frühschicht
+			FridayShiftTypeID:    &createdShiftTypes[0].ID, // Frühschicht
+			// Dienstag, Donnerstag: Spätschicht
+			TuesdayShiftTypeID:  &createdShiftTypes[1].ID, // Spätschicht
+			ThursdayShiftTypeID: &createdShiftTypes[1].ID, // Spätschicht
+			// Samstag und Sonntag frei (nil)
+		},
+		{
+			Name:        "Teilzeit-Woche",
+			Description: "Teilzeit-Schichtvorlage (3 Tage)",
+			Color:       "#F59E0B",
+			IsActive:    true,
+			SortOrder:   3,
+			// Montag, Mittwoch, Freitag: Teilzeit
+			MondayShiftTypeID:    &createdShiftTypes[3].ID, // Teilzeit
+			WednesdayShiftTypeID: &createdShiftTypes[3].ID, // Teilzeit
+			FridayShiftTypeID:    &createdShiftTypes[3].ID, // Teilzeit
+			// Dienstag, Donnerstag, Samstag, Sonntag frei (nil)
+		},
+		{
+			Name:        "Nachtschicht-Woche",
+			Description: "Nachtschicht-Vorlage für 7 Tage",
+			Color:       "#8B5CF6",
+			IsActive:    false, // Inaktive Vorlage
+			SortOrder:   4,
+			// Alle Tage Nachtschicht
+			MondayShiftTypeID:    &createdShiftTypes[2].ID, // Nachtschicht
+			TuesdayShiftTypeID:   &createdShiftTypes[2].ID, // Nachtschicht
+			WednesdayShiftTypeID: &createdShiftTypes[2].ID, // Nachtschicht
+			ThursdayShiftTypeID:  &createdShiftTypes[2].ID, // Nachtschicht
+			FridayShiftTypeID:    &createdShiftTypes[2].ID, // Nachtschicht
+			SaturdayShiftTypeID:  &createdShiftTypes[2].ID, // Nachtschicht
+			SundayShiftTypeID:    &createdShiftTypes[2].ID, // Nachtschicht
+		},
+	}
+
+	for _, template := range shiftTemplates {
+		// Prüfe, ob Vorlage bereits existiert
+		var existingTemplate models.ShiftTemplate
+		if err := DB.Where("name = ?", template.Name).First(&existingTemplate).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				// Vorlage existiert nicht, erstelle sie
+				if err := DB.Create(&template).Error; err != nil {
+					return err
+				}
+			} else {
+				return err
+			}
+		}
+		// Vorlage existiert bereits, überspringe
+	}
+
 	// Erstelle Test-Shifts
 	// Lade die erstellten Users, Schedules und Schichttypen
 	var createdUsers []models.User
 	var createdSchedules []models.Schedule
-	var createdShiftTypes []models.ShiftType
 	DB.Find(&createdUsers)
 	DB.Find(&createdSchedules)
-	DB.Find(&createdShiftTypes)
 
 	if len(createdUsers) == 0 || len(createdSchedules) == 0 || len(createdShiftTypes) == 0 {
 		log.Println("Keine Users, Schedules oder Schichttypen gefunden für Shift-Erstellung")

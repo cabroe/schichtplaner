@@ -34,16 +34,17 @@ func setupTestDB(t *testing.T) {
 	DB, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	assert.NoError(t, err)
 	// Migration durchführen
-	err = DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{}, &models.Team{}, &models.ShiftType{})
+	err = DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{}, &models.Team{}, &models.ShiftType{}, &models.ShiftTemplate{})
 	assert.NoError(t, err)
 }
 
-func countAll(t *testing.T) (int64, int64, int64) {
-	var users, schedules, shifts int64
+func countAll(t *testing.T) (int64, int64, int64, int64) {
+	var users, schedules, shifts, shiftTemplates int64
 	assert.NoError(t, DB.Model(&models.User{}).Count(&users).Error)
 	assert.NoError(t, DB.Model(&models.Schedule{}).Count(&schedules).Error)
 	assert.NoError(t, DB.Model(&models.Shift{}).Count(&shifts).Error)
-	return users, schedules, shifts
+	assert.NoError(t, DB.Model(&models.ShiftTemplate{}).Count(&shiftTemplates).Error)
+	return users, schedules, shifts, shiftTemplates
 }
 
 func TestSeedDatabase(t *testing.T) {
@@ -52,10 +53,11 @@ func TestSeedDatabase(t *testing.T) {
 	err := SeedDatabase()
 	assert.NoError(t, err)
 
-	users, schedules, shifts := countAll(t)
+	users, schedules, shifts, shiftTemplates := countAll(t)
 	assert.Equal(t, int64(5), users, "Es sollten 5 User angelegt werden")
 	assert.Equal(t, int64(3), schedules, "Es sollten 3 Schedules angelegt werden")
 	assert.Equal(t, int64(8), shifts, "Es sollten 8 Shifts angelegt werden")
+	assert.Equal(t, int64(4), shiftTemplates, "Es sollten 4 Schichtvorlagen angelegt werden")
 
 	// Prüfe, ob ein Admin-User existiert
 	var admin models.User
@@ -70,10 +72,11 @@ func TestResetDatabase(t *testing.T) {
 	assert.NoError(t, SeedDatabase())
 	assert.NoError(t, ResetDatabase())
 
-	users, schedules, shifts := countAll(t)
+	users, schedules, shifts, shiftTemplates := countAll(t)
 	assert.Equal(t, int64(0), users, "Alle User sollten gelöscht sein")
 	assert.Equal(t, int64(0), schedules, "Alle Schedules sollten gelöscht sein")
 	assert.Equal(t, int64(0), shifts, "Alle Shifts sollten gelöscht sein")
+	assert.Equal(t, int64(0), shiftTemplates, "Alle Schichtvorlagen sollten gelöscht sein")
 }
 
 func TestResetAndSeedDatabase(t *testing.T) {
@@ -82,10 +85,11 @@ func TestResetAndSeedDatabase(t *testing.T) {
 	assert.NoError(t, SeedDatabase())
 	assert.NoError(t, ResetAndSeedDatabase())
 
-	users, schedules, shifts := countAll(t)
+	users, schedules, shifts, shiftTemplates := countAll(t)
 	assert.Equal(t, int64(5), users)
 	assert.Equal(t, int64(3), schedules)
 	assert.Equal(t, int64(8), shifts)
+	assert.Equal(t, int64(4), shiftTemplates)
 }
 
 func TestSeedDatabase_EmptyTables(t *testing.T) {
@@ -133,13 +137,14 @@ func TestInitDatabase(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Migration sollte funktionieren
-	err = DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{}, &models.Team{}, &models.ShiftType{})
+	err = DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{}, &models.Team{}, &models.ShiftType{}, &models.ShiftTemplate{})
 	assert.NoError(t, err)
 
 	// Prüfe, ob Tabellen existieren
 	assert.True(t, DB.Migrator().HasTable(&models.User{}))
 	assert.True(t, DB.Migrator().HasTable(&models.Schedule{}))
 	assert.True(t, DB.Migrator().HasTable(&models.Shift{}))
+	assert.True(t, DB.Migrator().HasTable(&models.ShiftTemplate{}))
 }
 
 func TestCloseDatabase(t *testing.T) {
@@ -202,28 +207,31 @@ func TestDatabaseOperations_Integration(t *testing.T) {
 	err := SeedDatabase()
 	assert.NoError(t, err)
 
-	users, schedules, shifts := countAll(t)
+	users, schedules, shifts, shiftTemplates := countAll(t)
 	assert.Equal(t, int64(5), users)
 	assert.Equal(t, int64(3), schedules)
 	assert.Equal(t, int64(8), shifts)
+	assert.Equal(t, int64(4), shiftTemplates)
 
 	// Reset
 	err = ResetDatabase()
 	assert.NoError(t, err)
 
-	users, schedules, shifts = countAll(t)
+	users, schedules, shifts, shiftTemplates = countAll(t)
 	assert.Equal(t, int64(0), users)
 	assert.Equal(t, int64(0), schedules)
 	assert.Equal(t, int64(0), shifts)
+	assert.Equal(t, int64(0), shiftTemplates)
 
 	// Erneut Seed
 	err = SeedDatabase()
 	assert.NoError(t, err)
 
-	users, schedules, shifts = countAll(t)
+	users, schedules, shifts, shiftTemplates = countAll(t)
 	assert.Equal(t, int64(5), users)
 	assert.Equal(t, int64(3), schedules)
 	assert.Equal(t, int64(8), shifts)
+	assert.Equal(t, int64(4), shiftTemplates)
 }
 
 func TestDatabaseFileOperations(t *testing.T) {
@@ -239,7 +247,7 @@ func TestDatabaseFileOperations(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Migration
-	err = DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{}, &models.Team{}, &models.ShiftType{})
+	err = DB.AutoMigrate(&models.User{}, &models.Shift{}, &models.Schedule{}, &models.Team{}, &models.ShiftType{}, &models.ShiftTemplate{})
 	assert.NoError(t, err)
 
 	// Seed
@@ -247,10 +255,11 @@ func TestDatabaseFileOperations(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Prüfe, dass Daten erstellt wurden
-	users, schedules, shifts := countAll(t)
+	users, schedules, shifts, shiftTemplates := countAll(t)
 	assert.Equal(t, int64(5), users)
 	assert.Equal(t, int64(3), schedules)
 	assert.Equal(t, int64(8), shifts)
+	assert.Equal(t, int64(4), shiftTemplates)
 
 	// Schließe DB
 	CloseDatabase()
