@@ -100,7 +100,7 @@ Aktualisiert das Datum der letzten Änderung.
 
 ## 📁 Dateien
 
-- `BACKEND_OPTIMIZATION_TODO.md` - Haupt-TODO-Liste
+- `TODO.md` - Haupt-TODO-Liste
 - `scripts/update_todo.sh` - Pflege-Skript
 - `TODO_README.md` - Diese Dokumentation
 
@@ -162,10 +162,10 @@ chmod +x scripts/update_todo.sh
 ### TODO-Datei nicht gefunden
 ```bash
 # Prüfen ob Datei existiert
-ls -la BACKEND_OPTIMIZATION_TODO.md
+ls -la TODO.md
 
 # Datei neu erstellen falls nötig
-# (Siehe BACKEND_OPTIMIZATION_TODO.md)
+# (Siehe TODO.md)
 ```
 
 ---

@@ -4,7 +4,7 @@
 # Verwendung: ./scripts/update_todo.sh [status|progress|add|complete|update]
 # Parameter-basierte Steuerung ohne Benutzerinteraktion
 
-TODO_FILE="BACKEND_OPTIMIZATION_TODO.md"
+TODO_FILE="TODO.md"
 
 # Farben für Output
 RED='\033[0;31m'

@@ -42,7 +42,7 @@
 - `make todo-complete` für Aufgaben abschließen
 - `make todo-update` für Fortschritt aktualisieren
 - Prioritäten: Hoch (Sofort), Mittel (Nächste Iteration), Niedrig (Langfristig)
-- TODO-Datei: `BACKEND_OPTIMIZATION_TODO.md`
+- TODO-Datei: `TODO.md`
 - Pflege-Skript: `scripts/update_todo.sh`
 
 ## API Standards

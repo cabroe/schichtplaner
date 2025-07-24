@@ -1,6 +1,13 @@
-# Backend-Optimierung TODO
+# TODO - Projekt Aufgaben
 
 ## 🚀 **Hoch (Sofort) - Kritische Optimierungen**
+
+### 5. Frontend Tests
+- [ ] **Datei**: `frontend/src`
+- [ ] **Aufgabe**: React Tests implementieren
+- [ ] **Schätzung**: 5 Stunden
+- [ ] **Status**: Offen
+
 
 ### 1. Connection Pool Konfiguration
 - [ ] **Datei**: `database/database.go`
