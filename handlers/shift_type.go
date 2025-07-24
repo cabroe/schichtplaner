@@ -74,29 +74,22 @@ func CreateShiftType(c echo.Context) error {
 		})
 	}
 
-	// Validiere Pflichtfelder
-	if shiftType.Name == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Name ist ein Pflichtfeld",
-		})
-	}
+	// Validiere Pflichtfelder mit dem Validator
+	validator := utils.NewValidator()
+	validator.RequiredString("Name", shiftType.Name, "Name ist ein Pflichtfeld")
 
-	// Validiere Standardzeiten
+	// Validiere Standardzeiten (nur wenn beide gesetzt sind)
 	if !shiftType.DefaultStart.IsZero() && !shiftType.DefaultEnd.IsZero() {
-		if shiftType.DefaultStart.After(shiftType.DefaultEnd) {
-			return c.JSON(http.StatusBadRequest, map[string]string{
-				"error": "Standard-Startzeit muss vor Standard-Endzeit liegen",
-			})
-		}
+		validator.TimeRange("DefaultStart", "DefaultEnd", shiftType.DefaultStart, shiftType.DefaultEnd, "Standard-Startzeit muss vor Standard-Endzeit liegen")
 	}
 
-	// Validiere Dauer-Beschränkungen
+	// Validiere Dauer-Beschränkungen (nur wenn beide > 0 sind)
 	if shiftType.MinDuration > 0 && shiftType.MaxDuration > 0 {
-		if shiftType.MinDuration > shiftType.MaxDuration {
-			return c.JSON(http.StatusBadRequest, map[string]string{
-				"error": "Mindestdauer darf nicht größer als Maximaldauer sein",
-			})
-		}
+		validator.NumberRange("MinDuration", "MaxDuration", shiftType.MinDuration, shiftType.MaxDuration, "Mindestdauer darf nicht größer als Maximaldauer sein")
+	}
+
+	if err := validator.ValidateAndRespond(c); err != nil {
+		return err
 	}
 
 	if err := database.DB.Create(&shiftType).Error; err != nil {
@@ -131,29 +124,22 @@ func UpdateShiftType(c echo.Context) error {
 		})
 	}
 
-	// Validiere Pflichtfelder
-	if updateData.Name == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Name ist ein Pflichtfeld",
-		})
-	}
+	// Validiere Pflichtfelder mit dem Validator
+	validator := utils.NewValidator()
+	validator.RequiredString("Name", updateData.Name, "Name ist ein Pflichtfeld")
 
-	// Validiere Standardzeiten
+	// Validiere Standardzeiten (nur wenn beide gesetzt sind)
 	if !updateData.DefaultStart.IsZero() && !updateData.DefaultEnd.IsZero() {
-		if updateData.DefaultStart.After(updateData.DefaultEnd) {
-			return c.JSON(http.StatusBadRequest, map[string]string{
-				"error": "Standard-Startzeit muss vor Standard-Endzeit liegen",
-			})
-		}
+		validator.TimeRange("DefaultStart", "DefaultEnd", updateData.DefaultStart, updateData.DefaultEnd, "Standard-Startzeit muss vor Standard-Endzeit liegen")
 	}
 
-	// Validiere Dauer-Beschränkungen
+	// Validiere Dauer-Beschränkungen (nur wenn beide > 0 sind)
 	if updateData.MinDuration > 0 && updateData.MaxDuration > 0 {
-		if updateData.MinDuration > updateData.MaxDuration {
-			return c.JSON(http.StatusBadRequest, map[string]string{
-				"error": "Mindestdauer darf nicht größer als Maximaldauer sein",
-			})
-		}
+		validator.NumberRange("MinDuration", "MaxDuration", updateData.MinDuration, updateData.MaxDuration, "Mindestdauer darf nicht größer als Maximaldauer sein")
+	}
+
+	if err := validator.ValidateAndRespond(c); err != nil {
+		return err
 	}
 
 	if err := database.DB.Model(&shiftType).Updates(updateData).Error; err != nil {

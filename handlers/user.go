@@ -73,26 +73,15 @@ func CreateUser(c echo.Context) error {
 		})
 	}
 
-	// Validiere Pflichtfelder
-	if userRequest.Username == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Benutzername ist ein Pflichtfeld",
-		})
-	}
-	if userRequest.Email == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "E-Mail ist ein Pflichtfeld",
-		})
-	}
-	if userRequest.Password == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Passwort ist ein Pflichtfeld",
-		})
-	}
-	if userRequest.Name == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Name ist ein Pflichtfeld",
-		})
+	// Validiere Pflichtfelder mit dem Validator
+	validator := utils.NewValidator()
+	validator.RequiredString("Username", userRequest.Username, "Benutzername ist ein Pflichtfeld")
+	validator.RequiredString("Email", userRequest.Email, "E-Mail ist ein Pflichtfeld")
+	validator.RequiredString("Password", userRequest.Password, "Passwort ist ein Pflichtfeld")
+	validator.RequiredString("Name", userRequest.Name, "Name ist ein Pflichtfeld")
+
+	if err := validator.ValidateAndRespond(c); err != nil {
+		return err
 	}
 
 	// Hash das Passwort
@@ -169,20 +158,13 @@ func UpdateUser(c echo.Context) error {
 	}
 
 	// Validiere Pflichtfelder beim Update
-	if updateRequest.Username == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Benutzername ist ein Pflichtfeld",
-		})
-	}
-	if updateRequest.Email == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "E-Mail ist ein Pflichtfeld",
-		})
-	}
-	if updateRequest.Name == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Name ist ein Pflichtfeld",
-		})
+	validator := utils.NewValidator()
+	validator.RequiredString("Username", updateRequest.Username, "Benutzername ist ein Pflichtfeld")
+	validator.RequiredString("Email", updateRequest.Email, "E-Mail ist ein Pflichtfeld")
+	validator.RequiredString("Name", updateRequest.Name, "Name ist ein Pflichtfeld")
+
+	if err := validator.ValidateAndRespond(c); err != nil {
+		return err
 	}
 
 	// Aktualisiere die Felder

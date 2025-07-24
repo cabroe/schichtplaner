@@ -61,28 +61,15 @@ func CreateSchedule(c echo.Context) error {
 		})
 	}
 
-	// Validiere Pflichtfelder
-	if schedule.Name == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Name ist ein Pflichtfeld",
-		})
-	}
-	if schedule.StartDate.IsZero() {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Startdatum ist ein Pflichtfeld",
-		})
-	}
-	if schedule.EndDate.IsZero() {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Enddatum ist ein Pflichtfeld",
-		})
-	}
+	// Validiere Pflichtfelder mit dem Validator
+	validator := utils.NewValidator()
+	validator.RequiredString("Name", schedule.Name, "Name ist ein Pflichtfeld")
+	validator.RequiredTime("StartDate", schedule.StartDate, "Startdatum ist ein Pflichtfeld")
+	validator.RequiredTime("EndDate", schedule.EndDate, "Enddatum ist ein Pflichtfeld")
+	validator.TimeRange("StartDate", "EndDate", schedule.StartDate, schedule.EndDate, "Startdatum muss vor Enddatum liegen")
 
-	// Validiere Zeitraum
-	if schedule.StartDate.After(schedule.EndDate) {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Startdatum muss vor Enddatum liegen",
-		})
+	if err := validator.ValidateAndRespond(c); err != nil {
+		return err
 	}
 
 	if err := database.DB.Create(&schedule).Error; err != nil {
@@ -117,28 +104,15 @@ func UpdateSchedule(c echo.Context) error {
 		})
 	}
 
-	// Validiere Pflichtfelder
-	if updateData.Name == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Name ist ein Pflichtfeld",
-		})
-	}
-	if updateData.StartDate.IsZero() {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Startdatum ist ein Pflichtfeld",
-		})
-	}
-	if updateData.EndDate.IsZero() {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Enddatum ist ein Pflichtfeld",
-		})
-	}
+	// Validiere Pflichtfelder mit dem Validator
+	validator := utils.NewValidator()
+	validator.RequiredString("Name", updateData.Name, "Name ist ein Pflichtfeld")
+	validator.RequiredTime("StartDate", updateData.StartDate, "Startdatum ist ein Pflichtfeld")
+	validator.RequiredTime("EndDate", updateData.EndDate, "Enddatum ist ein Pflichtfeld")
+	validator.TimeRange("StartDate", "EndDate", updateData.StartDate, updateData.EndDate, "Startdatum muss vor Enddatum liegen")
 
-	// Validiere Zeitraum
-	if updateData.StartDate.After(updateData.EndDate) {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Startdatum muss vor Enddatum liegen",
-		})
+	if err := validator.ValidateAndRespond(c); err != nil {
+		return err
 	}
 
 	if err := database.DB.Model(&schedule).Updates(updateData).Error; err != nil {

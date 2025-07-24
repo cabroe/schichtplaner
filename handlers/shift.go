@@ -61,33 +61,16 @@ func CreateShift(c echo.Context) error {
 		})
 	}
 
-	// Validiere Pflichtfelder
-	if shift.UserID == 0 {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Benutzer-ID ist ein Pflichtfeld",
-		})
-	}
-	if shift.ScheduleID == 0 {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Schichtplan-ID ist ein Pflichtfeld",
-		})
-	}
-	if shift.StartTime.IsZero() {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Startzeit ist ein Pflichtfeld",
-		})
-	}
-	if shift.EndTime.IsZero() {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Endzeit ist ein Pflichtfeld",
-		})
-	}
+	// Validiere Pflichtfelder mit dem Validator
+	validator := utils.NewValidator()
+	validator.RequiredUint("UserID", shift.UserID, "Benutzer-ID ist ein Pflichtfeld")
+	validator.RequiredUint("ScheduleID", shift.ScheduleID, "Schichtplan-ID ist ein Pflichtfeld")
+	validator.RequiredTime("StartTime", shift.StartTime, "Startzeit ist ein Pflichtfeld")
+	validator.RequiredTime("EndTime", shift.EndTime, "Endzeit ist ein Pflichtfeld")
+	validator.TimeRange("StartTime", "EndTime", shift.StartTime, shift.EndTime, "Startzeit muss vor Endzeit liegen")
 
-	// Validiere Zeiten
-	if shift.StartTime.After(shift.EndTime) {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Startzeit muss vor Endzeit liegen",
-		})
+	if err := validator.ValidateAndRespond(c); err != nil {
+		return err
 	}
 
 	if err := database.DB.Create(&shift).Error; err != nil {
@@ -122,33 +105,16 @@ func UpdateShift(c echo.Context) error {
 		})
 	}
 
-	// Validiere Pflichtfelder
-	if updateData.UserID == 0 {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Benutzer-ID ist ein Pflichtfeld",
-		})
-	}
-	if updateData.ScheduleID == 0 {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Schichtplan-ID ist ein Pflichtfeld",
-		})
-	}
-	if updateData.StartTime.IsZero() {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Startzeit ist ein Pflichtfeld",
-		})
-	}
-	if updateData.EndTime.IsZero() {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Endzeit ist ein Pflichtfeld",
-		})
-	}
+	// Validiere Pflichtfelder mit dem Validator
+	validator := utils.NewValidator()
+	validator.RequiredUint("UserID", updateData.UserID, "Benutzer-ID ist ein Pflichtfeld")
+	validator.RequiredUint("ScheduleID", updateData.ScheduleID, "Schichtplan-ID ist ein Pflichtfeld")
+	validator.RequiredTime("StartTime", updateData.StartTime, "Startzeit ist ein Pflichtfeld")
+	validator.RequiredTime("EndTime", updateData.EndTime, "Endzeit ist ein Pflichtfeld")
+	validator.TimeRange("StartTime", "EndTime", updateData.StartTime, updateData.EndTime, "Startzeit muss vor Endzeit liegen")
 
-	// Validiere Zeiten
-	if updateData.StartTime.After(updateData.EndTime) {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Startzeit muss vor Endzeit liegen",
-		})
+	if err := validator.ValidateAndRespond(c); err != nil {
+		return err
 	}
 
 	if err := database.DB.Model(&shift).Updates(updateData).Error; err != nil {

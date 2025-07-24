@@ -100,11 +100,12 @@ func CreateShiftTemplate(c echo.Context) error {
 		})
 	}
 
-	// Validiere Pflichtfelder
-	if shiftTemplate.Name == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Name ist ein Pflichtfeld",
-		})
+	// Validiere Pflichtfelder mit dem Validator
+	validator := utils.NewValidator()
+	validator.RequiredString("Name", shiftTemplate.Name, "Name ist ein Pflichtfeld")
+
+	if err := validator.ValidateAndRespond(c); err != nil {
+		return err
 	}
 
 	// Validiere, dass alle Schichttyp-IDs existieren (falls gesetzt)
@@ -160,11 +161,12 @@ func UpdateShiftTemplate(c echo.Context) error {
 		})
 	}
 
-	// Validiere Pflichtfelder
-	if updateData.Name == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Name ist ein Pflichtfeld",
-		})
+	// Validiere Pflichtfelder mit dem Validator
+	validator := utils.NewValidator()
+	validator.RequiredString("Name", updateData.Name, "Name ist ein Pflichtfeld")
+
+	if err := validator.ValidateAndRespond(c); err != nil {
+		return err
 	}
 
 	// Validiere, dass alle Schichttyp-IDs existieren (falls gesetzt)

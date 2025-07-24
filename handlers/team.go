@@ -68,21 +68,23 @@ func GetTeam(c echo.Context) error {
 func CreateTeam(c echo.Context) error {
 	var team models.Team
 
+	// Binde und validiere Request-Daten
 	if err := c.Bind(&team); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": "Ungültige Team-Daten",
 		})
 	}
 
-	// Validiere Pflichtfelder
-	if team.Name == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Name ist ein Pflichtfeld",
-		})
+	// Validiere Pflichtfelder mit dem Validator
+	validator := utils.NewValidator()
+	validator.RequiredString("Name", team.Name, "Name ist ein Pflichtfeld")
+
+	if err := validator.ValidateAndRespond(c); err != nil {
+		return err
 	}
 
+	// Erstelle das Team
 	if err := database.DB.Create(&team).Error; err != nil {
-		// Log den spezifischen Fehler für Debugging
 		c.Logger().Errorf("Fehler beim Erstellen des Teams: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "Fehler beim Erstellen des Teams: " + err.Error(),
@@ -115,15 +117,15 @@ func UpdateTeam(c echo.Context) error {
 		})
 	}
 
-	// Validiere Pflichtfelder
-	if updateData.Name == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Name ist ein Pflichtfeld",
-		})
+	// Validiere Pflichtfelder mit dem Validator
+	validator := utils.NewValidator()
+	validator.RequiredString("Name", updateData.Name, "Name ist ein Pflichtfeld")
+
+	if err := validator.ValidateAndRespond(c); err != nil {
+		return err
 	}
 
 	if err := database.DB.Model(&team).Updates(updateData).Error; err != nil {
-		// Log den spezifischen Fehler für Debugging
 		c.Logger().Errorf("Fehler beim Aktualisieren des Teams: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "Fehler beim Aktualisieren des Teams: " + err.Error(),
