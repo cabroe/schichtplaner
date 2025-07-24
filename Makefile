@@ -57,9 +57,6 @@ docker-down: ## Stoppt alle Services
 todo: ## Zeigt TODO-Status an
 	@./scripts/update_todo.sh status
 
-todo-progress: ## Zeigt detaillierten TODO-Fortschritt
-	@./scripts/update_todo.sh progress
-
 todo-add: ## Fügt neue TODO-Aufgabe hinzu (interaktiv)
 	@./scripts/update_todo.sh add
 
@@ -69,8 +66,11 @@ todo-complete: ## Markiert TODO-Aufgabe als abgeschlossen (interaktiv)
 todo-complete-title: ## Markiert TODO-Aufgabe als abgeschlossen (per Titel)
 	@./scripts/update_todo.sh complete-title
 
+todo-progress: ## Zeigt detaillierten TODO-Fortschritt
+	@./scripts/update_todo.sh progress
+
 todo-update: ## Aktualisiert TODO-Fortschritt
 	@./scripts/update_todo.sh update
 
 help: ## Zeigt diese Hilfe an
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
