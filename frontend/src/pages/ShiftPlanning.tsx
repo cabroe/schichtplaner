@@ -6,34 +6,60 @@ import {
   addDays, 
   getWeekNumber, 
   groupDaysByWeek, 
-  generateCalendarDays,
-  formatCalendarDate,
-  formatCalendarDateLong
-} from '../utils/dateUtils';
-import { ContextMenu, ContextMenuItem, ContextMenuDivider } from '../components/ContextMenu';
-import DataTable from '../components/DataTable';
+  generateCalendarDays} from '../utils/dateUtils';
+import { ContextMenu } from '../components/ContextMenu';
+import {
+  ShiftPlanningTable,
+  ShiftTemplateModal,
+  ShiftContextMenuContent
+} from '../components/shift-planning';
+import type { Employee, ShiftType, ShiftTemplate, WeekGroup } from '../types/shift';
 
 // Mock-Daten für Schichtvorlagen
-const shiftTemplates = [
-  { id: 1, name: 'Frühschicht', startTime: '06:00', endTime: '14:00', color: '#ff6b6b' },
-  { id: 2, name: 'Spätschicht', startTime: '14:00', endTime: '22:00', color: '#4ecdc4' },
-  { id: 3, name: 'Nachtschicht', startTime: '22:00', endTime: '06:00', color: '#45b7d1' },
-  { id: 4, name: 'Teilzeit', startTime: '09:00', endTime: '13:00', color: '#96ceb4' },
+const shiftTemplates: ShiftTemplate[] = [
+  { 
+    id: '1', 
+    name: 'Frühschicht-Woche', 
+    description: '5 Tage Frühschicht', 
+    weekPattern: ['F', 'F', 'F', 'F', 'F', null, null],
+    color: '#ff6b6b'
+  },
+  { 
+    id: '2', 
+    name: 'Spätschicht-Woche', 
+    description: '5 Tage Spätschicht', 
+    weekPattern: ['S', 'S', 'S', 'S', 'S', null, null],
+    color: '#4ecdc4'
+  },
+  { 
+    id: '3', 
+    name: 'Nachtschicht-Woche', 
+    description: '5 Tage Nachtschicht', 
+    weekPattern: ['N', 'N', 'N', 'N', 'N', null, null],
+    color: '#45b7d1'
+  },
+  { 
+    id: '4', 
+    name: 'Wechselnde Schichten', 
+    description: 'Früh-Spät-Nacht Rotation', 
+    weekPattern: ['F', 'F', 'S', 'S', 'N', null, null],
+    color: '#96ceb4'
+  },
 ];
 
 // Hook für Schichtplanung
 const useShiftPlanning = (weeksToShow: number) => {
   const [calendarDays] = useState(() => generateCalendarDays(weeksToShow));
-  const [shifts, setShifts] = useState<Record<string, any>>({});
-  const [copiedShift, setCopiedShift] = useState<any>(null);
+  const [shifts, setShifts] = useState<Record<string, ShiftType>>({});
+  const [copiedShift, setCopiedShift] = useState<ShiftType>(null);
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
 
-  const getShift = (employeeId: string, day: Date) => {
+  const getShift = (employeeId: string, day: Date): ShiftType => {
     const key = `${employeeId}-${day.toISOString().split('T')[0]}`;
     return shifts[key] || null;
   };
 
-  const setShift = (employeeId: string, day: Date, shift: any) => {
+  const setShift = (employeeId: string, day: Date, shift: ShiftType) => {
     const key = `${employeeId}-${day.toISOString().split('T')[0]}`;
     setShifts(prev => ({
       ...prev,
@@ -70,20 +96,20 @@ const useShiftPlanning = (weeksToShow: number) => {
 
 // Hook für Context Menu
 const useContextMenu = (
-  setShift: (employeeId: string, day: Date, shift: any) => void,
+  setShift: (employeeId: string, day: Date, shift: ShiftType) => void,
   deleteWeek: (weekStart: Date) => void,
-  setCopiedShift: (shift: any) => void,
-  copiedShift: any) => {
+  setCopiedShift: (shift: ShiftType) => void,
+  copiedShift: ShiftType) => {
   const [contextMenu, setContextMenu] = useState<{
     x: number;
     y: number;
     isOpen: boolean;
-    employee?: any;
+    employee?: Employee;
     day?: Date;
-    shiftType?: any;
+    shiftType?: ShiftType;
   }>({ x: 0, y: 0, isOpen: false });
 
-  const openContextMenu = (event: React.MouseEvent, employee: any, day: Date, shiftType?: any) => {
+  const openContextMenu = (event: React.MouseEvent, employee: Employee, day: Date, shiftType: ShiftType) => {
     event.preventDefault();
     setContextMenu({
       x: event.clientX,
@@ -99,7 +125,7 @@ const useContextMenu = (
     setContextMenu(prev => ({ ...prev, isOpen: false }));
   };
 
-  const handleSetShift = (shift: any) => {
+  const handleSetShift = (shift: ShiftType) => {
     if (contextMenu.employee && contextMenu.day) {
       setShift(contextMenu.employee.id, contextMenu.day, shift);
     }
@@ -151,18 +177,28 @@ const useContextMenu = (
 };
 
 // Hook für Schichtplanung-Handler
-const useShiftPlanningHandlers = (setShift: (employeeId: string, day: Date, shift: any) => void) => {
+const useShiftPlanningHandlers = (setShift: (employeeId: string, day: Date, shift: ShiftType) => void) => {
   const [showTemplateModal, setShowTemplateModal] = useState(false);
-  const [selectedCell, setSelectedCell] = useState<{ employee: any; day: Date } | null>(null);
+  const [selectedCell, setSelectedCell] = useState<{ employee: Employee; day: Date; shiftType: ShiftType } | null>(null);
 
-  const handleCellClick = (employee: any, day: Date) => {
-    setSelectedCell({ employee, day });
+  const handleCellClick = (employee: Employee, day: Date, shiftType: ShiftType) => {
+    setSelectedCell({ employee, day, shiftType });
     setShowTemplateModal(true);
   };
 
-  const handleTemplateSelect = (template: any) => {
+  const handleTemplateSelect = (templateId: string) => {
     if (selectedCell) {
-      setShift(selectedCell.employee.id, selectedCell.day, template);
+      const template = shiftTemplates.find(t => t.id === templateId);
+      if (template) {
+        // Finde den Wochentag (0-6, Montag = 0)
+        const dayOfWeek = selectedCell.day.getDay();
+        const adjustedDayOfWeek = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Montag = 0
+        const shiftType = template.weekPattern[adjustedDayOfWeek];
+        
+        if (shiftType) {
+          setShift(selectedCell.employee.id, selectedCell.day, shiftType);
+        }
+      }
     }
     setShowTemplateModal(false);
   };
@@ -224,6 +260,8 @@ const ShiftPlanningPage: React.FC = () => {
     deleteWeek,
     copiedShift,
     setCopiedShift,
+    activeSubmenu,
+    setActiveSubmenu
   } = useShiftPlanning(weeksToShow);
   
   // Verwende den useContextMenu-Hook
@@ -241,16 +279,20 @@ const ShiftPlanningPage: React.FC = () => {
   // Verwende den useShiftPlanningHandlers-Hook
   const {
     showTemplateModal,
+    selectedCell,
     handleCellClick,
     handleTemplateSelect,
     handleCloseModal
   } = useShiftPlanningHandlers(setShift);
   
   // Gruppiere die Tage nach Kalenderwochen
-  const weekGroups = groupDaysByWeek(calendarDays);
+  const weekGroups: WeekGroup[] = groupDaysByWeek(calendarDays).map((days) => ({
+    week: getWeekNumber(days[0]),
+    days
+  }));
 
   // Konvertiere User-Objekte in das Format, das die Komponente erwartet
-  const employees = (users || []).map(user => ({
+  const employees: Employee[] = (users || []).map(user => ({
     id: user.id?.toString() || `user-${Math.random().toString(36).substr(2, 9)}`,
     name: user.name || 'Unbekannter Benutzer',
     username: user.username || 'unknown',
@@ -311,160 +353,48 @@ const ShiftPlanningPage: React.FC = () => {
         <div className="col-12">
           <h1 className="mb-4">Schichtplanung</h1>
           
-          {/* Schichtplanungs-Tabelle mit DataTable-Komponente */}
-          <div className="card">
-            <div className="card-body">
-              <DataTable responsive striped bordered>
-                <thead>
-                  <tr>
-                    <th style={{ minWidth: '150px' }}>Mitarbeiter</th>
-                    {weekGroups.map((week, weekIndex) => (
-                      <th key={weekIndex} colSpan={7} className="text-center">
-                        KW {getWeekNumber(week[0])}
-                      </th>
-                    ))}
-                  </tr>
-                  <tr>
-                    <th></th>
-                    {calendarDays.map((day, dayIndex) => (
-                      <th key={dayIndex} className="text-center" style={{ minWidth: '100px' }}>
-                        <div>{formatCalendarDate(day)}</div>
-                        <div className="small">{formatCalendarDateLong(day)}</div>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {employees.map(employee => (
-                    <tr key={employee.id}>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <div 
-                            className="rounded-circle me-2" 
-                            style={{ 
-                              width: '12px', 
-                              height: '12px', 
-                              backgroundColor: employee.color || '#6c757d' 
-                            }}
-                          />
-                          <div>
-                            <div className="fw-bold">{employee.name}</div>
-                            <div className="small text-muted">{employee.username}</div>
-                          </div>
-                        </div>
-                      </td>
-                      {calendarDays.map((day, dayIndex) => {
-                        const shift = getShift(employee.id, day);
-                        return (
-                          <td 
-                            key={dayIndex}
-                            className="text-center position-relative"
-                            style={{ 
-                              backgroundColor: shift ? shift.color : 'transparent',
-                              cursor: 'pointer',
-                              minHeight: '60px'
-                            }}
-                            onClick={() => handleCellClick(employee, day)}
-                            onContextMenu={(e) => openContextMenu(e, employee, day, shift)}
-                          >
-                            {shift && (
-                              <div className="small">
-                                <div className="fw-bold">{shift.name}</div>
-                                <div>{shift.startTime} - {shift.endTime}</div>
-                              </div>
-                            )}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </DataTable>
-            </div>
-          </div>
+          {/* Schichtplanungs-Tabelle */}
+          <ShiftPlanningTable
+            weekGroups={weekGroups}
+            calendarDays={calendarDays}
+            employees={employees}
+            getShift={getShift}
+            onCellClick={handleCellClick}
+            onContextMenu={openContextMenu}
+          />
 
-          {/* Context Menu mit vorhandener ContextMenu-Komponente */}
+          {/* Context Menu */}
           <ContextMenu
             x={contextMenu.x}
             y={contextMenu.y}
             isOpen={contextMenu.isOpen}
             onClose={closeContextMenu}
           >
-            <ContextMenuItem onClick={() => handleSetShift(shiftTemplates[0])}>
-              <i className="fas fa-sun me-2"></i>
-              Frühschicht zuweisen
-            </ContextMenuItem>
-            <ContextMenuItem onClick={() => handleSetShift(shiftTemplates[1])}>
-              <i className="fas fa-moon me-2"></i>
-              Spätschicht zuweisen
-            </ContextMenuItem>
-            <ContextMenuItem onClick={() => handleSetShift(shiftTemplates[2])}>
-              <i className="fas fa-star me-2"></i>
-              Nachtschicht zuweisen
-            </ContextMenuItem>
-            <ContextMenuItem onClick={() => handleSetShift(shiftTemplates[3])}>
-              <i className="fas fa-clock me-2"></i>
-              Teilzeit zuweisen
-            </ContextMenuItem>
-            <ContextMenuDivider />
-            {contextMenu.shiftType && (
-              <>
-                <ContextMenuItem onClick={handleCopyShift}>
-                  <i className="fas fa-copy me-2"></i>
-                  Schicht kopieren
-                </ContextMenuItem>
-                <ContextMenuItem onClick={handleDeleteShift} danger>
-                  <i className="fas fa-trash me-2"></i>
-                  Schicht löschen
-                </ContextMenuItem>
-              </>
+            {contextMenu.employee && contextMenu.day && (
+              <ShiftContextMenuContent
+                employee={contextMenu.employee}
+                day={contextMenu.day}
+                shiftType={contextMenu.shiftType || null}
+                copiedShift={copiedShift}
+                activeSubmenu={activeSubmenu}
+                setActiveSubmenu={setActiveSubmenu}
+                onSetShift={handleSetShift}
+                onCopyShift={handleCopyShift}
+                onPasteShift={handlePasteShift}
+                onDeleteShift={handleDeleteShift}
+                onDeleteWeek={handleDeleteWeek}
+              />
             )}
-            {copiedShift && (
-              <ContextMenuItem onClick={handlePasteShift}>
-                <i className="fas fa-paste me-2"></i>
-                Schicht einfügen
-              </ContextMenuItem>
-            )}
-            <ContextMenuDivider />
-            <ContextMenuItem onClick={handleDeleteWeek} danger>
-              <i className="fas fa-calendar-times me-2"></i>
-              Woche löschen
-            </ContextMenuItem>
           </ContextMenu>
 
           {/* Template Modal */}
-          {showTemplateModal && (
-            <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-              <div className="modal-dialog">
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title">Schichtvorlage auswählen</h5>
-                    <button 
-                      type="button" 
-                      className="btn-close" 
-                      onClick={handleCloseModal}
-                    />
-                  </div>
-                  <div className="modal-body">
-                    <div className="row">
-                      {shiftTemplates.map(template => (
-                        <div key={template.id} className="col-6 mb-3">
-                          <button
-                            className="btn btn-outline-primary w-100"
-                            onClick={() => handleTemplateSelect(template)}
-                            style={{ borderColor: template.color, color: template.color }}
-                          >
-                            <div className="fw-bold">{template.name}</div>
-                            <div className="small">{template.startTime} - {template.endTime}</div>
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          <ShiftTemplateModal
+            show={showTemplateModal}
+            onHide={handleCloseModal}
+            selectedCell={selectedCell}
+            templates={shiftTemplates}
+            onTemplateSelect={handleTemplateSelect}
+          />
         </div>
       </div>
     </div>
