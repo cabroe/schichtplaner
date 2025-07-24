@@ -33,7 +33,7 @@ func RegisterHandlers(e *echo.Echo) {
 	e.FileFS("/", "index.html", distIndexHTML)
 	e.StaticFS("/", distDirFS)
 	// This is needed to serve the index.html file for all routes that are not /api/*
-	// neede for SPA to work when loading a specific url directly
+	// needed for SPA to work when loading a specific url directly
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		Skipper: func(c echo.Context) bool {
 			// Skip static handling für /api
@@ -55,7 +55,7 @@ func setupDevProxy(e *echo.Echo) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Setep a proxy to the vite dev server on localhost:5173
+	// Setup a proxy to the vite dev server on localhost:5173
 	balancer := middleware.NewRoundRobinBalancer([]*middleware.ProxyTarget{
 		{
 			URL: url,

@@ -1,0 +1,154 @@
+### Shift Type API Tests
+### Base URL: http://localhost:3000/api
+
+### ========================================
+### SHIFT TYPES - CRUD OPERATIONS
+### ========================================
+
+### Alle Schichttypen abrufen
+GET http://localhost:3000/api/shift-types
+
+### Alle aktiven Schichttypen abrufen
+GET http://localhost:3000/api/shift-types/active
+
+### Schichttyp nach ID abrufen
+GET http://localhost:3000/api/shift-types/1
+
+### Neuen Schichttyp erstellen - Frühschicht
+POST http://localhost:3000/api/shift-types
+Content-Type: application/json
+
+{
+  "name": "Frühschicht",
+  "description": "Frühschicht von 6:00 bis 14:00",
+  "color": "#3B82F6",
+  "default_start": "06:00:00",
+  "default_end": "14:00:00",
+  "default_break": 30,
+  "is_active": true,
+  "sort_order": 1,
+  "min_duration": 480,
+  "max_duration": 600
+}
+
+### Neuen Schichttyp erstellen - Spätschicht
+POST http://localhost:3000/api/shift-types
+Content-Type: application/json
+
+{
+  "name": "Spätschicht",
+  "description": "Spätschicht von 14:00 bis 22:00",
+  "color": "#10B981",
+  "default_start": "14:00:00",
+  "default_end": "22:00:00",
+  "default_break": 30,
+  "is_active": true,
+  "sort_order": 2,
+  "min_duration": 480,
+  "max_duration": 600
+}
+
+### Neuen Schichttyp erstellen - Nachtschicht
+POST http://localhost:3000/api/shift-types
+Content-Type: application/json
+
+{
+  "name": "Nachtschicht",
+  "description": "Nachtschicht von 22:00 bis 6:00",
+  "color": "#8B5CF6",
+  "default_start": "22:00:00",
+  "default_end": "06:00:00",
+  "default_break": 30,
+  "is_active": true,
+  "sort_order": 3,
+  "min_duration": 480,
+  "max_duration": 600
+}
+
+### Schichttyp aktualisieren
+PUT http://localhost:3000/api/shift-types/1
+Content-Type: application/json
+
+{
+  "name": "Updated Frühschicht",
+  "description": "Updated Frühschicht Beschreibung",
+  "color": "#F59E0B",
+  "default_start": "07:00:00",
+  "default_end": "15:00:00",
+  "default_break": 45,
+  "is_active": true,
+  "sort_order": 2,
+  "min_duration": 480,
+  "max_duration": 600
+}
+
+### Schichttyp löschen
+DELETE http://localhost:3000/api/shift-types/1
+
+### ========================================
+### SHIFT TYPES - STATUS MANAGEMENT
+### ========================================
+
+### Schichttyp aktivieren/deaktivieren
+PUT http://localhost:3000/api/shift-types/1/toggle
+
+### ========================================
+### SHIFT TYPES - SORTING
+### ========================================
+
+### Schichttyp-Sortierung aktualisieren
+PUT http://localhost:3000/api/shift-types/order
+Content-Type: application/json
+
+{
+  "id": 1,
+  "sort_order": 5
+}
+
+### ========================================
+### SHIFT TYPES - VALIDATION TESTS
+### ========================================
+
+### Schichttyp mit ungültigen Zeiten (Start nach Ende)
+POST http://localhost:3000/api/shift-types
+Content-Type: application/json
+
+{
+  "name": "Ungültige Schicht",
+  "description": "Schicht mit ungültigen Zeiten",
+  "color": "#EF4444",
+  "default_start": "14:00:00",
+  "default_end": "06:00:00",
+  "default_break": 30,
+  "is_active": true,
+  "sort_order": 4,
+  "min_duration": 480,
+  "max_duration": 600
+}
+
+### Schichttyp mit ungültiger Dauer (Min > Max)
+POST http://localhost:3000/api/shift-types
+Content-Type: application/json
+
+{
+  "name": "Ungültige Dauer",
+  "description": "Schicht mit ungültiger Dauer",
+  "color": "#EF4444",
+  "default_start": "08:00:00",
+  "default_end": "16:00:00",
+  "default_break": 30,
+  "is_active": true,
+  "sort_order": 5,
+  "min_duration": 600,
+  "max_duration": 480
+}
+
+### ========================================
+### SHIFT TYPES - PAGINATION
+### ========================================
+
+### Schichttypen mit Pagination (Seite 1, 10 pro Seite)
+GET http://localhost:3000/api/shift-types?page=1&page_size=10
+
+### Schichttypen mit Pagination (Seite 2, 5 pro Seite)
+GET http://localhost:3000/api/shift-types?page=2&page_size=5 

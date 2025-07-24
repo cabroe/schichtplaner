@@ -1,0 +1,213 @@
+### Error Tests für Schichtplaner API
+### Base URL: http://localhost:3000/api
+
+### ========================================
+### 404 ERROR TESTS - NOT FOUND
+### ========================================
+
+### Nicht existierende API-Route mit GET
+GET http://localhost:3000/api/nonexistent
+
+### Nicht existierende API-Route mit POST
+POST http://localhost:3000/api/nonexistent
+Content-Type: application/json
+
+{
+  "test": "data"
+}
+
+### Nicht existierende API-Route mit PUT
+PUT http://localhost:3000/api/nonexistent
+Content-Type: application/json
+
+{
+  "test": "data"
+}
+
+### Nicht existierende API-Route mit DELETE
+DELETE http://localhost:3000/api/nonexistent
+
+### Nicht existierende User-ID
+GET http://localhost:3000/api/users/999
+
+### Nicht existierende Team-ID
+GET http://localhost:3000/api/teams/999
+
+### Nicht existierende Shift-Type-ID
+GET http://localhost:3000/api/shift-types/999
+
+### Nicht existierende Shift-Template-ID
+GET http://localhost:3000/api/shift-templates/999
+
+### Nicht existierende Schedule-ID
+GET http://localhost:3000/api/schedules/999
+
+### Nicht existierende Shift-ID
+GET http://localhost:3000/api/shifts/999
+
+### ========================================
+### 405 ERROR TESTS - METHOD NOT ALLOWED
+### ========================================
+
+### Falsche HTTP-Methode für Health Check (POST statt GET)
+POST http://localhost:3000/api/health
+
+### Falsche HTTP-Methode für Users (PUT statt GET)
+PUT http://localhost:3000/api/users
+
+### Falsche HTTP-Methode für Teams (DELETE statt GET)
+DELETE http://localhost:3000/api/teams
+
+### Falsche HTTP-Methode für Shift Types (GET statt POST)
+GET http://localhost:3000/api/shift-types
+Content-Type: application/json
+
+{
+  "name": "Test"
+}
+
+### ========================================
+### 400 ERROR TESTS - BAD REQUEST
+### ========================================
+
+### Ungültige User-ID (String statt Zahl)
+GET http://localhost:3000/api/users/invalid
+
+### Ungültige Team-ID (String statt Zahl)
+GET http://localhost:3000/api/teams/invalid
+
+### Ungültige Shift-Type-ID (String statt Zahl)
+GET http://localhost:3000/api/shift-types/invalid
+
+### Ungültige Schedule-ID (String statt Zahl)
+GET http://localhost:3000/api/schedules/invalid
+
+### Ungültige Shift-ID (String statt Zahl)
+GET http://localhost:3000/api/shifts/invalid
+
+### ========================================
+### INVALID JSON TESTS
+### ========================================
+
+### Ungültiges JSON für User erstellen
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "invalid-email",
+  "password": "password123",
+  "account_number": "EMP001",
+  "name": "Test User",
+  "color": "#ff0000",
+  "role": "user",
+  "is_active": true,
+  "is_admin": false
+}
+
+### Ungültiges JSON für Team erstellen
+POST http://localhost:3000/api/teams
+Content-Type: application/json
+
+{
+  "name": "",
+  "description": "Test Team Beschreibung",
+  "color": "invalid-color",
+  "is_active": true,
+  "sort_order": 1
+}
+
+### Ungültiges JSON für Shift Type erstellen
+POST http://localhost:3000/api/shift-types
+Content-Type: application/json
+
+{
+  "name": "Test Schicht",
+  "description": "Test Beschreibung",
+  "color": "#3B82F6",
+  "default_start": "invalid-time",
+  "default_end": "invalid-time",
+  "default_break": -30,
+  "is_active": true,
+  "sort_order": 1,
+  "min_duration": 600,
+  "max_duration": 480
+}
+
+### ========================================
+### MISSING REQUIRED FIELDS TESTS
+### ========================================
+
+### User ohne erforderliche Felder
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "color": "#ff0000"
+}
+
+### Team ohne erforderliche Felder
+POST http://localhost:3000/api/teams
+Content-Type: application/json
+
+{
+  "description": "Test Team Beschreibung",
+  "color": "#3B82F6"
+}
+
+### Schedule ohne erforderliche Felder
+POST http://localhost:3000/api/schedules
+Content-Type: application/json
+
+{
+  "description": "Test Schedule Beschreibung",
+  "is_active": true
+}
+
+### ========================================
+### VALIDATION ERROR TESTS
+### ========================================
+
+### User mit ungültiger E-Mail
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "invalid-email-format",
+  "password": "password123",
+  "account_number": "EMP001",
+  "name": "Test User",
+  "color": "#ff0000",
+  "role": "user",
+  "is_active": true,
+  "is_admin": false
+}
+
+### Schedule mit ungültigem Datum (Start nach Ende)
+POST http://localhost:3000/api/schedules
+Content-Type: application/json
+
+{
+  "name": "Ungültiger Schedule",
+  "description": "Schedule mit ungültigem Datum",
+  "start_date": "2024-01-31T00:00:00Z",
+  "end_date": "2024-01-01T00:00:00Z",
+  "is_active": true
+}
+
+### Shift mit ungültigen Zeiten (Start nach Ende)
+POST http://localhost:3000/api/shifts
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "shift_type_id": 1,
+  "start_time": "2024-01-15T14:00:00Z",
+  "end_time": "2024-01-15T06:00:00Z",
+  "break_time": 30,
+  "description": "Ungültige Schicht",
+  "is_active": true,
+  "schedule_id": 1
+} 

@@ -1,0 +1,142 @@
+### Shift API Tests
+### Base URL: http://localhost:3000/api
+
+### ========================================
+### SHIFTS - CRUD OPERATIONS
+### ========================================
+
+### Alle Schichten abrufen
+GET http://localhost:3000/api/shifts
+
+### Schicht nach ID abrufen
+GET http://localhost:3000/api/shifts/1
+
+### Neue Schicht erstellen - Frühschicht
+POST http://localhost:3000/api/shifts
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "shift_type_id": 1,
+  "start_time": "2024-01-15T06:00:00Z",
+  "end_time": "2024-01-15T14:00:00Z",
+  "break_time": 30,
+  "description": "Frühschicht",
+  "is_active": true,
+  "schedule_id": 1
+}
+
+### Neue Schicht erstellen - Spätschicht
+POST http://localhost:3000/api/shifts
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "shift_type_id": 2,
+  "start_time": "2024-01-16T14:00:00Z",
+  "end_time": "2024-01-16T22:00:00Z",
+  "break_time": 30,
+  "description": "Spätschicht",
+  "is_active": true,
+  "schedule_id": 1
+}
+
+### Neue Schicht erstellen - Nachtschicht
+POST http://localhost:3000/api/shifts
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "shift_type_id": 3,
+  "start_time": "2024-01-17T22:00:00Z",
+  "end_time": "2024-01-18T06:00:00Z",
+  "break_time": 30,
+  "description": "Nachtschicht",
+  "is_active": true,
+  "schedule_id": 1
+}
+
+### Schicht aktualisieren
+PUT http://localhost:3000/api/shifts/1
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "shift_type_id": 2,
+  "start_time": "2024-01-15T14:00:00Z",
+  "end_time": "2024-01-15T22:00:00Z",
+  "break_time": 45,
+  "description": "Spätschicht",
+  "is_active": true,
+  "schedule_id": 1
+}
+
+### Schicht löschen
+DELETE http://localhost:3000/api/shifts/1
+
+### ========================================
+### SHIFTS - USER RELATIONSHIPS
+### ========================================
+
+### Schichten nach Benutzer abrufen
+GET http://localhost:3000/api/shifts/user/1
+
+### Schichten nach Benutzer mit Pagination
+GET http://localhost:3000/api/shifts/user/1?page=1&page_size=10
+
+### ========================================
+### SHIFTS - VALIDATION TESTS
+### ========================================
+
+### Schicht mit ungültigen Zeiten (Start nach Ende)
+POST http://localhost:3000/api/shifts
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "shift_type_id": 1,
+  "start_time": "2024-01-15T14:00:00Z",
+  "end_time": "2024-01-15T06:00:00Z",
+  "break_time": 30,
+  "description": "Ungültige Schicht",
+  "is_active": true,
+  "schedule_id": 1
+}
+
+### Schicht ohne Benutzer
+POST http://localhost:3000/api/shifts
+Content-Type: application/json
+
+{
+  "shift_type_id": 1,
+  "start_time": "2024-01-15T06:00:00Z",
+  "end_time": "2024-01-15T14:00:00Z",
+  "break_time": 30,
+  "description": "Schicht ohne Benutzer",
+  "is_active": true,
+  "schedule_id": 1
+}
+
+### Schicht ohne Zeitplan
+POST http://localhost:3000/api/shifts
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "shift_type_id": 1,
+  "start_time": "2024-01-15T06:00:00Z",
+  "end_time": "2024-01-15T14:00:00Z",
+  "break_time": 30,
+  "description": "Schicht ohne Zeitplan",
+  "is_active": true
+}
+
+### ========================================
+### SHIFTS - PAGINATION
+### ========================================
+
+### Schichten mit Pagination (Seite 1, 10 pro Seite)
+GET http://localhost:3000/api/shifts?page=1&page_size=10
+
+### Schichten mit Pagination (Seite 2, 5 pro Seite)
+GET http://localhost:3000/api/shifts?page=2&page_size=5 

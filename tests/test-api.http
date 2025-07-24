@@ -1,0 +1,375 @@
+### Schichtplaner API Tests
+### Base URL: http://localhost:3000/api
+
+### ========================================
+### HEALTH CHECK
+### ========================================
+
+GET http://localhost:3000/api/health
+
+### ========================================
+### ERROR TESTS - 404 HANDLING
+### ========================================
+
+### Nicht existierende API-Route (sollte 404 zurückgeben)
+GET http://localhost:3000/api/nonexistent
+
+### Nicht existierende API-Route mit POST
+POST http://localhost:3000/api/nonexistent
+Content-Type: application/json
+
+{
+  "test": "data"
+}
+
+### Nicht existierende API-Route mit PUT
+PUT http://localhost:3000/api/nonexistent
+Content-Type: application/json
+
+{
+  "test": "data"
+}
+
+### Nicht existierende API-Route mit DELETE
+DELETE http://localhost:3000/api/nonexistent
+
+### Falsche HTTP-Methode für Health Check
+POST http://localhost:3000/api/health
+
+### ========================================
+### USERS
+### ========================================
+
+### Alle Benutzer abrufen
+GET http://localhost:3000/api/users
+
+### Alle aktiven Benutzer abrufen
+GET http://localhost:3000/api/users/active
+
+### Benutzer nach ID abrufen
+GET http://localhost:3000/api/users/1
+
+### Neuen Benutzer erstellen
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "password123",
+  "account_number": "EMP001",
+  "name": "Test User",
+  "color": "#ff0000",
+  "role": "user",
+  "is_active": true,
+  "is_admin": false
+}
+
+### Benutzer aktualisieren
+PUT http://localhost:3000/api/users/1
+Content-Type: application/json
+
+{
+  "username": "updateduser",
+  "email": "updated@example.com",
+  "account_number": "EMP002",
+  "name": "Updated User",
+  "color": "#00ff00",
+  "role": "admin",
+  "is_active": true,
+  "is_admin": true
+}
+
+### Passwort ändern
+PUT http://localhost:3000/api/users/1/password
+Content-Type: application/json
+
+{
+  "old_password": "password123",
+  "new_password": "newpassword123"
+}
+
+### Benutzer löschen
+DELETE http://localhost:3000/api/users/1
+
+### Benutzer nach Team abrufen
+GET http://localhost:3000/api/users/team/1
+
+### Benutzer ohne Team abrufen
+GET http://localhost:3000/api/users/without-team
+
+### ========================================
+### TEAMS
+### ========================================
+
+### Alle Teams abrufen
+GET http://localhost:3000/api/teams
+
+### Alle aktiven Teams abrufen
+GET http://localhost:3000/api/teams/active
+
+### Team nach ID abrufen
+GET http://localhost:3000/api/teams/1
+
+### Neues Team erstellen
+POST http://localhost:3000/api/teams
+Content-Type: application/json
+
+{
+  "name": "Test Team",
+  "description": "Test Team Beschreibung",
+  "color": "#3B82F6",
+  "is_active": true,
+  "sort_order": 1
+}
+
+### Team aktualisieren
+PUT http://localhost:3000/api/teams/1
+Content-Type: application/json
+
+{
+  "name": "Updated Team",
+  "description": "Updated Team Beschreibung",
+  "color": "#10B981",
+  "is_active": true,
+  "sort_order": 2
+}
+
+### Team löschen
+DELETE http://localhost:3000/api/teams/1
+
+### Team aktivieren/deaktivieren
+PUT http://localhost:3000/api/teams/1/toggle
+
+### Benutzer zu Team hinzufügen
+POST http://localhost:3000/api/teams/1/members
+Content-Type: application/json
+
+{
+  "user_id": 1
+}
+
+### Benutzer aus Team entfernen
+DELETE http://localhost:3000/api/teams/1/members/1
+
+### Team-Mitglieder abrufen
+GET http://localhost:3000/api/teams/1/members
+
+### Team-Sortierung aktualisieren
+PUT http://localhost:3000/api/teams/order
+Content-Type: application/json
+
+{
+  "id": 1,
+  "sort_order": 5
+}
+
+### ========================================
+### SHIFT TYPES
+### ========================================
+
+### Alle Schichttypen abrufen
+GET http://localhost:3000/api/shift-types
+
+### Alle aktiven Schichttypen abrufen
+GET http://localhost:3000/api/shift-types/active
+
+### Schichttyp nach ID abrufen
+GET http://localhost:3000/api/shift-types/1
+
+### Neuen Schichttyp erstellen
+POST http://localhost:3000/api/shift-types
+Content-Type: application/json
+
+{
+  "name": "Frühschicht",
+  "description": "Frühschicht von 6:00 bis 14:00",
+  "color": "#3B82F6",
+  "default_start": "06:00:00",
+  "default_end": "14:00:00",
+  "default_break": 30,
+  "is_active": true,
+  "sort_order": 1,
+  "min_duration": 480,
+  "max_duration": 600
+}
+
+### Schichttyp aktualisieren
+PUT http://localhost:3000/api/shift-types/1
+Content-Type: application/json
+
+{
+  "name": "Updated Frühschicht",
+  "description": "Updated Frühschicht Beschreibung",
+  "color": "#10B981",
+  "default_start": "07:00:00",
+  "default_end": "15:00:00",
+  "default_break": 45,
+  "is_active": true,
+  "sort_order": 2,
+  "min_duration": 480,
+  "max_duration": 600
+}
+
+### Schichttyp löschen
+DELETE http://localhost:3000/api/shift-types/1
+
+### Schichttyp aktivieren/deaktivieren
+PUT http://localhost:3000/api/shift-types/1/toggle
+
+### Schichttyp-Sortierung aktualisieren
+PUT http://localhost:3000/api/shift-types/order
+Content-Type: application/json
+
+{
+  "id": 1,
+  "sort_order": 5
+}
+
+### ========================================
+### SHIFT TEMPLATES
+### ========================================
+
+### Alle Schichtvorlagen abrufen
+GET http://localhost:3000/api/shift-templates
+
+### Alle aktiven Schichtvorlagen abrufen
+GET http://localhost:3000/api/shift-templates/active
+
+### Schichtvorlage nach ID abrufen
+GET http://localhost:3000/api/shift-templates/1
+
+### Neue Schichtvorlage erstellen
+POST http://localhost:3000/api/shift-templates
+Content-Type: application/json
+
+{
+  "name": "Vollzeit-Woche",
+  "description": "Vollzeit-Schichtvorlage",
+  "color": "#3B82F6",
+  "is_active": true,
+  "sort_order": 1,
+  "monday_shift_type_id": 1,
+  "tuesday_shift_type_id": 1,
+  "wednesday_shift_type_id": 1,
+  "thursday_shift_type_id": 1,
+  "friday_shift_type_id": 1
+}
+
+### Schichtvorlage aktualisieren
+PUT http://localhost:3000/api/shift-templates/1
+Content-Type: application/json
+
+{
+  "name": "Updated Vollzeit-Woche",
+  "description": "Updated Vollzeit-Schichtvorlage",
+  "color": "#10B981",
+  "is_active": true,
+  "sort_order": 2,
+  "monday_shift_type_id": 1,
+  "tuesday_shift_type_id": 1,
+  "wednesday_shift_type_id": 2,
+  "thursday_shift_type_id": 2,
+  "friday_shift_type_id": 2
+}
+
+### Schichtvorlage löschen
+DELETE http://localhost:3000/api/shift-templates/1
+
+### Schichtvorlage aktivieren/deaktivieren
+PUT http://localhost:3000/api/shift-templates/1/toggle
+
+### Schichtvorlage-Sortierung aktualisieren
+PUT http://localhost:3000/api/shift-templates/order
+Content-Type: application/json
+
+{
+  "id": 1,
+  "sort_order": 5
+}
+
+### ========================================
+### SCHEDULES
+### ========================================
+
+### Alle Schichtpläne abrufen
+GET http://localhost:3000/api/schedules
+
+### Alle aktiven Schichtpläne abrufen
+GET http://localhost:3000/api/schedules/active
+
+### Schichtplan nach ID abrufen
+GET http://localhost:3000/api/schedules/1
+
+### Neuen Schichtplan erstellen
+POST http://localhost:3000/api/schedules
+Content-Type: application/json
+
+{
+  "name": "Januar 2024",
+  "description": "Schichtplan für Januar 2024",
+  "start_date": "2024-01-01T00:00:00Z",
+  "end_date": "2024-01-31T23:59:59Z",
+  "is_active": true
+}
+
+### Schichtplan aktualisieren
+PUT http://localhost:3000/api/schedules/1
+Content-Type: application/json
+
+{
+  "name": "Updated Januar 2024",
+  "description": "Updated Schichtplan für Januar 2024",
+  "start_date": "2024-01-01T00:00:00Z",
+  "end_date": "2024-01-31T23:59:59Z",
+  "is_active": true
+}
+
+### Schichtplan löschen
+DELETE http://localhost:3000/api/schedules/1
+
+### ========================================
+### SHIFTS
+### ========================================
+
+### Alle Schichten abrufen
+GET http://localhost:3000/api/shifts
+
+### Schicht nach ID abrufen
+GET http://localhost:3000/api/shifts/1
+
+### Neue Schicht erstellen
+POST http://localhost:3000/api/shifts
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "shift_type_id": 1,
+  "start_time": "2024-01-15T06:00:00Z",
+  "end_time": "2024-01-15T14:00:00Z",
+  "break_time": 30,
+  "description": "Frühschicht",
+  "is_active": true,
+  "schedule_id": 1
+}
+
+### Schicht aktualisieren
+PUT http://localhost:3000/api/shifts/1
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "shift_type_id": 2,
+  "start_time": "2024-01-15T14:00:00Z",
+  "end_time": "2024-01-15T22:00:00Z",
+  "break_time": 45,
+  "description": "Spätschicht",
+  "is_active": true,
+  "schedule_id": 1
+}
+
+### Schicht löschen
+DELETE http://localhost:3000/api/shifts/1
+
+### Schichten nach Benutzer abrufen
+GET http://localhost:3000/api/shifts/user/1 

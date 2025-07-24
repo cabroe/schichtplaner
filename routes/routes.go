@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"schichtplaner/handlers"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -16,4 +18,23 @@ func RegisterAPIRoutes(e *echo.Echo) {
 	RegisterShiftTypeRoutes(api)
 	RegisterTeamRoutes(api)
 	RegisterShiftTemplateRoutes(api)
+
+	// Registriere benutzerdefinierte Error-Handler für API-Endpunkte
+	registerErrorHandlers(e)
+}
+
+// registerErrorHandlers registriert die benutzerdefinierten Error-Handler
+func registerErrorHandlers(e *echo.Echo) {
+	// Setze den benutzerdefinierten HTTP-Error-Handler
+	e.HTTPErrorHandler = handlers.InternalServerErrorHandler
+
+	// Registriere Catch-all Routen für nicht existierende API-Endpunkte
+	// Diese müssen auf der Haupt-Echo-Instanz registriert werden, nicht in der API-Gruppe
+	e.GET("/api/*", handlers.NotFoundHandler)
+	e.POST("/api/*", handlers.NotFoundHandler)
+	e.PUT("/api/*", handlers.NotFoundHandler)
+	e.DELETE("/api/*", handlers.NotFoundHandler)
+	e.PATCH("/api/*", handlers.NotFoundHandler)
+	e.HEAD("/api/*", handlers.NotFoundHandler)
+	e.OPTIONS("/api/*", handlers.NotFoundHandler)
 }

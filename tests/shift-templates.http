@@ -1,0 +1,137 @@
+### Shift Template API Tests
+### Base URL: http://localhost:3000/api
+
+### ========================================
+### SHIFT TEMPLATES - CRUD OPERATIONS
+### ========================================
+
+### Alle Schichtvorlagen abrufen
+GET http://localhost:3000/api/shift-templates
+
+### Alle aktiven Schichtvorlagen abrufen
+GET http://localhost:3000/api/shift-templates/active
+
+### Schichtvorlage nach ID abrufen
+GET http://localhost:3000/api/shift-templates/1
+
+### Neue Schichtvorlage erstellen - Vollzeit
+POST http://localhost:3000/api/shift-templates
+Content-Type: application/json
+
+{
+  "name": "Vollzeit-Woche",
+  "description": "Vollzeit-Schichtvorlage",
+  "color": "#3B82F6",
+  "is_active": true,
+  "sort_order": 1,
+  "monday_shift_type_id": 1,
+  "tuesday_shift_type_id": 1,
+  "wednesday_shift_type_id": 1,
+  "thursday_shift_type_id": 1,
+  "friday_shift_type_id": 1
+}
+
+### Neue Schichtvorlage erstellen - Teilzeit
+POST http://localhost:3000/api/shift-templates
+Content-Type: application/json
+
+{
+  "name": "Teilzeit-Woche",
+  "description": "Teilzeit-Schichtvorlage",
+  "color": "#10B981",
+  "is_active": true,
+  "sort_order": 2,
+  "monday_shift_type_id": 1,
+  "tuesday_shift_type_id": 1,
+  "wednesday_shift_type_id": 2,
+  "thursday_shift_type_id": 2,
+  "friday_shift_type_id": 2
+}
+
+### Neue Schichtvorlage erstellen - Nachtschicht
+POST http://localhost:3000/api/shift-templates
+Content-Type: application/json
+
+{
+  "name": "Nachtschicht-Woche",
+  "description": "Nachtschicht-Schichtvorlage",
+  "color": "#8B5CF6",
+  "is_active": true,
+  "sort_order": 3,
+  "monday_shift_type_id": 3,
+  "tuesday_shift_type_id": 3,
+  "wednesday_shift_type_id": 3,
+  "thursday_shift_type_id": 3,
+  "friday_shift_type_id": 3
+}
+
+### Schichtvorlage aktualisieren
+PUT http://localhost:3000/api/shift-templates/1
+Content-Type: application/json
+
+{
+  "name": "Updated Vollzeit-Woche",
+  "description": "Updated Vollzeit-Schichtvorlage",
+  "color": "#F59E0B",
+  "is_active": true,
+  "sort_order": 2,
+  "monday_shift_type_id": 1,
+  "tuesday_shift_type_id": 1,
+  "wednesday_shift_type_id": 2,
+  "thursday_shift_type_id": 2,
+  "friday_shift_type_id": 2
+}
+
+### Schichtvorlage löschen
+DELETE http://localhost:3000/api/shift-templates/1
+
+### ========================================
+### SHIFT TEMPLATES - STATUS MANAGEMENT
+### ========================================
+
+### Schichtvorlage aktivieren/deaktivieren
+PUT http://localhost:3000/api/shift-templates/1/toggle
+
+### ========================================
+### SHIFT TEMPLATES - SORTING
+### ========================================
+
+### Schichtvorlage-Sortierung aktualisieren
+PUT http://localhost:3000/api/shift-templates/order
+Content-Type: application/json
+
+{
+  "id": 1,
+  "sort_order": 5
+}
+
+### ========================================
+### SHIFT TEMPLATES - VALIDATION TESTS
+### ========================================
+
+### Schichtvorlage mit ungültiger Schichttyp-ID
+POST http://localhost:3000/api/shift-templates
+Content-Type: application/json
+
+{
+  "name": "Ungültige Vorlage",
+  "description": "Vorlage mit ungültiger Schichttyp-ID",
+  "color": "#EF4444",
+  "is_active": true,
+  "sort_order": 4,
+  "monday_shift_type_id": 999,
+  "tuesday_shift_type_id": 999,
+  "wednesday_shift_type_id": 999,
+  "thursday_shift_type_id": 999,
+  "friday_shift_type_id": 999
+}
+
+### ========================================
+### SHIFT TEMPLATES - PAGINATION
+### ========================================
+
+### Schichtvorlagen mit Pagination (Seite 1, 10 pro Seite)
+GET http://localhost:3000/api/shift-templates?page=1&page_size=10
+
+### Schichtvorlagen mit Pagination (Seite 2, 5 pro Seite)
+GET http://localhost:3000/api/shift-templates?page=2&page_size=5 

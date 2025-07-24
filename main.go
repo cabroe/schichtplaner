@@ -33,12 +33,12 @@ func main() {
 	// /api/metrics-Endpoint für Prometheus (VOR dem Frontend)
 	e.GET("/api/metrics", echoprometheus.NewHandler())
 
-	// Setup the frontend handlers to service vite static assets
-	frontend.RegisterHandlers(e)
-
-	// Setup the API Group
+	// Setup the API Group FIRST (vor dem Frontend)
 	// Die API-Routen werden jetzt in routes/routes.go registriert
 	routes.RegisterAPIRoutes(e)
+
+	// Setup the frontend handlers to service vite static assets LAST
+	frontend.RegisterHandlers(e)
 
 	// Graceful Shutdown
 	go func() {

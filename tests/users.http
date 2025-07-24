@@ -1,0 +1,82 @@
+### User API Tests
+### Base URL: http://localhost:3000/api
+
+### ========================================
+### USERS - CRUD OPERATIONS
+### ========================================
+
+### Alle Benutzer abrufen
+GET http://localhost:3000/api/users
+
+### Alle aktiven Benutzer abrufen
+GET http://localhost:3000/api/users/active
+
+### Benutzer nach ID abrufen
+GET http://localhost:3000/api/users/1
+
+### Neuen Benutzer erstellen
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "password123",
+  "account_number": "EMP001",
+  "name": "Test User",
+  "color": "#ff0000",
+  "role": "user",
+  "is_active": true,
+  "is_admin": false
+}
+
+### Benutzer aktualisieren
+PUT http://localhost:3000/api/users/1
+Content-Type: application/json
+
+{
+  "username": "updateduser",
+  "email": "updated@example.com",
+  "account_number": "EMP002",
+  "name": "Updated User",
+  "color": "#00ff00",
+  "role": "admin",
+  "is_active": true,
+  "is_admin": true
+}
+
+### Benutzer löschen
+DELETE http://localhost:3000/api/users/1
+
+### ========================================
+### USERS - PASSWORD MANAGEMENT
+### ========================================
+
+### Passwort ändern
+PUT http://localhost:3000/api/users/1/password
+Content-Type: application/json
+
+{
+  "old_password": "password123",
+  "new_password": "newpassword123"
+}
+
+### ========================================
+### USERS - TEAM RELATIONSHIPS
+### ========================================
+
+### Benutzer nach Team abrufen
+GET http://localhost:3000/api/users/team/1
+
+### Benutzer ohne Team abrufen
+GET http://localhost:3000/api/users/without-team
+
+### ========================================
+### USERS - PAGINATION
+### ========================================
+
+### Benutzer mit Pagination (Seite 1, 10 pro Seite)
+GET http://localhost:3000/api/users?page=1&page_size=10
+
+### Benutzer mit Pagination (Seite 2, 5 pro Seite)
+GET http://localhost:3000/api/users?page=2&page_size=5 

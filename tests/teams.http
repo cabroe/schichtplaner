@@ -1,0 +1,90 @@
+### Team API Tests
+### Base URL: http://localhost:3000/api
+
+### ========================================
+### TEAMS - CRUD OPERATIONS
+### ========================================
+
+### Alle Teams abrufen
+GET http://localhost:3000/api/teams
+
+### Alle aktiven Teams abrufen
+GET http://localhost:3000/api/teams/active
+
+### Team nach ID abrufen
+GET http://localhost:3000/api/teams/1
+
+### Neues Team erstellen
+POST http://localhost:3000/api/teams
+Content-Type: application/json
+
+{
+  "name": "Test Team",
+  "description": "Test Team Beschreibung",
+  "color": "#3B82F6",
+  "is_active": true,
+  "sort_order": 1
+}
+
+### Team aktualisieren
+PUT http://localhost:3000/api/teams/1
+Content-Type: application/json
+
+{
+  "name": "Updated Team",
+  "description": "Updated Team Beschreibung",
+  "color": "#10B981",
+  "is_active": true,
+  "sort_order": 2
+}
+
+### Team löschen
+DELETE http://localhost:3000/api/teams/1
+
+### ========================================
+### TEAMS - STATUS MANAGEMENT
+### ========================================
+
+### Team aktivieren/deaktivieren
+PUT http://localhost:3000/api/teams/1/toggle
+
+### ========================================
+### TEAMS - MEMBER MANAGEMENT
+### ========================================
+
+### Benutzer zu Team hinzufügen
+POST http://localhost:3000/api/teams/1/members
+Content-Type: application/json
+
+{
+  "user_id": 1
+}
+
+### Benutzer aus Team entfernen
+DELETE http://localhost:3000/api/teams/1/members/1
+
+### Team-Mitglieder abrufen
+GET http://localhost:3000/api/teams/1/members
+
+### ========================================
+### TEAMS - SORTING
+### ========================================
+
+### Team-Sortierung aktualisieren
+PUT http://localhost:3000/api/teams/order
+Content-Type: application/json
+
+{
+  "id": 1,
+  "sort_order": 5
+}
+
+### ========================================
+### TEAMS - PAGINATION
+### ========================================
+
+### Teams mit Pagination (Seite 1, 10 pro Seite)
+GET http://localhost:3000/api/teams?page=1&page_size=10
+
+### Teams mit Pagination (Seite 2, 5 pro Seite)
+GET http://localhost:3000/api/teams?page=2&page_size=5 

@@ -1,0 +1,103 @@
+### Schedule API Tests
+### Base URL: http://localhost:3000/api
+
+### ========================================
+### SCHEDULES - CRUD OPERATIONS
+### ========================================
+
+### Alle Schichtpläne abrufen
+GET http://localhost:3000/api/schedules
+
+### Alle aktiven Schichtpläne abrufen
+GET http://localhost:3000/api/schedules/active
+
+### Schichtplan nach ID abrufen
+GET http://localhost:3000/api/schedules/1
+
+### Neuen Schichtplan erstellen - Januar 2024
+POST http://localhost:3000/api/schedules
+Content-Type: application/json
+
+{
+  "name": "Januar 2024",
+  "description": "Schichtplan für Januar 2024",
+  "start_date": "2024-01-01T00:00:00Z",
+  "end_date": "2024-01-31T23:59:59Z",
+  "is_active": true
+}
+
+### Neuen Schichtplan erstellen - Februar 2024
+POST http://localhost:3000/api/schedules
+Content-Type: application/json
+
+{
+  "name": "Februar 2024",
+  "description": "Schichtplan für Februar 2024",
+  "start_date": "2024-02-01T00:00:00Z",
+  "end_date": "2024-02-29T23:59:59Z",
+  "is_active": true
+}
+
+### Neuen Schichtplan erstellen - März 2024
+POST http://localhost:3000/api/schedules
+Content-Type: application/json
+
+{
+  "name": "März 2024",
+  "description": "Schichtplan für März 2024",
+  "start_date": "2024-03-01T00:00:00Z",
+  "end_date": "2024-03-31T23:59:59Z",
+  "is_active": true
+}
+
+### Schichtplan aktualisieren
+PUT http://localhost:3000/api/schedules/1
+Content-Type: application/json
+
+{
+  "name": "Updated Januar 2024",
+  "description": "Updated Schichtplan für Januar 2024",
+  "start_date": "2024-01-01T00:00:00Z",
+  "end_date": "2024-01-31T23:59:59Z",
+  "is_active": true
+}
+
+### Schichtplan löschen
+DELETE http://localhost:3000/api/schedules/1
+
+### ========================================
+### SCHEDULES - VALIDATION TESTS
+### ========================================
+
+### Schichtplan mit ungültigem Datum (Start nach Ende)
+POST http://localhost:3000/api/schedules
+Content-Type: application/json
+
+{
+  "name": "Ungültiger Schichtplan",
+  "description": "Schichtplan mit ungültigem Datum",
+  "start_date": "2024-01-31T00:00:00Z",
+  "end_date": "2024-01-01T00:00:00Z",
+  "is_active": true
+}
+
+### Schichtplan ohne Name
+POST http://localhost:3000/api/schedules
+Content-Type: application/json
+
+{
+  "description": "Schichtplan ohne Name",
+  "start_date": "2024-01-01T00:00:00Z",
+  "end_date": "2024-01-31T23:59:59Z",
+  "is_active": true
+}
+
+### ========================================
+### SCHEDULES - PAGINATION
+### ========================================
+
+### Schichtpläne mit Pagination (Seite 1, 10 pro Seite)
+GET http://localhost:3000/api/schedules?page=1&page_size=10
+
+### Schichtpläne mit Pagination (Seite 2, 5 pro Seite)
+GET http://localhost:3000/api/schedules?page=2&page_size=5 
