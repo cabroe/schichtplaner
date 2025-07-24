@@ -1,12 +1,8 @@
 package models
 
-import (
-	"gorm.io/gorm"
-)
-
 // Team repräsentiert ein Team im System
 type Team struct {
-	gorm.Model
+	Base
 	Name        string `gorm:"not null;unique" json:"name"`
 	Description string `json:"description"`
 	Color       string `gorm:"default:'#6B7280'" json:"color"` // Hex-Farbe für UI

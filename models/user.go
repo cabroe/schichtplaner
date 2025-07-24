@@ -1,12 +1,8 @@
 package models
 
-import (
-	"gorm.io/gorm"
-)
-
 // User repräsentiert einen Benutzer im System
 type User struct {
-	gorm.Model
+	Base
 	Username      string  `gorm:"uniqueIndex;not null" json:"username"`
 	Email         string  `gorm:"uniqueIndex;not null" json:"email"`
 	Password      string  `gorm:"not null" json:"-"` // "-" versteckt das Passwort in JSON-Responses

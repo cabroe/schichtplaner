@@ -1,12 +1,8 @@
 package models
 
-import (
-	"gorm.io/gorm"
-)
-
 // ShiftTemplate repräsentiert eine Schichtvorlage mit 7 Tagen
 type ShiftTemplate struct {
-	gorm.Model
+	Base
 	Name        string `gorm:"not null;unique" json:"name"`
 	Description string `json:"description"`
 	Color       string `gorm:"default:'#6B7280'" json:"color"` // Hex-Farbe für UI

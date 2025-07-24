@@ -2,13 +2,11 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 // ShiftType repräsentiert einen Schichttyp (z.B. Frühschicht, Spätschicht, Nachtschicht)
 type ShiftType struct {
-	gorm.Model
+	Base
 	Name         string    `gorm:"not null;unique" json:"name"`
 	Description  string    `json:"description"`
 	Color        string    `gorm:"default:'#3B82F6'" json:"color"`  // Hex-Farbe für UI

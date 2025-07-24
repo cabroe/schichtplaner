@@ -2,13 +2,11 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 // Schedule repräsentiert einen Schichtplan
 type Schedule struct {
-	gorm.Model
+	Base
 	Name        string    `gorm:"not null" json:"name"`
 	Description string    `json:"description"`
 	StartDate   time.Time `gorm:"not null" json:"start_date"`
