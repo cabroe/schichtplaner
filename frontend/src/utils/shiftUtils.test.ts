@@ -40,8 +40,7 @@ describe('shiftUtils', () => {
 
   describe('Kalenderwoche-Klassen', () => {
     it('gibt korrekte CSS-Klassen für Kalenderwochen zurück', () => {
-      expect(getWeekNumberClass(1)).toBe('bg-light');
-      expect(getWeekNumberClass(52)).toBe('bg-light');
+      expect(getWeekNumberClass()).toBe('bg-dark');
     });
   });
 

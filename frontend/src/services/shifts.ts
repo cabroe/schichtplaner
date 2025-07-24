@@ -116,8 +116,7 @@ class ShiftService {
       response.data = response.data.filter((shift: Shift) =>
         shift.name.toLowerCase().includes(query.toLowerCase()) ||
         (shift.description && shift.description.toLowerCase().includes(query.toLowerCase())) ||
-        shift.employee.firstName.toLowerCase().includes(query.toLowerCase()) ||
-        shift.employee.lastName.toLowerCase().includes(query.toLowerCase())
+        shift.employee.name.toLowerCase().includes(query.toLowerCase())
       );
     }
     return response;

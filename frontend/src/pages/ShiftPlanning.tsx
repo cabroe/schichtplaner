@@ -2,18 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { userService } from '../services/users';
 import type { User } from '../types';
 import { 
-  getWeekStart, 
-  addDays, 
   getWeekNumber, 
-  groupDaysByWeek, 
-  generateCalendarDays} from '../utils/dateUtils';
+  groupDaysByWeek} from '../utils/dateUtils';
 import { ContextMenu } from '../components/ContextMenu';
 import {
   ShiftPlanningTable,
   ShiftTemplateModal,
   ShiftContextMenuContent
 } from '../components/shift-planning';
-import type { Employee, ShiftType, ShiftTemplate, WeekGroup } from '../types/shift';
+import type { Employee, WeekGroup } from '../types/shift';
 import { useShiftPlanning, useShiftContextMenu, useShiftHandlers } from '../hooks';
 
 const ShiftPlanningPage: React.FC = () => {

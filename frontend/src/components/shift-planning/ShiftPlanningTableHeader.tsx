@@ -21,7 +21,7 @@ const ShiftPlanningTableHeader: React.FC<ShiftPlanningTableHeaderProps> = ({
           <th 
             key={`week-${groupIndex}`} 
             colSpan={group.days.length} 
-            className={`text-center ${getWeekNumberClass(group.week)}`}
+            className={`text-center ${getWeekNumberClass()}`}
           >
             KW {group.week}
           </th>

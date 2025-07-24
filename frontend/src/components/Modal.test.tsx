@@ -192,7 +192,6 @@ describe("Modal", () => {
     it("erstellt korrekte Modal-Struktur", () => {
       render(<Modal title="Testtitel">Testinhalt</Modal>);
       
-      const modal = screen.getByRole("dialog");
       const modalDialog = screen.getByRole("document");
       const modalContent = modalDialog.querySelector(".modal-content");
       const modalHeader = modalContent?.querySelector(".modal-header");
