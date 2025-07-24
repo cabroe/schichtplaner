@@ -61,6 +61,13 @@
 
 ## 🔧 **Mittel (Nächste Iteration) - Wichtige Verbesserungen**
 
+### Base Model Tests
+- [x] **Datei**: `models/base.go`
+- [x] **Aufgabe**: Umfassende Tests für Base-Model implementieren
+- [x] **Schätzung**: 3 Stunden
+- [x] **Status**: Offen
+
+
 ### Test Aufgabe
 - [x] **Datei**: `test.go`
 - [x] **Aufgabe**: Test Beschreibung
