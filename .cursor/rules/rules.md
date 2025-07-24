@@ -35,6 +35,16 @@
 - Docker für Deployment
 - >80% Testabdeckung
 
+## TODO-Verwaltung
+- `make todo` für Status-Übersicht
+- `make todo-progress` für detaillierten Fortschritt
+- `make todo-add` für neue Aufgaben hinzufügen
+- `make todo-complete` für Aufgaben abschließen
+- `make todo-update` für Fortschritt aktualisieren
+- Prioritäten: Hoch (Sofort), Mittel (Nächste Iteration), Niedrig (Langfristig)
+- TODO-Datei: `BACKEND_OPTIMIZATION_TODO.md`
+- Pflege-Skript: `scripts/update_todo.sh`
+
 ## API Standards
 - RESTful Design: `/api/resource/:id`
 - HTTP-Statuscodes: 200, 201, 400, 404, 500
