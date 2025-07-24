@@ -2,14 +2,21 @@
 
 ## 🚀 **Hoch (Sofort) - Kritische Optimierungen**
 
-### 5. Frontend Tests
-- [ ] **Datei**: `frontend/src`
-- [ ] **Aufgabe**: React Tests implementieren
-- [ ] **Schätzung**: 5 Stunden
-- [ ] **Status**: Offen
+### API Tests
+- [x] **Datei**: `handlers/api.go`
+- [x] **Aufgabe**: REST API Tests implementieren
+- [x] **Schätzung**: 4 Stunden
+- [x] **Status**: Offen
 
 
-### 1. Connection Pool Konfiguration
+### Frontend Tests
+- [x] **Datei**: `frontend/src`
+- [x] **Aufgabe**: React Tests implementieren
+- [x] **Schätzung**: 5 Stunden
+- [x] **Status**: Offen
+
+
+### Connection Pool Konfiguration
 - [ ] **Datei**: `database/database.go`
 - [ ] **Aufgabe**: Connection Pool mit Timeouts implementieren
 - [ ] **Details**:
@@ -20,7 +27,7 @@
 - [ ] **Vorteil**: Bessere Performance und Ressourcenverwaltung
 - [ ] **Schätzung**: 2 Stunden
 
-### 2. Rate Limiting
+### Rate Limiting
 - [ ] **Datei**: `main.go`
 - [ ] **Aufgabe**: Rate Limiting für API-Endpunkte implementieren
 - [ ] **Details**:
@@ -30,7 +37,7 @@
 - [ ] **Vorteil**: Schutz vor DDoS und API-Missbrauch
 - [ ] **Schätzung**: 3 Stunden
 
-### 3. CORS-Konfiguration
+### CORS-Konfiguration
 - [ ] **Datei**: `main.go`
 - [ ] **Aufgabe**: CORS für Produktionsumgebung konfigurieren
 - [ ] **Details**:
@@ -40,7 +47,7 @@
 - [ ] **Vorteil**: Sicherheit und Cross-Origin-Kompatibilität
 - [ ] **Schätzung**: 1 Stunde
 
-### 4. GORM Logger Optimierung
+### GORM Logger Optimierung
 - [ ] **Datei**: `database/database.go`
 - [ ] **Aufgabe**: GORM Logger für Produktion optimieren
 - [ ] **Details**:
@@ -54,21 +61,21 @@
 
 ## 🔧 **Mittel (Nächste Iteration) - Wichtige Verbesserungen**
 
-### 9. Test Aufgabe
+### Test Aufgabe
 - [x] **Datei**: `test.go`
 - [x] **Aufgabe**: Test Beschreibung
 - [x] **Schätzung**: 1 Stunden
 - [x] **Status**: Offen
 
 
-### 9. DB-Tool Tests
+### DB-Tool Tests
 - [x] **Datei**: `cmd/db/main.go`
 - [x] **Aufgabe**: Umfassende Tests implementieren
 - [x] **Schätzung**: 3 Stunden
 - [x] **Status**: Offen
 
 
-### 5. Strukturiertes Logging
+### Strukturiertes Logging
 - [ ] **Datei**: `middleware/logging.go` (neu)
 - [ ] **Aufgabe**: Strukturiertes Logging mit Fields implementieren
 - [ ] **Details**:
@@ -78,7 +85,7 @@
 - [ ] **Vorteil**: Bessere Debugging-Möglichkeiten
 - [ ] **Schätzung**: 4 Stunden
 
-### 6. Caching-Middleware
+### Caching-Middleware
 - [ ] **Datei**: `middleware/cache.go` (neu)
 - [ ] **Aufgabe**: Caching-Middleware für häufig abgerufene Daten
 - [ ] **Details**:
@@ -88,7 +95,7 @@
 - [ ] **Vorteil**: Reduzierte Datenbank-Last
 - [ ] **Schätzung**: 6 Stunden
 
-### 7. Bulk-Operationen
+### Bulk-Operationen
 - [ ] **Datei**: `handlers/` (verschiedene)
 - [ ] **Aufgabe**: Bulk-Create/Update für bessere Performance
 - [ ] **Details**:
@@ -98,7 +105,7 @@
 - [ ] **Vorteil**: Deutlich bessere Performance bei Massenoperationen
 - [ ] **Schätzung**: 8 Stunden
 
-### 8. Query-Optimierungen
+### Query-Optimierungen
 - [ ] **Datei**: `handlers/` (verschiedene)
 - [ ] **Aufgabe**: Datenbank-Queries optimieren
 - [ ] **Details**:
@@ -112,7 +119,14 @@
 
 ## 📈 **Niedrig (Langfristig) - Erweiterte Features**
 
-### 9. Test-Datenbank-Pool
+### Dokumentation
+- [ ] **Datei**: `docs/`
+- [ ] **Aufgabe**: Projektdokumentation erstellen
+- [ ] **Schätzung**: 8 Stunden
+- [ ] **Status**: Offen
+
+
+### Test-Datenbank-Pool
 - [ ] **Datei**: `database/test_helpers.go` (neu)
 - [ ] **Aufgabe**: Test-Datenbank-Pool für parallele Tests
 - [ ] **Details**:
@@ -122,7 +136,7 @@
 - [ ] **Vorteil**: Schnellere Test-Ausführung
 - [ ] **Schätzung**: 4 Stunden
 
-### 10. Erweiterte Monitoring
+### Erweiterte Monitoring
 - [ ] **Datei**: `monitoring/` (erweitern)
 - [ ] **Aufgabe**: Erweiterte Monitoring-Metriken
 - [ ] **Details**:
@@ -132,7 +146,7 @@
 - [ ] **Vorteil**: Bessere Observability
 - [ ] **Schätzung**: 12 Stunden
 
-### 11. Custom Error Types
+### Custom Error Types
 - [ ] **Datei**: `utils/errors.go` (neu)
 - [ ] **Aufgabe**: Strukturierte Error-Behandlung
 - [ ] **Details**:

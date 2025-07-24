@@ -18,27 +18,32 @@ show_status() {
     echo -e "${BLUE}📊 TODO-Status Übersicht${NC}"
     echo "================================"
     
-    # Zähle Aufgaben nach Priorität (vereinfacht)
-    high_count=$(grep -c "### [1-4]" "$TODO_FILE")
-    medium_count=$(grep -c "### [5-8]" "$TODO_FILE")
-    low_count=$(grep -c "### [9-9]" "$TODO_FILE")
-    # Manuell niedrige Aufgaben zählen
-    low_count=$(grep -c "### 9\|### 10\|### 11" "$TODO_FILE")
+    # Zähle Aufgaben nach Priorität (Sektion-basiert)
+    high_count=$(sed -n '/^## 🚀/,/^## 🔧/p' "$TODO_FILE" | grep -c "### ")
+    medium_count=$(sed -n '/^## 🔧/,/^## 📈/p' "$TODO_FILE" | grep -c "### ")
+    low_count=$(sed -n '/^## 📈/,/^## 📊/p' "$TODO_FILE" | grep -c "### ")
     
-    # Zähle abgeschlossene Aufgaben
-    high_done=$(grep -A 10 "## 🚀" "$TODO_FILE" | grep -c "^- \[x\]")
-    medium_done=$(grep -A 10 "## 🔧" "$TODO_FILE" | grep -c "^- \[x\]")
-    low_done=$(grep -A 10 "## 📈" "$TODO_FILE" | grep -c "^- \[x\]")
+    # Zähle abgeschlossene Aufgaben (nur die erste Checkbox jeder Aufgabe)
+    high_done=$(sed -n '/^## 🚀/,/^## 🔧/p' "$TODO_FILE" | grep -A 1 "### " | grep "^- \[x\]" | wc -l | tr -d ' ')
+    medium_done=$(sed -n '/^## 🔧/,/^## 📈/p' "$TODO_FILE" | grep -A 1 "### " | grep "^- \[x\]" | wc -l | tr -d ' ')
+    low_done=$(sed -n '/^## 📈/,/^## 📊/p' "$TODO_FILE" | grep -A 1 "### " | grep "^- \[x\]" | wc -l | tr -d ' ')
     
-    echo -e "${YELLOW}Hoch (Sofort):${NC} $high_done/$high_count abgeschlossen"
-    echo -e "${YELLOW}Mittel:${NC} $medium_done/$medium_count abgeschlossen"
-    echo -e "${YELLOW}Niedrig:${NC} $low_done/$low_count abgeschlossen"
+    # Berechne Prozente
+    high_percent=$((high_count > 0 ? high_done * 100 / high_count : 0))
+    medium_percent=$((medium_count > 0 ? medium_done * 100 / medium_count : 0))
+    low_percent=$((low_count > 0 ? low_done * 100 / low_count : 0))
     
+    # Zeige übersichtlichen Status
+    echo -e "${YELLOW}Hoch (Sofort):${NC} $high_done/$high_count ($high_percent%)"
+    echo -e "${YELLOW}Mittel:${NC} $medium_done/$medium_count ($medium_percent%)"
+    echo -e "${YELLOW}Niedrig:${NC} $low_done/$low_count ($low_percent%)"
+    
+    # Gesamtfortschritt
     total=$((high_count + medium_count + low_count))
     total_done=$((high_done + medium_done + low_done))
-    progress=$((total_done * 100 / total))
+    total_percent=$((total > 0 ? total_done * 100 / total : 0))
     
-    echo -e "${GREEN}Gesamtfortschritt: $progress% ($total_done/$total)${NC}"
+    echo -e "${GREEN}Gesamt: $total_done/$total ($total_percent%)${NC}"
 }
 
 show_progress() {
@@ -47,13 +52,13 @@ show_progress() {
     
     # Zeige alle Aufgaben mit Status
     echo -e "${YELLOW}🚀 Hoch (Sofort):${NC}"
-    grep -A 5 "### [1-4]" "$TODO_FILE" | grep -E "^- \[[ x]\]" || echo "Keine Aufgaben gefunden"
+    awk '/^## 🚀/,/^## 🔧/ {if ($0 ~ /^### /) {print "\n" $0; task=1} else if (task && $0 ~ /^- \[[ x]\]/) {print $0} else if (task && $0 ~ /^$/) {task=0}}' "$TODO_FILE" | grep -E "^- \[[ x]\]" || echo "Keine Aufgaben gefunden"
     
     echo -e "\n${YELLOW}🔧 Mittel:${NC}"
-    grep -A 5 "### [5-8]" "$TODO_FILE" | grep -E "^- \[[ x]\]" || echo "Keine Aufgaben gefunden"
+    awk '/^## 🔧/,/^## 📈/ {if ($0 ~ /^### /) {print "\n" $0; task=1} else if (task && $0 ~ /^- \[[ x]\]/) {print $0} else if (task && $0 ~ /^$/) {task=0}}' "$TODO_FILE" | grep -E "^- \[[ x]\]" || echo "Keine Aufgaben gefunden"
     
     echo -e "\n${YELLOW}📈 Niedrig:${NC}"
-    grep -A 5 "### 9\|### 10\|### 11" "$TODO_FILE" | grep -E "^- \[[ x]\]" || echo "Keine Aufgaben gefunden"
+    awk '/^## 📈/,/^## 📊/ {if ($0 ~ /^### /) {print "\n" $0; task=1} else if (task && $0 ~ /^- \[[ x]\]/) {print $0} else if (task && $0 ~ /^$/) {task=0}}' "$TODO_FILE" | grep -E "^- \[[ x]\]" || echo "Keine Aufgaben gefunden"
 }
 
 add_task() {
@@ -78,21 +83,15 @@ add_task() {
     echo "Beschreibung: $description"
     echo "Schätzung: $estimate Stunden"
     
-    # Bestimme nächste Nummer
+    # Bestimme Sektion
     case $priority in
         "hoch")
-            next_num=$(grep -c "### [1-4]\." "$TODO_FILE" | head -1)
-            next_num=$((next_num + 1))
             section="Hoch (Sofort)"
             ;;
         "mittel")
-            next_num=$(grep -c "### [5-8]\." "$TODO_FILE" | head -1)
-            next_num=$((next_num + 5))
             section="Mittel (Nächste Iteration)"
             ;;
         "niedrig")
-            next_num=$(grep -c "### [9-11]\." "$TODO_FILE" | head -1)
-            next_num=$((next_num + 9))
             section="Niedrig (Langfristig)"
             ;;
         *)
@@ -106,7 +105,7 @@ add_task() {
         # Füge nach der Mittel-Sektion hinzu
         sed -i '' "/^## 🔧 \*\*Mittel/a\\
 \\
-### $next_num. $title\\
+### $title\\
 - [ ] **Datei**: \`$file\`\\
 - [ ] **Aufgabe**: $description\\
 - [ ] **Schätzung**: $estimate Stunden\\
@@ -117,7 +116,7 @@ add_task() {
         # Füge nach der Niedrig-Sektion hinzu
         sed -i '' "/^## 📈 \*\*Niedrig/a\\
 \\
-### $next_num. $title\\
+### $title\\
 - [ ] **Datei**: \`$file\`\\
 - [ ] **Aufgabe**: $description\\
 - [ ] **Schätzung**: $estimate Stunden\\
@@ -128,7 +127,7 @@ add_task() {
         # Füge nach der Hoch-Sektion hinzu
         sed -i '' "/^## 🚀 \*\*Hoch/a\\
 \\
-### $next_num. $title\\
+### $title\\
 - [ ] **Datei**: \`$file\`\\
 - [ ] **Aufgabe**: $description\\
 - [ ] **Schätzung**: $estimate Stunden\\
@@ -175,7 +174,7 @@ complete_by_title() {
     echo "Suche nach Aufgabe: $title"
     
     # Finde Zeile mit dem Titel und markiere als abgeschlossen
-    line_num=$(grep -n "### [0-9]*\. $title" "$TODO_FILE" | cut -d: -f1)
+    line_num=$(grep -n "### $title" "$TODO_FILE" | cut -d: -f1)
     
     if [ -z "$line_num" ]; then
         echo -e "${RED}❌ Aufgabe '$title' nicht gefunden${NC}"
