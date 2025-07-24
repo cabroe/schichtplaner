@@ -21,8 +21,8 @@ export function getWeekdayClass(date: Date): string {
 /**
  * Gibt CSS-Klasse für Kalenderwoche zurück
  */
-export function getWeekNumberClass(weekNumber: number): string {
-  return 'bg-light';
+export function getWeekNumberClass(): string {
+  return 'bg-dark';
 }
 
 /**
