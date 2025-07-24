@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"net/http"
-	"strconv"
 
 	"schichtplaner/database"
 	"schichtplaner/models"
@@ -47,11 +46,9 @@ func GetActiveTeams(c echo.Context) error {
 
 // GetTeam gibt ein spezifisches Team zurück
 func GetTeam(c echo.Context) error {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	id, err := utils.ParseIDParamWithResponse(c, "id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Team-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
 	var team models.Team
@@ -96,11 +93,9 @@ func CreateTeam(c echo.Context) error {
 
 // UpdateTeam aktualisiert ein bestehendes Team
 func UpdateTeam(c echo.Context) error {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	id, err := utils.ParseIDParamWithResponse(c, "id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Team-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
 	var team models.Team
@@ -137,11 +132,9 @@ func UpdateTeam(c echo.Context) error {
 
 // DeleteTeam löscht ein Team
 func DeleteTeam(c echo.Context) error {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	id, err := utils.ParseIDParamWithResponse(c, "id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Team-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
 	var team models.Team
@@ -173,11 +166,9 @@ func DeleteTeam(c echo.Context) error {
 
 // ToggleTeamActive aktiviert/deaktiviert ein Team
 func ToggleTeamActive(c echo.Context) error {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	id, err := utils.ParseIDParamWithResponse(c, "id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Team-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
 	var team models.Team
@@ -200,11 +191,9 @@ func ToggleTeamActive(c echo.Context) error {
 
 // AddUserToTeam fügt einen Benutzer zu einem Team hinzu
 func AddUserToTeam(c echo.Context) error {
-	teamID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	teamID, err := utils.ParseIDParamWithResponse(c, "id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Team-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
 	var requestData struct {
@@ -248,18 +237,14 @@ func AddUserToTeam(c echo.Context) error {
 
 // RemoveUserFromTeam entfernt einen Benutzer aus einem Team
 func RemoveUserFromTeam(c echo.Context) error {
-	teamID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	teamID, err := utils.ParseIDParamWithResponse(c, "id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Team-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
-	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 32)
+	userID, err := utils.ParseIDParamWithResponse(c, "user_id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Benutzer-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
 	// Prüfe, ob der Benutzer im Team ist
@@ -285,11 +270,9 @@ func RemoveUserFromTeam(c echo.Context) error {
 
 // GetTeamMembers gibt alle Mitglieder eines Teams zurück
 func GetTeamMembers(c echo.Context) error {
-	teamID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	teamID, err := utils.ParseIDParamWithResponse(c, "id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Team-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
 	var users []models.User

@@ -36,11 +36,9 @@ func GetUsers(c echo.Context) error {
 
 // GetUser gibt einen spezifischen Benutzer zurück
 func GetUser(c echo.Context) error {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	id, err := utils.ParseIDParamWithResponse(c, "id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Benutzer-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
 	var user models.User
@@ -125,11 +123,9 @@ func CreateUser(c echo.Context) error {
 
 // UpdateUser aktualisiert einen bestehenden Benutzer
 func UpdateUser(c echo.Context) error {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	id, err := utils.ParseIDParamWithResponse(c, "id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Benutzer-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
 	var user models.User
@@ -204,11 +200,9 @@ func UpdateUser(c echo.Context) error {
 
 // DeleteUser löscht einen Benutzer
 func DeleteUser(c echo.Context) error {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	id, err := utils.ParseIDParamWithResponse(c, "id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Benutzer-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
 	var user models.User
@@ -252,11 +246,9 @@ func GetActiveUsers(c echo.Context) error {
 
 // ChangePassword ändert das Passwort eines Benutzers
 func ChangePassword(c echo.Context) error {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	id, err := utils.ParseIDParamWithResponse(c, "id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Benutzer-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
 	var user models.User
@@ -307,11 +299,9 @@ func ChangePassword(c echo.Context) error {
 
 // GetUsersByTeam gibt alle Benutzer eines bestimmten Teams zurück
 func GetUsersByTeam(c echo.Context) error {
-	teamID, err := strconv.ParseUint(c.Param("team_id"), 10, 32)
+	teamID, err := utils.ParseIDParamWithResponse(c, "team_id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Team-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
 	params := utils.GetPaginationParams(c)

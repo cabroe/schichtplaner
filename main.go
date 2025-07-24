@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"schichtplaner/database"
 	"schichtplaner/frontend"
@@ -52,8 +53,10 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	// Graceful Shutdown
-	if err := e.Shutdown(context.TODO()); err != nil {
+	// Graceful Shutdown with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctx); err != nil {
 		e.Logger.Fatal(err)
 	}
 }

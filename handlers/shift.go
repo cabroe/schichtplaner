@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"net/http"
-	"strconv"
 
 	"schichtplaner/database"
 	"schichtplaner/models"
@@ -34,11 +33,9 @@ func GetShifts(c echo.Context) error {
 
 // GetShift gibt eine spezifische Schicht zurück
 func GetShift(c echo.Context) error {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	id, err := utils.ParseIDParamWithResponse(c, "id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Schicht-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
 	var shift models.Shift
@@ -84,11 +81,9 @@ func CreateShift(c echo.Context) error {
 
 // UpdateShift aktualisiert eine bestehende Schicht
 func UpdateShift(c echo.Context) error {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	id, err := utils.ParseIDParamWithResponse(c, "id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Schicht-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
 	var shift models.Shift
@@ -128,11 +123,9 @@ func UpdateShift(c echo.Context) error {
 
 // DeleteShift löscht eine Schicht
 func DeleteShift(c echo.Context) error {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	id, err := utils.ParseIDParamWithResponse(c, "id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Schicht-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
 	var shift models.Shift
@@ -155,11 +148,9 @@ func DeleteShift(c echo.Context) error {
 
 // GetShiftsByUser gibt alle Schichten eines Benutzers mit Pagination zurück
 func GetShiftsByUser(c echo.Context) error {
-	userID, err := strconv.ParseUint(c.Param("user_id"), 10, 32)
+	userID, err := utils.ParseIDParamWithResponse(c, "user_id")
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Ungültige Benutzer-ID",
-		})
+		return err // Error response already sent by ParseIDParamWithResponse
 	}
 
 	// Prüfe, ob der User existiert
