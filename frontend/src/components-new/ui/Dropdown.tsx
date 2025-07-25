@@ -122,7 +122,6 @@ const Dropdown: React.FC<DropdownProps> = React.memo(({
     if (React.isValidElement(trigger)) {
       return React.cloneElement(trigger as React.ReactElement<any>, {
         onClick: handleToggle,
-        'data-bs-toggle': 'dropdown',
         'aria-haspopup': 'true',
         'aria-expanded': isOpen,
         disabled,
@@ -136,7 +135,6 @@ const Dropdown: React.FC<DropdownProps> = React.memo(({
         type="button"
         className={`btn ${getVariantClass()} ${getSizeClass()} dropdown-toggle`}
         onClick={handleToggle}
-        data-bs-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded={isOpen}
         disabled={disabled}

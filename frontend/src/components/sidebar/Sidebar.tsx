@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { UserDropdown, TicktacActions, RecentActivities } from "../";
 import { useUiStore } from "../../store/useUiStore";
 import { routeConfig } from "../../routes/routeConfig";
@@ -10,6 +10,7 @@ const Sidebar: React.FC = () => {
   const { pathname } = location;
   const togglerRef = useRef<HTMLButtonElement>(null);
   const { open, close, isOpen } = useUiStore();
+  const [openDropdowns, setOpenDropdowns] = useState<Set<string>>(new Set());
 
   // Hilfsfunktion für Submenu-Active-State
   const isSubmenuActive = (children: Record<string, PageTitleEntry>) =>
@@ -40,6 +41,21 @@ const Sidebar: React.FC = () => {
   function handleCloseSidebarMenu() {
     close();
   }
+
+  // Dropdown-Funktionen
+  const toggleDropdown = (path: string) => {
+    setOpenDropdowns(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(path)) {
+        newSet.delete(path);
+      } else {
+        newSet.add(path);
+      }
+      return newSet;
+    });
+  };
+
+  const isDropdownOpen = (path: string) => openDropdowns.has(path);
 
   const currentTitle = findPageTitle(pathname, routeConfig) || "";
 
@@ -89,19 +105,18 @@ const Sidebar: React.FC = () => {
                 // Submenu (z.B. Demos)
                 return (
                   <li className={`nav-item dropdown${isSubmenuActive(entry.children) ? " active" : ""}`} key={path}>
-                    <a
-                      href="#"
+                    <button
+                      type="button"
                       className="nav-link dropdown-toggle"
-                      data-bs-toggle="dropdown"
-                      role="button"
-                      aria-expanded={isSubmenuActive(entry.children) ? "true" : "false"}
+                      onClick={() => toggleDropdown(path)}
+                      aria-expanded={isDropdownOpen(path)}
                     >
                       <span className="nav-link-icon d-md-none d-lg-inline-block text-center">
                         <i className={entry.icon}></i>
                       </span>
                       <span className="nav-link-title">{entry.title}</span>
-                    </a>
-                    <div className={`dropdown-menu${isSubmenuActive(entry.children) ? " show" : ""}`}>
+                    </button>
+                    <div className={`dropdown-menu${isDropdownOpen(path) ? " show" : ""}`}>
                       {Object.entries(entry.children).map(([childPath, child]) => (
                         <Link className={`dropdown-item${pathname === childPath ? " active" : ""}`} to={childPath} key={childPath} onClick={handleCloseSidebarMenu}>
                           <span className="me-2"><i className={child.icon}></i></span>

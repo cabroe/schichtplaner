@@ -188,7 +188,6 @@ const UserDropdown: React.FC<UserDropdownProps> = React.memo(({
         type="button"
         className={`btn ${getVariantClass()} ${getSizeClass()} dropdown-toggle`}
         onClick={handleToggle}
-        data-bs-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded={isOpen}
         disabled={disabled}
