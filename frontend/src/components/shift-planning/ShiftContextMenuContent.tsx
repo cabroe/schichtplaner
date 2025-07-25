@@ -6,7 +6,7 @@ import {
   ContextMenuItem, 
   ContextMenuDivider, 
   ContextSubmenu 
-} from '../ContextMenu';
+} from '../context-menu';
 import type { Employee, ShiftType } from '../../types/shift';
 
 interface ShiftContextMenuContentProps {

@@ -1,5 +1,6 @@
 import React from 'react';
-import Status, { StatusProps } from './Status';
+import Status from './Status';
+import type { StatusProps } from './Status';
 
 export interface StatusListProps {
   /** Array von Status-Elementen */

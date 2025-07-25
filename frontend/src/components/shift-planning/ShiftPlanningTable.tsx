@@ -1,5 +1,5 @@
 import React from 'react';
-import DataTable from '../DataTable';
+import { DataTable } from '../';
 import ShiftPlanningTableHeader from './ShiftPlanningTableHeader';
 import ShiftPlanningTableBody from './ShiftPlanningTableBody';
 import type { Employee, ShiftType, WeekGroup } from '../../types/shift';
