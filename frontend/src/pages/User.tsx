@@ -4,10 +4,11 @@ import { userService } from '../services/users';
 import type { User, UserForm } from '../types';
 import { DataTable, Modal, Toast } from '../components';
 import { useUiStore } from '../store/useUiStore';
-import { Form, FormGroup, Input, Select, Checkbox, ColorDropdown } from '../components/forms';
+import { Form, FormGroup, Input, Select, Checkbox } from '../components/forms';
+import { ColorDropdown } from '../components/dropdown';
 import { useStatus } from '../contexts/StatusContext';
 
-const UserManagement: React.FC = () => {
+const User: React.FC = () => {
   const { user: currentUser } = useAuth();
   const { addNotification, open, close } = useUiStore();
   const { setStatus } = useStatus();
@@ -525,4 +526,4 @@ const UserManagement: React.FC = () => {
   );
 };
 
-export default UserManagement; 
+export default User; 

@@ -13,7 +13,7 @@ const ShiftPlanning = lazy(() => import('../pages/ShiftPlanning'));
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
 const About = lazy(() => import('../pages/About'));
-const UserManagement = lazy(() => import('../pages/UserManagement'));
+const User = lazy(() => import('../pages/User'));
 // NotFound wird direkt in App.tsx importiert
 
 export interface RouteDefinition {
@@ -86,7 +86,7 @@ export const protectedRoutes: RouteDefinition[] = [
 
   {
     path: '/admin/users',
-    component: UserManagement,
+    component: User,
     title: 'Benutzer-Verwaltung',
     protected: true,
     template: 'main'

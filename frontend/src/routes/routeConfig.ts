@@ -4,6 +4,7 @@ import SettingsHeader from "../pages/pageHeaders/SettingsHeader";
 import ModalDemoHeader from "../pages/pageHeaders/ModalDemoHeader";
 import ToastDemoHeader from "../pages/pageHeaders/ToastDemoHeader";
 import ShiftPlanningHeader from "../pages/pageHeaders/ShiftPlanningHeader";
+import UserHeader from "../pages/pageHeaders/UserHeader";
 
 export type PageTitleEntry = {
   title: string;
@@ -47,6 +48,7 @@ export const routeConfig: Record<string, PageTitleEntry> = {
         title: "Benutzer",
         pretitle: "Verwaltung",
         icon: "fas fa-users",
+        headerComponent: UserHeader,
       },
     },
   },

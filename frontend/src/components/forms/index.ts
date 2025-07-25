@@ -6,7 +6,10 @@ export * from './Textarea';
 export * from './Select';
 export * from './Checkbox';
 export * from './RadioGroup';
-export * from './ColorDropdown';
+export * from './SearchForm';
+
+// Re-export Dropdown-Komponenten aus dem dropdown-Ordner
+export * from '../dropdown';
 
 // Optionaler Default-Export für den Fall, dass jemand das gesamte Modul importieren möchte
 import { Form } from './Form';
@@ -16,7 +19,8 @@ import { Textarea } from './Textarea';
 import { Select } from './Select';
 import { Checkbox } from './Checkbox';
 import { RadioGroup } from './RadioGroup';
-import { ColorDropdown } from './ColorDropdown';
+import SearchForm from './SearchForm';
+import { Dropdown, ColorDropdown } from '../dropdown';
 
 export default {
   Form,
@@ -26,5 +30,7 @@ export default {
   Select,
   Checkbox,
   RadioGroup,
-  ColorDropdown
+  ColorDropdown,
+  SearchForm,
+  Dropdown
 }; 

@@ -5,6 +5,7 @@ import TimesHeader from "../pages/pageHeaders/TimesHeader";
 import SettingsHeader from "../pages/pageHeaders/SettingsHeader";
 import ModalDemoHeader from "../pages/pageHeaders/ModalDemoHeader";
 import ToastDemoHeader from "../pages/pageHeaders/ToastDemoHeader";
+import UserHeader from "../pages/pageHeaders/UserHeader";
 
 
 describe("routeConfig", () => {
@@ -25,6 +26,11 @@ describe("routeConfig", () => {
     expect(routeConfig["/demos"].children).toBeDefined();
     expect(routeConfig["/demos"].children!["/modal-demo"].headerComponent).toBe(ModalDemoHeader);
     expect(routeConfig["/demos"].children!["/toast-demo"].headerComponent).toBe(ToastDemoHeader);
+  });
+  it("enthält UserHeader für /admin/users", () => {
+    expect(routeConfig["/admin"]).toBeDefined();
+    expect(routeConfig["/admin"].children).toBeDefined();
+    expect(routeConfig["/admin"].children!["/admin/users"].headerComponent).toBe(UserHeader);
   });
   it("hat überall title, pretitle und icon", () => {
     for (const entry of Object.values(routeConfig)) {
