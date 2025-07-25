@@ -1,12 +1,21 @@
 import React from "react";
-import { UserDropdown, TicktacActions, RecentActivities } from "../";
+import { UserDropdown, TicktacActions, RecentActivities, Status } from "../";
 
 interface HeaderProps {
   title: string;
+  /** Optionaler Status, der im Header angezeigt wird */
+  status?: {
+    /** Status-Text oder Inhalt */
+    content: React.ReactNode;
+    /** Status-Variante (Farbe) */
+    variant?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger' | 'teal' | 'purple' | 'pink' | 'yellow' | 'orange' | 'green' | 'blue' | 'red' | 'gray';
+    /** Status-Größe */
+    size?: 'sm' | 'md' | 'lg';
+  };
 }
 
 // Header-Komponente im Tabler-Stil
-const Header: React.FC<HeaderProps> = ({ title }) => {
+const Header: React.FC<HeaderProps> = ({ title, status }) => {
   return (
     <header className="navbar navbar-expand-md d-none d-lg-flex d-print-none">
       <div className="container-fluid">
@@ -22,9 +31,20 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
           <UserDropdown />
         </div>
 
-        {/* Titel */}
+        {/* Titel und Status */}
         <div className="collapse navbar-collapse" id="navbar-menu">
-          <h2 className="page-title me-2">{title}</h2>
+          <div className="d-flex align-items-center">
+            <h2 className="page-title me-2">{title}</h2>
+            {status && (
+              <Status 
+                variant={status.variant} 
+                size={status.size}
+                className="ms-2"
+              >
+                {status.content}
+              </Status>
+            )}
+          </div>
         </div>
       </div>
     </header>
