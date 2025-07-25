@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { userService } from '../services/users';
-import type { User, UserForm, UserRole } from '../types';
+import type { User, UserForm } from '../types';
 import DataTable from '../components/DataTable';
 import Modal from '../components/Modal';
 import Toast from '../components/Toast';
 import { useUiStore } from '../store/useUiStore';
+import { Form, FormGroup, Input, Select, Checkbox, ColorDropdown } from '../components/forms';
 
 const UserManagement: React.FC = () => {
   const { user: currentUser } = useAuth();
@@ -151,15 +152,15 @@ const UserManagement: React.FC = () => {
   };
 
   // Formular speichern
-  const handleSaveUser = async () => {
+  const handleSaveUser = async (data: Record<string, any>) => {
     try {
       setLoading(true);
       
       if (isEditMode && selectedUser) {
-        await userService.updateUser(selectedUser.id, formData);
+        await userService.updateUser(selectedUser.id, data as UserForm);
         setToastMessage('Benutzer erfolgreich aktualisiert');
       } else {
-        await userService.createUser(formData);
+        await userService.createUser(data as UserForm);
         setToastMessage('Benutzer erfolgreich erstellt');
       }
       setShowToast(true);
@@ -175,14 +176,6 @@ const UserManagement: React.FC = () => {
     }
   };
 
-  // Formular-Input-Handler
-  const handleInputChange = (field: keyof UserForm, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
   // Benutzer beim Laden der Komponente laden
   useEffect(() => {
     loadUsers();
@@ -196,6 +189,28 @@ const UserManagement: React.FC = () => {
         user.email.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : users;
+
+  // Optionen für Rollen
+  const roleOptions = [
+    { value: 'user', label: 'Benutzer' },
+    { value: 'employee', label: 'Mitarbeiter' },
+    { value: 'manager', label: 'Manager' },
+    { value: 'admin', label: 'Administrator' }
+  ];
+
+  // Optionen für Farben
+  const colorOptions = [
+    { value: '#206bc4', label: 'Blau' },
+    { value: '#4299e1', label: 'Hellblau' },
+    { value: '#2d3748', label: 'Grau' },
+    { value: '#48bb78', label: 'Grün' },
+    { value: '#ed8936', label: 'Orange' },
+    { value: '#e53e3e', label: 'Rot' },
+    { value: '#9f7aea', label: 'Lila' },
+    { value: '#f6ad55', label: 'Gelb' },
+    { value: '#38b2ac', label: 'Türkis' },
+    { value: '#f56565', label: 'Pink' }
+  ];
 
   return (
     <div className="container-xl">
@@ -330,144 +345,159 @@ const UserManagement: React.FC = () => {
         title={isEditMode ? 'Benutzer bearbeiten' : 'Neuen Benutzer erstellen'}
         onClose={() => close()}
       >
-        <div className="row g-3">
-          <div className="col-md-6">
-            <label className="form-label">Benutzername *</label>
-            <input
-              type="text"
-              className="form-control"
-              value={formData.username}
-              onChange={(e) => handleInputChange('username', e.target.value)}
-              required
-            />
-          </div>
-          <div className="col-md-6">
-            <label className="form-label">E-Mail *</label>
-            <input
-              type="email"
-              className="form-control"
-              value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
-              required
-            />
-          </div>
-          <div className="col-md-6">
-            <label className="form-label">Name *</label>
-            <input
-              type="text"
-              className="form-control"
-              value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-              required
-            />
-          </div>
-          <div className="col-md-6">
-            <label className="form-label">Farbe</label>
-            <input
-              type="color"
-              className="form-control form-control-color"
-              value={formData.color}
-              onChange={(e) => handleInputChange('color', e.target.value)}
-            />
-          </div>
-          <div className="col-md-6">
-            <label className="form-label">Rolle *</label>
-            <select
-              className="form-select"
-              value={formData.role}
-              onChange={(e) => handleInputChange('role', e.target.value as UserRole)}
-              required
-            >
-              <option value="user">Benutzer</option>
-              <option value="employee">Mitarbeiter</option>
-              <option value="manager">Manager</option>
-              <option value="admin">Administrator</option>
-            </select>
-          </div>
-          <div className="col-md-6">
-            <label className="form-label">Personalnummer</label>
-            <input
-              type="text"
-              className="form-control"
-              value={formData.personalnummer}
-              onChange={(e) => handleInputChange('personalnummer', e.target.value)}
-            />
-          </div>
-          <div className="col-md-6">
-            <label className="form-label">Kontonummer *</label>
-            <input
-              type="text"
-              className="form-control"
-              value={formData.account_number}
-              onChange={(e) => handleInputChange('account_number', e.target.value)}
-              required
-            />
-          </div>
-          <div className="col-md-6">
-            <label className="form-label">
-              {isEditMode ? 'Neues Passwort (leer lassen für keine Änderung)' : 'Passwort *'}
-            </label>
-            <input
-              type="password"
-              className="form-control"
-              value={formData.password}
-              onChange={(e) => handleInputChange('password', e.target.value)}
-              required={!isEditMode}
-            />
-          </div>
-          <div className="col-12">
-            <div className="form-check">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                id="is_active"
-                checked={formData.is_active}
-                onChange={(e) => handleInputChange('is_active', e.target.checked)}
-              />
-              <label className="form-check-label" htmlFor="is_active">
-                Benutzer ist aktiv
-              </label>
+        <Form 
+          onSubmit={handleSaveUser}
+          loading={loading}
+          initialValues={formData}
+        >
+          <div className="row g-3">
+            <div className="col-md-6">
+              <FormGroup 
+                label="Benutzername" 
+                htmlFor="username" 
+                required
+                helpText="Eindeutiger Benutzername für die Anmeldung"
+              >
+                <Input
+                  type="text"
+                  name="username"
+                  placeholder="max.mustermann"
+                  required
+                  minLength={3}
+                  maxLength={50}
+                  title="Benutzername muss zwischen 3 und 50 Zeichen lang sein"
+                />
+              </FormGroup>
+            </div>
+            <div className="col-md-6">
+              <FormGroup 
+                label="E-Mail" 
+                htmlFor="email" 
+                required
+              >
+                <Input
+                  type="email"
+                  name="email"
+                  placeholder="max@example.com"
+                  required
+                  title="Bitte geben Sie eine gültige E-Mail-Adresse ein"
+                />
+              </FormGroup>
+            </div>
+            <div className="col-md-6">
+              <FormGroup 
+                label="Name" 
+                htmlFor="name" 
+                required
+                helpText="Vollständiger Name des Benutzers"
+              >
+                <Input
+                  type="text"
+                  name="name"
+                  placeholder="Max Mustermann"
+                  required
+                  minLength={2}
+                  maxLength={100}
+                  title="Name muss zwischen 2 und 100 Zeichen lang sein"
+                />
+              </FormGroup>
+            </div>
+            <div className="col-md-6">
+              <FormGroup 
+                label="Farbe" 
+                htmlFor="color"
+                helpText="Farbe für die Benutzer-Avatar-Anzeige"
+              >
+                <ColorDropdown
+                  name="color"
+                  value={formData.color}
+                  onChange={(color) => setFormData(prev => ({ ...prev, color }))}
+                  options={colorOptions}
+                />
+              </FormGroup>
+            </div>
+            <div className="col-md-6">
+              <FormGroup 
+                label="Rolle" 
+                htmlFor="role" 
+                required
+              >
+                <Select
+                  name="role"
+                  options={roleOptions}
+                  required
+                  title="Bitte wählen Sie eine Rolle aus"
+                />
+              </FormGroup>
+            </div>
+            <div className="col-md-6">
+              <FormGroup 
+                label="Personalnummer" 
+                htmlFor="personalnummer"
+                helpText="Optionale Personalnummer"
+              >
+                <Input
+                  type="text"
+                  name="personalnummer"
+                  placeholder="12345"
+                  maxLength={20}
+                />
+              </FormGroup>
+            </div>
+            <div className="col-md-6">
+              <FormGroup 
+                label="Kontonummer" 
+                htmlFor="account_number" 
+                required
+                helpText="Eindeutige Kontonummer für das System"
+              >
+                <Input
+                  type="text"
+                  name="account_number"
+                  placeholder="ACC001"
+                  required
+                  minLength={3}
+                  maxLength={20}
+                  title="Kontonummer muss zwischen 3 und 20 Zeichen lang sein"
+                />
+              </FormGroup>
+            </div>
+            <div className="col-md-6">
+              <FormGroup 
+                label={isEditMode ? 'Neues Passwort' : 'Passwort'} 
+                htmlFor="password" 
+                required={!isEditMode}
+                helpText={isEditMode ? 'Leer lassen für keine Änderung' : 'Mindestens 8 Zeichen'}
+              >
+                <Input
+                  type="password"
+                  name="password"
+                  required={!isEditMode}
+                  minLength={8}
+                  title={isEditMode ? 'Leer lassen oder mindestens 8 Zeichen' : 'Passwort muss mindestens 8 Zeichen lang sein'}
+                />
+              </FormGroup>
+            </div>
+            <div className="col-12">
+              <FormGroup>
+                <Checkbox
+                  name="is_active"
+                  label="Benutzer ist aktiv"
+                  title="Aktive Benutzer können sich anmelden"
+                />
+              </FormGroup>
+            </div>
+            <div className="col-12">
+              <FormGroup>
+                <Checkbox
+                  name="is_admin"
+                  label="Administrator-Rechte"
+                  title="Administratoren haben vollen Systemzugriff"
+                />
+              </FormGroup>
             </div>
           </div>
-          <div className="col-12">
-            <div className="form-check">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                id="is_admin"
-                checked={formData.is_admin}
-                onChange={(e) => handleInputChange('is_admin', e.target.checked)}
-              />
-              <label className="form-check-label" htmlFor="is_admin">
-                Administrator-Rechte
-              </label>
-            </div>
-          </div>
-        </div>
-        <div className="modal-footer">
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={() => close()}
-          >
-            Abbrechen
-          </button>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={handleSaveUser}
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2"></span>
-                Speichern...
-              </>
-            ) : (
-              'Speichern'
-            )}
-          </button>
-        </div>
+        </Form>
       </Modal>
 
       {/* Toast-Benachrichtigung */}

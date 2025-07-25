@@ -225,3 +225,6 @@ export function ContextSubmenu({
     </div>
   );
 }
+
+// Default export für die Hauptkomponente
+export default ContextMenu;
