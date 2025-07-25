@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 
-interface ContextMenuProps {
+export interface ContextMenuProps {
   x: number;
   y: number;
   isOpen: boolean;
@@ -8,7 +8,7 @@ interface ContextMenuProps {
   children: React.ReactNode;
 }
 
-interface ContextMenuItemProps {
+export interface ContextMenuItemProps {
   onClick: () => void;
   icon?: string;
   disabled?: boolean;
@@ -16,7 +16,7 @@ interface ContextMenuItemProps {
   children: React.ReactNode;
 }
 
-interface ContextSubmenuProps {
+export interface ContextSubmenuProps {
   title: string;
   id: string;
   icon?: string;

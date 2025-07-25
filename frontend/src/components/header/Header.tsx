@@ -1,7 +1,5 @@
 import React from "react";
-import UserDropdown from "./UserDropdown";
-import TicktacActions from "./TicktacActions";
-import RecentActivities from "./RecentActivities";
+import { UserDropdown, TicktacActions, RecentActivities } from "../";
 
 interface HeaderProps {
   title: string;

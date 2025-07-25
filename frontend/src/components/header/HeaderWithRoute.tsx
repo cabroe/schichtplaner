@@ -1,8 +1,8 @@
 import React from "react";
 import Header from "./Header";
 import { useLocation } from "react-router-dom";
-import { routeConfig } from "../routes/routeConfig";
-import type { PageTitleEntry } from "../routes/routeConfig";
+import { routeConfig } from "../../routes/routeConfig";
+import type { PageTitleEntry } from "../../routes/routeConfig";
 
 function findPageEntry(pathname: string, entries: Record<string, PageTitleEntry>): PageTitleEntry | undefined {
   for (const [key, entry] of Object.entries(entries)) {

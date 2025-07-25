@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { userService } from '../services/users';
 import type { User, UserForm } from '../types';
-import DataTable from '../components/DataTable';
-import Modal from '../components/Modal';
-import Toast from '../components/Toast';
+import { DataTable, Modal, Toast } from '../components';
 import { useUiStore } from '../store/useUiStore';
 import { Form, FormGroup, Input, Select, Checkbox, ColorDropdown } from '../components/forms';
 

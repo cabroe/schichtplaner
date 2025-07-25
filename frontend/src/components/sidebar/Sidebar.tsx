@@ -1,11 +1,9 @@
 import React, { useRef } from "react";
-import UserDropdown from "./UserDropdown";
-import TicktacActions from "./TicktacActions";
-import { useUiStore } from "../store/useUiStore";
-import RecentActivities from "./RecentActivities";
-import { routeConfig } from "../routes/routeConfig";
+import { UserDropdown, TicktacActions, RecentActivities } from "../";
+import { useUiStore } from "../../store/useUiStore";
+import { routeConfig } from "../../routes/routeConfig";
 import { Link, useLocation } from "react-router-dom";
-import type { PageTitleEntry } from "../routes/routeConfig";
+import type { PageTitleEntry } from "../../routes/routeConfig";
 
 const Sidebar: React.FC = () => {
   const location = useLocation();

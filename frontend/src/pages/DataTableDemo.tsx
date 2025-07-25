@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import DataTable from "../components/DataTable";
+import { DataTable } from "../components";
 
 const DataTableDemo: React.FC = () => {
   const [selectedSize, setSelectedSize] = useState<'sm' | 'lg' | undefined>(undefined);

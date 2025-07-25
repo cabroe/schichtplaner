@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Toast from "../components/Toast";
+import { Toast } from "../components";
 
 const ToastDemo: React.FC = () => {
   const [show, setShow] = useState(false);

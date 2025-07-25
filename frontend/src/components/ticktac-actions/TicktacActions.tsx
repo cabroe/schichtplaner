@@ -1,5 +1,5 @@
 import React from "react";
-import { useUiStore } from "../store/useUiStore";
+import { useUiStore } from "../../store/useUiStore";
 
 const TicktacActions: React.FC = () => {
   const { close, isOpen } = useUiStore();

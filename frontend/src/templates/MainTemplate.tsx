@@ -1,7 +1,5 @@
 import React from "react";
-import Sidebar from "../components/Sidebar";
-import HeaderWithRoute from "../components/HeaderWithRoute";
-import PageHeader from "../components/PageHeader";
+import { Sidebar, HeaderWithRoute, PageHeader } from "../components";
 import { useLocation } from "react-router-dom";
 import { getHeaderComponentForRoute } from "../utils/routeUtils";
 
