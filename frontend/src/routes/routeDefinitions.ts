@@ -8,6 +8,7 @@ const ModalDemo = lazy(() => import('../pages/ModalDemo'));
 const ToastDemo = lazy(() => import('../pages/ToastDemo'));
 const ContextMenuDemo = lazy(() => import('../pages/ContextMenuDemo'));
 const DataTableDemo = lazy(() => import('../pages/DataTableDemo'));
+const FormDemo = lazy(() => import('../pages/FormDemo'));
 const ShiftPlanning = lazy(() => import('../pages/ShiftPlanning'));
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
@@ -106,6 +107,13 @@ export const protectedRoutes: RouteDefinition[] = [
     path: '/data-table-demo',
     component: DataTableDemo,
     title: 'Data Table Demo',
+    protected: true,
+    template: 'main'
+  },
+  {
+    path: '/form-demo',
+    component: FormDemo,
+    title: 'Form Demo',
     protected: true,
     template: 'main'
   }

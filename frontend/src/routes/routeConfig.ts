@@ -77,6 +77,11 @@ export const routeConfig: Record<string, PageTitleEntry> = {
         pretitle: "Beispielseite",
         icon: "fas fa-table",
       },
+      "/form-demo": {
+        title: "Form Demo",
+        pretitle: "Beispielseite",
+        icon: "fas fa-edit",
+      },
     },
   },
 };
