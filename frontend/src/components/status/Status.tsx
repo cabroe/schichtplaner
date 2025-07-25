@@ -8,7 +8,7 @@ export interface StatusProps {
   /** Zusätzliche CSS-Klassen */
   className?: string;
   /** Größe des Status */
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'undefined';
 }
 
 /**

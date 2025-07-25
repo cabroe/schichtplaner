@@ -5,10 +5,12 @@ import type { User, UserForm } from '../types';
 import { DataTable, Modal, Toast } from '../components';
 import { useUiStore } from '../store/useUiStore';
 import { Form, FormGroup, Input, Select, Checkbox, ColorDropdown } from '../components/forms';
+import { useStatus } from '../contexts/StatusContext';
 
 const UserManagement: React.FC = () => {
   const { user: currentUser } = useAuth();
   const { addNotification, open, close } = useUiStore();
+  const { setStatus } = useStatus();
   
   // State für Benutzer-Daten
   const [users, setUsers] = useState<User[]>([]);
@@ -32,6 +34,21 @@ const UserManagement: React.FC = () => {
     is_active: true,
     is_admin: false
   });
+
+  // Status aktualisieren, wenn sich die Anzahl der Benutzer ändert
+  useEffect(() => {
+    
+    setStatus({
+      content: `${users.length}`,
+      variant: users.length > 0 ? 'success' : 'secondary',
+      size: undefined
+    });
+
+    // Cleanup beim Verlassen der Komponente
+    return () => {
+      setStatus(null);
+    };
+  }, [users, setStatus]);
 
   // Prüfe Admin-Berechtigung
   if (currentUser?.role !== 'admin') {

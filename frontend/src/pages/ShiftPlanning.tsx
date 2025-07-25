@@ -4,7 +4,7 @@ import type { User } from '../types';
 import { 
   getWeekNumber, 
   groupDaysByWeek} from '../utils/dateUtils';
-import { ContextMenu } from '../components/ContextMenu';
+import { ContextMenu } from '../components';
 import {
   ShiftPlanningTable,
   ShiftTemplateModal,

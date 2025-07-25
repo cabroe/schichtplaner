@@ -22,6 +22,15 @@ export interface RouteDefinition {
   title: string;
   protected?: boolean;
   template?: 'main' | 'simple';
+  /** Optionaler Status, der im Header angezeigt wird */
+  status?: {
+    /** Status-Text oder Inhalt */
+    content: React.ReactNode;
+    /** Status-Variante (Farbe) */
+    variant?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger' | 'teal' | 'purple' | 'pink' | 'yellow' | 'orange' | 'green' | 'blue' | 'red' | 'gray';
+    /** Status-Größe */
+    size?: 'sm' | 'md' | 'lg';
+  };
 }
 
 export const publicRoutes: RouteDefinition[] = [

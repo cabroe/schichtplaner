@@ -2,6 +2,8 @@ import React from "react";
 import Header from "./Header";
 import { useLocation } from "react-router-dom";
 import { routeConfig } from "../../routes/routeConfig";
+import { getRouteByPath } from "../../routes/routeDefinitions";
+import { useStatus } from "../../contexts/StatusContext";
 import type { PageTitleEntry } from "../../routes/routeConfig";
 
 function findPageEntry(pathname: string, entries: Record<string, PageTitleEntry>): PageTitleEntry | undefined {
@@ -19,7 +21,13 @@ const HeaderWithRoute: React.FC = () => {
   const location = useLocation();
   const { pathname } = location;
   const page = findPageEntry(pathname, routeConfig) || { title: "", pretitle: "", icon: "" };
-  return <Header title={page.title} />;
+  const route = getRouteByPath(pathname);
+  const { status } = useStatus();
+  
+  // Verwende den Status aus dem Context, falls vorhanden, sonst den aus der Route
+  const headerStatus = status || route?.status;
+  
+  return <Header title={page.title} status={headerStatus} />;
 };
 
 export default HeaderWithRoute; 

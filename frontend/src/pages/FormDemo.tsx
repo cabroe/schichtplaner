@@ -311,7 +311,7 @@ const FormDemo: React.FC = () => {
                     Importieren Sie die Komponenten aus dem forms-Modul:
                   </p>
                   <code className="d-block bg-light p-2 rounded">
-                    import {'{'} Form, FormGroup, Input {'}'} from './components/forms';
+                    import {'{'} Form, FormGroup, Input {'}'} from '../components';
                   </code>
                 </div>
               </div>

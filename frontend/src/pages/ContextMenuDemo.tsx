@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ContextMenu, ContextMenuItem, ContextMenuDivider, ContextSubmenu } from "../components/context-menu";
+import { ContextMenu, ContextMenuItem, ContextMenuDivider, ContextSubmenu } from "../components";
 
 const ContextMenuDemo: React.FC = () => {
   const [contextMenu, setContextMenu] = useState<{

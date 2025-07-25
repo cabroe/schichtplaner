@@ -4,6 +4,7 @@ import MainTemplate from "./templates/MainTemplate";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute, LogoutHandler } from "./components";
 import { AuthProvider } from "./contexts/AuthContext";
+import { StatusProvider } from "./contexts/StatusContext";
 import SimpleTemplate from "./templates/SimpleTemplate";
 import { publicRoutes, protectedRoutes } from "./routes/routeDefinitions";
 import "./App.css";
@@ -20,7 +21,8 @@ const LoadingSpinner = () => (
 function AppRoutes() {
   return (
     <AuthProvider>
-      <Suspense fallback={<LoadingSpinner />}>
+      <StatusProvider>
+        <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           {/* Logout Route */}
           <Route path="/logout" element={<LogoutHandler />} />
@@ -68,7 +70,8 @@ function AppRoutes() {
           {/* 404 Route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </Suspense>
+        </Suspense>
+      </StatusProvider>
     </AuthProvider>
   );
 }
