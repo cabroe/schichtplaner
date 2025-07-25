@@ -23,7 +23,7 @@ const ButtonDemoNeu = lazy(() => import('../pages/ButtonDemo-neu'));
 const CalendarDemoNeu = lazy(() => import('../pages/CalendarDemo-neu'));
 const CardDemoNeu = lazy(() => import('../pages/CardDemo-neu'));
 const ContainerDemoNeu = lazy(() => import('../pages/ContainerDemo-neu'));
-const DataTableDemoNeu = lazy(() => import('../pages/datatabledemo-neu'));
+const DataTableDemoNeu = lazy(() => import('../pages/DataTableDemo-neu'));
 const DividerDemoNeu = lazy(() => import('../pages/DividerDemo-neu'));
 const DropdownDemoNeu = lazy(() => import('../pages/DropdownDemo-neu'));
 const IconDemoNeu = lazy(() => import('../pages/IconDemo-neu'));

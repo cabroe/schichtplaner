@@ -32,9 +32,7 @@ export const Menu: React.FC<MenuProps> = ({
   items,
   trigger,
   placement = 'bottom',
-  size = 'md',
   className = '',
-  variant = 'default',
   showArrow = false,
   autoClose = true
 }) => {

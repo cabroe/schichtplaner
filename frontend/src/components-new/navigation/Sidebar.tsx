@@ -37,7 +37,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCollapse,
   className = '',
   variant = 'default',
-  size = 'md',
   showToggle = true,
   sticky = false
 }) => {

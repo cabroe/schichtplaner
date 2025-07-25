@@ -17,7 +17,6 @@ export interface ChartProps {
   className?: string;
   showLegend?: boolean;
   showGrid?: boolean;
-  responsive?: boolean;
   onDataPointClick?: (data: ChartData, index: number) => void;
 }
 
@@ -26,14 +25,14 @@ export interface ChartProps {
  */
 export const Chart: React.FC<ChartProps> = ({
   data,
-  type,
+  type = 'line',
   title,
   subtitle,
   height = 300,
-  width,
+  width = 400,
   className = '',
-  showLegend = true,
-  responsive = true}) => {
+  showLegend = true
+}) => {
   const chartId = `chart-${Math.random().toString(36).substr(2, 9)}`;
 
   const getChartClass = () => {

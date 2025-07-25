@@ -24,7 +24,6 @@ const DataTableDemoNeu: React.FC = () => {
   const [sortBy, setSortBy] = useState<string>('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
   // Beispieldaten
   const users: User[] = [
@@ -111,9 +110,10 @@ const DataTableDemoNeu: React.FC = () => {
     setSelectedUsers(selectedRows);
   };
 
-  const handleProductSelectionChange = (selectedRows: string[]) => {
-    setSelectedProducts(selectedRows);
-  };
+  // Entfernt, da nicht verwendet
+  // const handleProductSelectionChange = (selectedRows: string[]) => {
+  //   setSelectedProducts(selectedRows);
+  // };
 
   // DataTable Spalten für Benutzer
   const userColumns = [
@@ -128,7 +128,7 @@ const DataTableDemoNeu: React.FC = () => {
       key: 'name',
       title: 'Name',
       sortable: true,
-      render: (value: string, row: User) => (
+      render: (value: string, _row: User) => (
         <div className="d-flex align-items-center">
           <span className="avatar avatar-sm me-2 bg-primary">
             {value.charAt(0)}
@@ -183,7 +183,7 @@ const DataTableDemoNeu: React.FC = () => {
       key: 'name',
       title: 'Produkt',
       sortable: true,
-      render: (value: string, row: Product) => (
+      render: (value: string, _row: Product) => (
         <div className="d-flex align-items-center">
           <div className="avatar avatar-sm me-2 bg-secondary">
             {value.charAt(0)}
@@ -246,9 +246,6 @@ const DataTableDemoNeu: React.FC = () => {
                 <span className="badge bg-primary me-2">
                   {selectedUsers.length} Benutzer ausgewählt
                 </span>
-                <span className="badge bg-success">
-                  {selectedProducts.length} Produkte ausgewählt
-                </span>
               </div>
             </div>
             <div className="card-body">
@@ -287,7 +284,7 @@ const DataTableDemoNeu: React.FC = () => {
                   }}
                   actions={{
                     title: 'Aktionen',
-                    render: (row: User) => (
+                    render: (_row: User) => (
                       <div className="btn-group">
                         <button className="btn btn-sm btn-outline-primary" title="Bearbeiten">
                           <i className="fas fa-edit" />

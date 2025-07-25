@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Employee, ShiftType } from '../../types/shift';
+import type { ShiftType } from '../../types/shift';
 
 export interface ShiftCellProps {
   shiftType: ShiftType;

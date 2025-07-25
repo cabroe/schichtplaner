@@ -52,12 +52,8 @@ export const Timeline: React.FC<TimelineProps> = ({
     return classes.filter(Boolean).join(' ');
   };
 
-  const getIconClass = (item: TimelineItem) => {
-    const classes = [
-      'rounded-circle d-flex align-items-center justify-content-center me-3',
-      'flex-shrink-0'
-    ];
-    return classes.filter(Boolean).join(' ');
+  const getIconClass = () => {
+    return 'ti ti-circle-fill text-primary';
   };
 
   const getIconColor = (item: TimelineItem) => {
@@ -93,7 +89,7 @@ export const Timeline: React.FC<TimelineProps> = ({
       <div key={item.id} className={getItemClass(item, index)}>
         <div className="d-flex align-items-start">
           <div 
-            className={getIconClass(item)}
+            className={getIconClass()}
             style={{ 
               backgroundColor: getIconColor(item),
               color: 'white',

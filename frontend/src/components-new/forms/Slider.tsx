@@ -33,7 +33,6 @@ export const Slider: React.FC<SliderProps> = ({
   showValue = false,
   showMarks = false,
   marks = {},
-  size = 'md',
   variant = 'default',
   rangeValues = [min, max],
   onRangeChange

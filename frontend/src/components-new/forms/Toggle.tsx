@@ -4,8 +4,6 @@ export interface ToggleProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
   disabled?: boolean;
-  size?: 'sm' | 'md' | 'lg';
-  variant?: 'default' | 'primary' | 'success' | 'warning' | 'danger';
   className?: string;
   label?: string;
   description?: string;
@@ -17,16 +15,14 @@ export interface ToggleProps {
  * Toggle-Switch-Komponente
  */
 export const Toggle: React.FC<ToggleProps> = ({
-  checked,
-  onChange,
+  checked = false,
   disabled = false,
-  size = 'md',
-  variant = 'default',
-  className = '',
   label,
   description,
-  showLabel = true,
-  id
+  className = '',
+  onChange,
+  id,
+  showLabel = true
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!disabled) {
@@ -46,14 +42,6 @@ export const Toggle: React.FC<ToggleProps> = ({
   const getSwitchClass = () => {
     const classes = [
       'form-check-input',
-      disabled ? 'opacity-50' : ''
-    ];
-    return classes.filter(Boolean).join(' ');
-  };
-
-  const getSliderClass = () => {
-    const classes = [
-      'form-check-label',
       disabled ? 'opacity-50' : ''
     ];
     return classes.filter(Boolean).join(' ');
