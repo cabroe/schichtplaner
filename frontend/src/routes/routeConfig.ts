@@ -84,6 +84,117 @@ export const routeConfig: Record<string, PageTitleEntry> = {
         pretitle: "Beispielseite",
         icon: "fas fa-edit",
       },
+      // Neue Komponenten Demos
+      "/accordion-demo-neu": {
+        title: "Accordion Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-chevron-down",
+      },
+      "/avatar-demo-neu": {
+        title: "Avatar Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-user-circle",
+      },
+      "/badge-demo-neu": {
+        title: "Badge Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-tag",
+      },
+      "/button-demo-neu": {
+        title: "Button Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-square",
+      },
+      "/calendar-demo-neu": {
+        title: "Calendar Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-calendar",
+      },
+      "/card-demo-neu": {
+        title: "Card Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-credit-card",
+      },
+      "/container-demo-neu": {
+        title: "Container Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-box",
+      },
+      "/data-table-demo-neu": {
+        title: "DataTable Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-table",
+      },
+      "/divider-demo-neu": {
+        title: "Divider Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-minus",
+      },
+      "/dropdown-demo-neu": {
+        title: "Dropdown Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-chevron-down",
+      },
+      "/icon-demo-neu": {
+        title: "Icon Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-icons",
+      },
+      "/label-demo-neu": {
+        title: "Label Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-tag",
+      },
+      "/loading-spinner-demo-neu": {
+        title: "Loading Spinner Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-spinner",
+      },
+      "/modal-demo-neu": {
+        title: "Modal Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-window-restore",
+      },
+      "/progress-bar-demo-neu": {
+        title: "Progress Bar Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-tasks",
+      },
+      "/stepper-demo-neu": {
+        title: "Stepper Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-steps",
+      },
+      "/tabs-demo-neu": {
+        title: "Tabs Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-folder",
+      },
+      "/timeline-demo-neu": {
+        title: "Timeline Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-stream",
+      },
+      "/toast-demo-neu": {
+        title: "Toast Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-bell",
+      },
+      "/tooltip-demo-neu": {
+        title: "Tooltip Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-comment",
+      },
+      "/user-dropdown-demo-neu": {
+        title: "User Dropdown Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-user",
+      },
+      "/user-label-demo-neu": {
+        title: "User Label Demo",
+        pretitle: "Neue Komponenten",
+        icon: "fas fa-user-tag",
+      },
     },
   },
 };

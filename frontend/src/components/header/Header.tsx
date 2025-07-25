@@ -39,7 +39,7 @@ const Header: React.FC<HeaderProps> = ({ title, status }) => {
               <Status 
                 variant={status.variant} 
                 size={status.size}
-                className="mt-1"
+                className="ms-1"
               >
                 {status.content}
               </Status>
