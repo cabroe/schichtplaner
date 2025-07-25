@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useUiStore } from "../../store/useUiStore";
+import { useUiStore } from "../../../store/useUiStore";
 
 interface ModalProps {
   title?: string;

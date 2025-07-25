@@ -5,7 +5,7 @@ import type { User, UserForm } from '../types';
 import { DataTable, Modal, Toast } from '../components';
 import { useUiStore } from '../store/useUiStore';
 import { Form, FormGroup, Input, Select, Checkbox } from '../components/forms';
-import { ColorDropdown } from '../components/dropdown';
+import { ColorDropdown } from '../components/ui';
 import { useStatus } from '../contexts/StatusContext';
 
 const User: React.FC = () => {

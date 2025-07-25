@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Select } from './Select';
+import { Select } from '../ui';
 
 export interface SearchFormProps {
   onSearch: (searchData: SearchFormData) => void;

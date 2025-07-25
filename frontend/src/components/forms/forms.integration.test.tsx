@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import * as FormsModule from './index';
-import { Dropdown, ColorDropdown } from '../dropdown';
+import { Dropdown, ColorDropdown } from '../ui';
 
 describe('Forms Module Integration Tests', () => {
   const mockOptions = [
