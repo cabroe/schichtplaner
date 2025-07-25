@@ -3,16 +3,10 @@ export * from './data-table';
 export * from './modal';
 export * from './toast';
 export * from './status';
-export * from './Dropdown';
-export * from './ColorDropdown';
-export * from './Checkbox';
-export * from './Input';
-export * from './Select';
-export * from './RadioGroup';
-export * from './Textarea';
-export * from './Form';
-export * from './FormGroup';
+export * from './dropdown';
+export * from './form';
+export * from './input';
 
 // Default-Export für Dropdown (Hauptkomponente)
-import Dropdown from './Dropdown';
+import { Dropdown } from './dropdown';
 export default Dropdown; 

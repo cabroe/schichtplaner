@@ -1,28 +1,22 @@
 // Export aller Formular-Komponenten für einfachen Import
-export * from '../ui/Form';
-export * from '../ui/FormGroup';
-export * from '../ui/Input';
-export * from '../ui/Textarea';
-export * from '../ui/Select';
-export * from '../ui/Checkbox';
-export * from '../ui/RadioGroup';
+export * from '../ui/form';
+export * from '../ui/input';
 export * from './SearchForm';
 
 // Re-export Dropdown-Komponenten aus dem ui-Ordner
-export * from '../ui/Dropdown';
-export * from '../ui/ColorDropdown';
+export * from '../ui/dropdown';
 
 // Optionaler Default-Export für den Fall, dass jemand das gesamte Modul importieren möchte
-import { Form } from '../ui/Form';
-import { FormGroup } from '../ui/FormGroup';
-import { Input } from '../ui/Input';
-import { Textarea } from '../ui/Textarea';
-import { Select } from '../ui/Select';
-import { Checkbox } from '../ui/Checkbox';
-import { RadioGroup } from '../ui/RadioGroup';
+import { Form } from '../ui/form';
+import { FormGroup } from '../ui/form';
+import { Input } from '../ui/input';
+import { Textarea } from '../ui/input';
+import { Select } from '../ui/input';
+import { Checkbox } from '../ui/input';
+import { RadioGroup } from '../ui/input';
 import SearchForm from './SearchForm';
-import Dropdown from '../ui/Dropdown';
-import ColorDropdown from '../ui/ColorDropdown';
+import { Dropdown } from '../ui/dropdown';
+import { ColorDropdown } from '../ui/dropdown';
 
 export default {
   Form,

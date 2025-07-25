@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import * as DropdownModule from './index';
-import Dropdown from './Dropdown';
-import ColorDropdown from './ColorDropdown';
+import { Dropdown } from './dropdown';
+import { ColorDropdown } from './dropdown';
 
 describe('Dropdown Module Exports', () => {
   it('exportiert Dropdown als default und named export', () => {
