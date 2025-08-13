@@ -2,6 +2,7 @@ package routes
 
 import (
 	"schichtplaner/handlers"
+	"schichtplaner/utils"
 
 	"github.com/labstack/echo/v4"
 )
@@ -9,6 +10,9 @@ import (
 // RegisterAPIRoutes registriert alle API-Routen
 func RegisterAPIRoutes(e *echo.Echo) {
 	api := e.Group("/api")
+	
+	// Add authentication middleware to all API routes except public ones
+	api.Use(utils.BasicAuthMiddleware())
 
 	// Registriere alle Routen-Gruppen
 	RegisterGeneralRoutes(api)
